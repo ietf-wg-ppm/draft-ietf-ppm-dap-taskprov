@@ -19,11 +19,10 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
+title: "In-band Task Provisioning for DAP"
 category: info
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-wang-ppm-dap-taskprov-latest
 submissiontype: IETF  # also: "independent", "IAB", or "IRTF"
 number:
 date:

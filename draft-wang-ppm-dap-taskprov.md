@@ -24,9 +24,13 @@ venue:
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
+    fullname: Shan Wang
+    organization: Apple
     email: "shan_wang@apple.com"
+ -
+    fullname: Christopher Patton
+    organization: Cloudflare
+    email: "cpatton@cloudflare.com"
 
 normative:
 
@@ -74,25 +78,156 @@ many deployments.
 {::boilerplate bcp14-tagged}
 
 
-# The "task_prov" Extension
+# The "task-prov" Extension
 
 > NOTE(cjpatton) It will be useful to think of a good name for this. Something
-> succinct and descriptive is ideal. `task_prov` is fine, but we can maybe do
+> succinct and descriptive is ideal. `task-prov` is fine, but we can maybe do
 > better.
 
 A new extension is defined:
 
 ~~~
 enum {
-   task_prov(0xff00), (65535)
+  task-prov(0xff00),
+  (65535)
 } ExtensionType;
 ~~~
+> NOTE(shan) TLS uses underscore `_` to define codepoints, which is different
+> from DAP's convension of using hyphen `-`, which one to follow?
 
 When the Client includes this extension with its report, the body of the
 extension is structured as follows:
 
 ~~~
-TODO(wangshan) Specify the structure of the extension.
+/* Definition of all parameters in extension_data for one task */
+struct {
+  /* Info specific for a task. */
+  opaque task_info<1..2^8-1>,
+
+  /* A list of URLs relative to which an aggregator's API endpoints can be found. */
+  opaque aggregator_endpoints<1..2^16-1>,
+
+  /* This determines the query type for batch selection and the properties that all batches for this task must have. */
+  QueryConfiguration query_configuration,
+
+  /* The maximum number of times a batch of reports may be queried by the Collector. */
+  uint16 max_batch_lifetime,
+
+  /* [[OPEN ISSUE: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304]] */
+  Time task_expiration,
+
+  /* A unique identifier for the VDAF instance used for the task, including the type of measurement associated with the task. */
+  VdafType vdaf_type,
+
+  /* Additional parameters relevant for the vdaf_type */
+  opaque vdaf_data<1..2^16-1>,
+} TaskConfiguration;
+
+/* Defined in DAP core protocol */
+/* https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/blob/main/draft-ietf-ppm-dap.md#queries-query */
+enum {
+   reserved(0), // Reserved for testing purposes
+   time-interval(1),
+   fixed-size(2),
+   (65535)
+} QueryType;
+
+struct {
+  uint32 max_batch_size,
+} FixedSizeQueryConfiguration;
+
+struct {
+  QueryType query_type,
+  Duration time_precision,
+  uint32 min_batch_size,
+  select (query_type) {
+    case time-interval: Empty;
+    case fixed-size: FixedSizeQueryConfiguration fixed_size_query_config;
+  }
+} QueryConfiguration;
+~~~
+
+The purpose of `TaskConfiguration` is to include all parameters that are
+necessary for creating a new task in aggregator. It includes all the fields to
+be associated with a task, as defined by DAP protocol task configuration
+(see{{#task-configuration}}). Besides, `TaskConfiguration` also includes fields
+that useful for configuring a task in-band:
+
+* An opaque `task_info` that is specific to a task. For e.g. this can be a
+string describing the purpose of this task.
+
+* An opaque `vdaf_data` that contains any VDAF specific parameters for the
+chosen `vdaf_type`. The aggregators MUST pass `vdaf_data` to VDAF initialiser,
+based on the chosen `vdaf_type`.
+
+~~~
+/* Below are NOT in taskprov, used for Apple-CF deployment. */
+/* To be deleted from task-prov extension, but is ok to have trace in public */
+/* repo since all algorithms described below have been published. */
+
+/* INAN codepoints for VDAF */
+/* https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/blob/main/draft-ietf-ppm-dap.md#queries-query */
+/* NOTE(cjpatton) CamelCase is different from other enums values in DAP world. */
+enum {
+  Prio3Aes128Count(0x00000000),
+  Prio3Aes128Sum(0x00000001),
+  Prio3Aes128Histogram(0x00000002),
+  /* 0x00000003 to 0x00000FFF reserved for Prio3 */
+  Poplar1Aes128(0x00001000),
+  /* 0xFFFF0000 to 0xFFFFFFFF reserved for private use */
+  Prio2(0xFFFF0000),
+  /* 0xFFFF0001 to 0xFFFF0003 reserved for Prio2 */
+  PrioPlusPlus(0xFFFF0004),
+  /* 0xFFFF0005 to 0xFFFF0007 reserved for PrioPlusPlus */
+  PrioPiRappor(0xFFFF0008),
+  /* 0xFFFF0009 to 0xFFFF000F reserved for PiRappor */
+  (255)
+} VdafType;
+
+enum {
+  reserved(0), // Reserved for testing purposes
+  float16(1),
+  float32(2),
+  float64(3),
+  fixed-point16(4),
+  fixed-point32(5),
+  fixed-point64(6),
+  (7)
+} RealNumberType;
+
+struct {
+  RealNumberType real_number_type;
+  select (real_number_type) {
+    case float16: uint16 float16_num;
+    case float32: uint32 float32_num;
+    case float64: uint64 float64_num;
+    case fixed-point16: uint16 fixed_point16_num;
+    case fixed-point32: uint32 fixed_point32_num;
+    case fixed-point64: uint64 fixed_point64_num;
+  }
+} RealNumber;
+
+/* Encoded VdafParameters is in vdaf_data */
+struct {
+  uint32 dimension;
+  RealNumber epsilon;
+  select (vdaf_type) { // determined by TaskConfiguration vdaf_type
+    case Prio2: Empty;
+    case Prio3: Empty;
+    case PrioPlusPlus: PrioPlusPlusParams
+    case PrioPiRappor: PrioPiRapporParams
+  }
+} VdafParameter;
+
+struct {
+  RealNumber sigma;
+} PrioPlusPlusParams;
+
+struct {
+  uint32 prime;
+  RealNumber alpha0;
+  RealNumber alpha1;
+} PrioPiRapporParams;
 ~~~
 
 
@@ -100,6 +235,37 @@ TODO(wangshan) Specify the structure of the extension.
 
 > TODO(wangshan) Say how the Client constructs the extension body. Does the
 > extension change anything else about the upload flow?
+
+The client should know whether task-prov extension will be used and all
+parameters required for `TaskConfiguration` prior to constructing the extension
+body, either out-of-band from aggregators, or from information already saved on
+client.
+
+## Construct task ID
+
+To use this extension, the client should first decide what is the task ID. For
+task-prov extension, a DAP task is not created before distributing task
+configuration to clients. Therefore, a DAP task ID may not be available to
+clients or aggregators before uploading. Aggregator MAY still choose a task ID
+for this task and deliver it to all clients in `task_info`. In this case,
+client MUST use that `task_info` as task ID. This arrangement SHOULD be agreed
+by aggregators and clients out-of-band.
+
+Alternatively, client can construct the task ID from `task_info` and any other
+part of task configuration, as long as the generated task ID is determinstic and
+stay consistent across all devices.
+
+## Construct extension body
+
+Client constructs this extension during the upload flow (see {{upload-flow}}),
+after hpke config (see {{#hpke-config}}). Note that if task ID is not available
+at time of hpke config query, the client should use `[aggregator]/hpke_config`
+API without specifying a `task_id`. Client typically sets `extension_type` to
+`task-prov` codepoint in `ReportMetadata`'s extenion field, and save the
+encoded `TaskConfiguration` in `extension_data` field.
+
+[[TODO: talk about client logging task configuration and checking against
+parameters like task_expiration.]]
 
 
 # Leader Behavior

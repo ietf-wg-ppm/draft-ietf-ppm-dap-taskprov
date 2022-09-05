@@ -72,6 +72,9 @@ many deployments.
 >
 > - Which of the sub-protocols are changed: upload, aggregate, collect?
 
+> TODO: talk about client logging task configuration and checking against
+parameters like task_expiration.
+
 
 # Conventions and Definitions
 
@@ -108,7 +111,7 @@ struct {
   opaque aggregator_endpoints<1..2^16-1>,
 
   /* This determines the query type for batch selection and the properties that all batches for this task must have. */
-  QueryConfiguration query_configuration,
+  QueryConfig query_config,
 
   /* The maximum number of times a batch of reports may be queried by the Collector. */
   uint16 max_batch_lifetime,
@@ -121,7 +124,7 @@ struct {
 
   /* Additional parameters relevant for the vdaf_type */
   opaque vdaf_data<1..2^16-1>,
-} TaskConfiguration;
+} TaskConfig;
 
 /* Defined in DAP core protocol */
 /* https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/blob/main/draft-ietf-ppm-dap.md#queries-query */
@@ -134,7 +137,7 @@ enum {
 
 struct {
   uint32 max_batch_size,
-} FixedSizeQueryConfiguration;
+} FixedSizeQueryConfig;
 
 struct {
   QueryType query_type,
@@ -142,15 +145,15 @@ struct {
   uint32 min_batch_size,
   select (query_type) {
     case time-interval: Empty;
-    case fixed-size: FixedSizeQueryConfiguration fixed_size_query_config;
+    case fixed-size: FixedSizeQueryConfig fixed_size_query_config;
   }
-} QueryConfiguration;
+} QueryConfig;
 ~~~
 
-The purpose of `TaskConfiguration` is to include all parameters that are
+The purpose of `TaskConfig` is to include all parameters that are
 necessary for creating a new task in aggregator. It includes all the fields to
-be associated with a task, as defined by DAP protocol task configuration
-(see{{#task-configuration}}). Besides, `TaskConfiguration` also includes fields
+be associated with a task (see task configuration in
+{{?DAP=I-D.draft-ietf-ppm-dap}}.). Besides, `TaskConfig` also includes fields
 that useful for configuring a task in-band:
 
 * An opaque `task_info` that is specific to a task. For e.g. this can be a
@@ -211,7 +214,7 @@ struct {
 struct {
   uint32 dimension;
   RealNumber epsilon;
-  select (vdaf_type) { // determined by TaskConfiguration vdaf_type
+  select (vdaf_type) { // determined by TaskConfig vdaf_type
     case Prio2: Empty;
     case Prio3: Empty;
     case PrioPlusPlus: PrioPlusPlusParams
@@ -237,7 +240,7 @@ struct {
 > extension change anything else about the upload flow?
 
 The client should know whether task-prov extension will be used and all
-parameters required for `TaskConfiguration` prior to constructing the extension
+parameters required for `TaskConfig` prior to constructing the extension
 body, either out-of-band from aggregators, or from information already saved on
 client.
 
@@ -257,15 +260,13 @@ stay consistent across all devices.
 
 ## Construct extension body
 
-Client constructs this extension during the upload flow (see {{upload-flow}}),
-after hpke config (see {{#hpke-config}}). Note that if task ID is not available
-at time of hpke config query, the client should use `[aggregator]/hpke_config`
-API without specifying a `task_id`. Client typically sets `extension_type` to
-`task-prov` codepoint in `ReportMetadata`'s extenion field, and save the
-encoded `TaskConfiguration` in `extension_data` field.
-
-[[TODO: talk about client logging task configuration and checking against
-parameters like task_expiration.]]
+Client constructs this extension during the upload flow, after hpke config
+(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap}}.). Note
+that if task ID is not available at time of hpke config query, the client
+should use `[aggregator]/hpke_config` API without specifying a `task_id`.
+Client typically sets `extension_type` to `task-prov` codepoint in
+`ReportMetadata`'s extenion field, and save the encoded `TaskConfig` in
+`extension_data` field.
 
 
 # Leader Behavior

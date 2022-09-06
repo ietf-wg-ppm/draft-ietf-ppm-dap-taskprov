@@ -143,7 +143,6 @@ When the Client includes this extension with its report, the body of the
 extension is structured as follows:
 
 ~~~
-/* Definition of all parameters in extension_data for one task */
 struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
@@ -154,7 +153,7 @@ struct {
 
     /* This determines the query type for batch selection and the */
     /* properties that all batches for this task must have. */
-    QueryConfig query_config;
+    QueryConfig query_config; // Defined in I-D.draft-ietf-ppm-dap-02
 
     /* The maximum number of times a batch of reports may be queried */
     /* by the Collector. */

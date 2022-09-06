@@ -25,7 +25,7 @@ venue:
 author:
  -
     fullname: Shan Wang
-    organization: Apple
+    organization: Apple Inc.
     email: "shan_wang@apple.com"
  -
     fullname: Christopher Patton
@@ -460,3 +460,23 @@ one copy of extension in `AggregateInitializeReq`.
 
 > NOTE(cjpatton) It's a good idea to acknowledge anyone by name who contributed
 > to the spec in some way, either directly or indirectly.
+> NOTE(shan) Will add more in future commits.
+
+## Contributors
+
+Junye Chen
+Apple Inc.
+junyec@apple.com
+
+Michael Scaria
+Apple Inc.
+mscaria@apple.com
+
+Suman Ganta
+Apple Inc.
+sganta2@apple.com
+
+Christopher A. Wood
+Cloudflare
+chriswood@cloudflare.com
+

@@ -214,7 +214,7 @@ The definition of Time, Duration, Url, QueryType follow those in
 
 Note that the parameters that are not necessarily tied to a task (for e.g.
 collector hpke config), and secrets that should not be known by clients, like
-`vdaf_verify_key`, MUST still be exchanged out-of-band among aggregators,
+`vdaf_verify_key`, MUST still be exchanged out-of-band among aggregators.
 
 # Client Behavior
 
@@ -390,7 +390,7 @@ one copy of extension in `AggregateInitializeReq`.
 > to the spec in some way, either directly or indirectly.
 > NOTE(shan) Will add more in future commits.
 
-## Contributors
+Contributors
 
 Junye Chen
 Apple Inc.

@@ -104,11 +104,11 @@ This extension affects upload, aggregate and collect sub-protocols.
 
 {::boilerplate bcp14-tagged}
 
-Similar to {{?DAP=I-D.draft-ietf-ppm-dap}}, this document uses the verbs
+Similar to {{?DAP=I-D.draft-ietf-ppm-dap-01}}, this document uses the verbs
 "abort" and "alert with `[some error message]`" to describe how protocol
 participants react to various error conditions.
 
-The terms used follow those described in {{?DAP=I-D.draft-ietf-ppm-dap}}. The
+The terms used follow those described in {{?DAP=I-D.draft-ietf-ppm-dap-01}}. The
 following new terms are used:
 
 Task provision:
@@ -148,27 +148,31 @@ struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
 
-    /* A list of URLs relative to which an aggregator's API endpoints can be found. */
+    /* A list of URLs relative to which an aggregator's API endpoints */
+    /* can be found. */
     Url aggregator_endpoints<1..2^16-1>;
 
-    /* This determines the query type for batch selection and the properties that all batches for this task must have. */
+    /* This determines the query type for batch selection and the */
+    /* properties that all batches for this task must have. */
     QueryConfig query_config;
 
-    /* The maximum number of times a batch of reports may be queried by the Collector. */
+    /* The maximum number of times a batch of reports may be queried */
+    /* by the Collector. */
     uint16 max_batch_lifetime;
 
-    /* [[OPEN ISSUE: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304]] */
+    /* Time up to which clients are allowed to upload to this task. */
+    /* See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304 */
     Time task_expiration;
 
-    /* A unique identifier for the VDAF instance used for the task, including the type of measurement associated with the task. */
+    /* A unique identifier for the VDAF instance used for the task, */
+    /* including the type of measurement associated with the task. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type */
     opaque vdaf_data<1..2^16-1>;
 } TaskConfig;
 
-/* Defined in DAP core protocol */
-/* https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/blob/main/draft-ietf-ppm-dap.md#queries-query */
+/* Defined in DAP core protocol. */
 enum {
     reserved(0), // Reserved for testing purposes
     time-interval(1),
@@ -194,7 +198,7 @@ struct {
 The purpose of `TaskConfig` is to include all parameters that are necessary
 for creating a new task in aggregators. It includes all the fields to be
 associated with a task (see task configuration in
-{{?DAP=I-D.draft-ietf-ppm-dap}}.). Besides, `TaskConfig` also includes fields
+{{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Besides, `TaskConfig` also includes fields
 that useful for configuring a task in-band:
 
 * An opaque `task_info` that is specific to a task. For e.g. this can be a
@@ -205,8 +209,8 @@ chosen by task author.
 chosen `vdaf_type`. The aggregators MUST pass `vdaf_data` to VDAF initialiser,
 based on the chosen `vdaf_type`.
 
-The definition of Time, Duration, Url follow those in
-{{?DAP=I-D.draft-ietf-ppm-dap}}.
+The definition of Time, Duration, Url, QueryType follow those in
+{{?DAP=I-D.draft-ietf-ppm-dap-01}}.
 
 Note that the parameters that are not necessarily tied to a task (for e.g.
 collector hpke config), and secrets that should not be known by clients, like
@@ -319,7 +323,7 @@ must be known to both clients and the collector.
 ## Construct extension body
 
 Client constructs this extension during the upload flow, after hpke config
-(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap}}.). Note
+(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Note
 that if task ID is not available at time of hpke config query, the client
 should use `[aggregator]/hpke_config` API without specifying a `task_id`.
 Client typically sets `extension_type` to `task-prov` codepoint in
@@ -374,7 +378,7 @@ There is no change to the aggregate sub-protocol on leader side.
 ## Change to collect sub-protocol
 
 During collect init, leader must perform batch validation (see batch-validation
-in {{?DAP=I-D.draft-ietf-ppm-dap}}) to the `CollectReq`. This requires leader
+in {{?DAP=I-D.draft-ietf-ppm-dap-01}}) to the `CollectReq`. This requires leader
 to know the parameters associated with the DAP task. However, upon receipt of
 `CollectReq`, leader may not know the parameters if the first upload has not
 arrived yet. In this case the leader MAY respond with HTTP status code 404
@@ -399,7 +403,7 @@ SHOULD abort the aggregate protocol and alert the leader with error
 
 If helper supports `task-prov` extension, it should first check if the task ID
 already exists, if so helper continues to the rest of helper initialization as
-usual (see helper initialization in {{?DAP=I-D.draft-ietf-ppm-dap}}.)
+usual (see helper initialization in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.)
 Note if the existing tasks's configuration is different from the one in report
 share extension, HPKE decryption will fail due to mismatched AAD.
 

@@ -149,7 +149,7 @@ struct {
 
     /* A list of URLs relative to which an aggregator's API endpoints */
     /* can be found. */
-    Url aggregator_endpoints<1..2^16-1>;
+    Url aggregator_endpoints<1..2^16-1>; // Defined in I-D.draft-ietf-ppm-dap-02
 
     /* This determines the query type for batch selection and the */
     /* properties that all batches for this task must have. */
@@ -161,7 +161,7 @@ struct {
 
     /* Time up to which clients are allowed to upload to this task. */
     /* See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304 */
-    Time task_expiration;
+    Time task_expiration; // Defined in I-D.draft-ietf-ppm-dap-02
 
     /* A unique identifier for the VDAF instance used for the task, */
     /* including the type of measurement associated with the task. */
@@ -171,21 +171,13 @@ struct {
     opaque vdaf_data<1..2^16-1>;
 } TaskConfig;
 
-/* Defined in DAP core protocol. */
-enum {
-    reserved(0), // Reserved for testing purposes
-    time-interval(1),
-    fixed-size(2),
-    (65535)
-} QueryType;
-
 struct {
     uint32 max_batch_size;
 } FixedSizeQueryConfig;
 
 struct {
-    QueryType query_type;
-    Duration time_precision;
+    QueryType query_type; // Defined in I-D.draft-ietf-ppm-dap-02
+    Duration time_precision; // Defined in I-D.draft-ietf-ppm-dap-01
     uint32 min_batch_size;
     select (query_type) {
         case time-interval: Empty;
@@ -240,7 +232,7 @@ SHOULD be agreed by aggregators, collector and clients out-of-band.
 Alternatively, task ID can be constructed from `task_info` and any other part
 of task configuration, as long as the generated task ID is determinstic and
 stay consistent across all parties. For example, the task ID can be a SHA256
-hash of the entire serialized `TaskConfig`.  In this case, the `task_info`
+hash of the entire serialized `TaskConfig`. In this case, the `task_info`
 serves as an unique byte array to distinguish different tasks that share the
 same task parameters. Task ID can be constructed on server side and then
 distributed to clients, or constructed independently on clients and servers.

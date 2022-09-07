@@ -150,21 +150,22 @@ struct {
      can be found. Defined in I-D.draft-ietf-ppm-dap-02. */
     Url aggregator_endpoints<1..2^16-1>;
 
-    /* This determines the query type for batch selection and the properties
-     that all batches for this task must have. Defined in
+    /* This determines the query type for batch selection and the
+    properties that all batches for this task must have. Defined in
      I-D.draft-ietf-ppm-dap-02. */
     QueryConfig query_config;
 
-    /* The maximum number of times a batch of reports may be queried by the
-     Collector. */
+    /* The maximum number of times a batch of reports may be queried by
+    the Collector. */
     uint16 max_batch_lifetime;
 
     /* Time up to which Clients are allowed to upload to this task. See
-     https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined in
-     I-D.draft-ietf-ppm-dap-02. */
+     https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined
+     in I-D.draft-ietf-ppm-dap-02. */
     Time task_expiration;
 
-    /* A codepoint for either a standard VDAF or reserved for private use. */
+    /* A codepoint for either a standard VDAF or reserved for private
+     use. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type. */
@@ -235,7 +236,7 @@ distributed to clients, or constructed independently on clients and servers.
 When constructed independently, the mechanism used for creating the task ID
 must be known to both clients and the collector.
 
-[[OPEN ISSUE: Should task ID construction from TaskConfig be enforeced?]]
+> OPEN ISSUE: Should task ID construction from TaskConfig be enforeced?
 
 ## Construct extension body
 

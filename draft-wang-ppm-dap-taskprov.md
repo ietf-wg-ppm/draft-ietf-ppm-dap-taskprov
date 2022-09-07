@@ -30,7 +30,7 @@ author:
  -
     fullname: Christopher Patton
     organization: Cloudflare
-    email: "cpatton@cloudflare.com"
+    email: "chrispatton+ietf@gmail.com"
 
 normative:
 
@@ -147,19 +147,19 @@ struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
 
-    /* A list of URLs relative to which an aggregator's API endpoints */
-    /* can be found. */
+    /* A list of URLs relative to which an aggregator's API endpoints
+     can be found. */
     Url aggregator_endpoints<1..2^16-1>; // Defined in I-D.draft-ietf-ppm-dap-02
 
     /* This determines the query type for batch selection and the */
-    /* properties that all batches for this task must have. */
-    QueryConfig query_config; // Defined in I-D.draft-ietf-ppm-dap-02
+    /* properties that all batches for this task must have.  Defined in I-D.draft-ietf-ppm-dap-02. */
+    QueryConfig query_config;
 
     /* The maximum number of times a batch of reports may be queried */
     /* by the Collector. */
     uint16 max_batch_lifetime;
 
-    /* Time up to which clients are allowed to upload to this task. */
+    /* Time up to which Clients are allowed to upload to this task. */
     /* See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304 */
     Time task_expiration; // Defined in I-D.draft-ietf-ppm-dap-02
 
@@ -167,8 +167,8 @@ struct {
     /* including the type of measurement associated with the task. */
     VdafType vdaf_type;
 
-    /* Additional parameters relevant for the vdaf_type */
-    opaque vdaf_data<1..2^16-1>;
+    /* Additional parameters relevant for the vdaf_type. */
+    opaque vdaf_config<1..2^16-1>;
 } TaskConfig;
 
 struct {
@@ -176,8 +176,8 @@ struct {
 } FixedSizeQueryConfig;
 
 struct {
-    QueryType query_type; // Defined in I-D.draft-ietf-ppm-dap-02
-    Duration time_precision; // Defined in I-D.draft-ietf-ppm-dap-01
+    QueryType query_type;    // Defined in I-D.draft-ietf-ppm-dap-02
+    Duration time_precision; // Defined in I-D.draft-ietf-ppm-dap-02
     uint32 min_batch_size;
     select (query_type) {
         case time-interval: Empty;
@@ -397,5 +397,5 @@ sganta2@apple.com
 
 Christopher A. Wood
 Cloudflare
-chriswood@cloudflare.com
+caw@heapingbits.net
 

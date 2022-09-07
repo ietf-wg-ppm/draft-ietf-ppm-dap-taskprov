@@ -62,7 +62,7 @@ own mechanism.
 This document describes a mechanism for configuring tasks that may be useful in
 many deployments. The goal of this mechanism is to add transparency to the
 task provision process, and define a task provision method that does not rely
-on deployment specific leader-helper out-out-band agreement.
+on deployment specific leader-helper out-of-band agreement.
 
 At a high level, this extension asks client to include all the task
 configuration parameters it received out-of-band from task author, in the
@@ -70,11 +70,10 @@ extension field of the `Report` it uploads to aggregators. The aggregators will
 create a DAP task upon receiving `Report` with such extension (or `ReportShare`
 in the case of helper.)
 
-By sending task configuration parameters to clients then return to server for
-task provision, we add transparency to the task that clients participate in.
-Client can see what privacy parameters has been configured for a task (for e.g.
-`min_batch_size`, or any differential privacy parameters if that's the privacy
-guarantee used).
+By sending task configuration parameters to clients, we add transparency to the
+task that clients participate in. Client can see what privacy parameters has
+been configured for a task (for e.g. `min_batch_size`, or any differential
+privacy parameters if that's the privacy guarantee used).
 
 By defining this mechanism as an extension, we can guarantee that for any
 deployments implementing this extension:
@@ -115,7 +114,7 @@ Task provision:
 : The process of creating a DAP task.
 
 Task configuration:
-: The non-secret parameters required to create a task in task proviosion.
+: The non-secret parameters required to create a task in task provision.
 
 Task author:
 : The entity that defines the parameters of a task.
@@ -148,23 +147,24 @@ struct {
     opaque task_info<1..2^8-1>;
 
     /* A list of URLs relative to which an aggregator's API endpoints
-     can be found. */
-    Url aggregator_endpoints<1..2^16-1>; // Defined in I-D.draft-ietf-ppm-dap-02
+     can be found. Defined in I-D.draft-ietf-ppm-dap-02. */
+    Url aggregator_endpoints<1..2^16-1>;
 
-    /* This determines the query type for batch selection and the */
-    /* properties that all batches for this task must have.  Defined in I-D.draft-ietf-ppm-dap-02. */
+    /* This determines the query type for batch selection and the properties
+     that all batches for this task must have. Defined in
+     I-D.draft-ietf-ppm-dap-02. */
     QueryConfig query_config;
 
-    /* The maximum number of times a batch of reports may be queried */
-    /* by the Collector. */
+    /* The maximum number of times a batch of reports may be queried by the
+     Collector. */
     uint16 max_batch_lifetime;
 
-    /* Time up to which Clients are allowed to upload to this task. */
-    /* See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304 */
-    Time task_expiration; // Defined in I-D.draft-ietf-ppm-dap-02
+    /* Time up to which Clients are allowed to upload to this task. See
+     https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined in
+     I-D.draft-ietf-ppm-dap-02. */
+    Time task_expiration;
 
-    /* A unique identifier for the VDAF instance used for the task, */
-    /* including the type of measurement associated with the task. */
+    /* A codepoint for either a standard VDAF or reserved for private use. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type. */
@@ -172,16 +172,12 @@ struct {
 } TaskConfig;
 
 struct {
-    uint32 max_batch_size;
-} FixedSizeQueryConfig;
-
-struct {
     QueryType query_type;    // Defined in I-D.draft-ietf-ppm-dap-02
     Duration time_precision; // Defined in I-D.draft-ietf-ppm-dap-02
     uint32 min_batch_size;
     select (query_type) {
         case time-interval: Empty;
-        case fixed-size: FixedSizeQueryConfig fixed_size_query_config;
+        case fixed-size: uint32 max_batch_size;
     }
 } QueryConfig;
 ~~~
@@ -239,14 +235,14 @@ distributed to clients, or constructed independently on clients and servers.
 When constructed independently, the mechanism used for creating the task ID
 must be known to both clients and the collector.
 
+[[OPEN ISSUE: Should task ID construction from TaskConfig be enforeced?]]
+
 ## Construct extension body
 
 Client constructs this extension during the upload flow, after hpke config
-(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Note
-that if task ID is not available at time of hpke config query, the client
-should use `[aggregator]/hpke_config` API without specifying a `task_id`.
+(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.).
 Client typically sets `extension_type` to `task-prov` codepoint in
-`ReportMetadata`'s extenion field, and save the encoded `TaskConfig` in
+`ReportMetadata`'s extension field, and save the encoded `TaskConfig` in
 `extension_data` field.
 
 # Leader Behavior
@@ -275,15 +271,16 @@ Note if the existing tasks's configuration is different from the one in report
 extension, HPKE decryption will fail due to mismatched AAD.
 
 If the task ID has not been seen before, leader should read and decode report's
-`extension_data` with the `TaskConfig` schema. If the decode failed, it MUST
+`extension_data` with the `TaskConfig` schema. If the decoding failed, it MUST
 abort the upload protocol and alert the client with error
 "unrecognizedMessage".
 
 If the decode succeeds, leader should create a new task using the task ID from
 the decoded report, and save task configuration with the newly created task. In
-particular, leader should pass `vdaf_data` to the VDAF initialiser, based on
-`vdaf_type` in `TaskConfig`. At this point, the task provision step has
-completed, and leader should continue to the rest of upload flow.
+particular, leader should deserialize `vdaf_data` corresponding to `vdaf_type`,
+and pass the relevant parameters to the VDAF initializer. At this point, the
+task provision step has completed, and leader should continue to the rest of
+upload flow.
 
 Leader MAY return error to the client if task creation failed.
 
@@ -323,7 +320,7 @@ SHOULD abort the aggregate protocol and alert the leader with error
 If helper supports `task-prov` extension, it should first check if the task ID
 already exists, if so helper continues to the rest of helper initialization as
 usual (see helper initialization in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.)
-Note if the existing tasks's configuration is different from the one in report
+Note if the existing task's configuration is different from the one in report
 share extension, HPKE decryption will fail due to mismatched AAD.
 
 If the task ID has not been seen before, helper should read and decode report
@@ -341,17 +338,17 @@ completed, and helper should continue to the rest of helper initialization.
 
 > TODO(wangshan) Describe if/how this extension impacts Collector behavior.
 
-Collector should handle `CollectResp` with status code 404 Not Found and error
-type `unrecognizedTask`, if it supports this extension, then it should retry
-with the same `CollectReq`, potentially using an interval from the Retry-After
-header in the last `CollectResp`.
+If Collector supports `task-prov` extension and receives a HTTP status code
+404 Not Found with error type `unrecognizedTask` after sending a `CollectReq`,
+it SHOULD retry with the same `CollectReq`, potentially using an interval from
+the Retry-After header in the received response.
 
 # Operational Considerations
 
 > NOTE(shan) Do we want to include this section in the beginning?
 
 The in-band task provision mechanism is easy to implement with streaming
-framework that has `groupBy operator`. In fact, task as an object doesn't have
+framework that has `groupBy` operator. In fact, task as an object doesn't have
 to exist in aggregators, it mainly becomes an identifier to group aggregations
 together.
 

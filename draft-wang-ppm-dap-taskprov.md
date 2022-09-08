@@ -110,7 +110,7 @@ participants react to various error conditions.
 The terms used follow those described in {{?DAP=I-D.draft-ietf-ppm-dap-01}}. The
 following new terms are used:
 
-Task provision:
+Task provisioning:
 : The process of creating a DAP task.
 
 Task configuration:
@@ -160,12 +160,12 @@ struct {
     uint16 max_batch_lifetime;
 
     /* Time up to which Clients are allowed to upload to this task. See
-     https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined
-     in I-D.draft-ietf-ppm-dap-02. */
+    https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined
+    in I-D.draft-ietf-ppm-dap-02. */
     Time task_expiration;
 
-    /* A codepoint for either a standard VDAF or reserved for private
-     use. */
+    /* A codepoint defined in I-D.draft-irtf-cfrg-vdaf-03 or reserved for private
+    use. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type. */
@@ -183,8 +183,8 @@ struct {
 } QueryConfig;
 ~~~
 
-The purpose of `TaskConfig` is to include all parameters that are necessary
-for creating a new task in aggregators. It includes all the fields to be
+The purpose of `TaskConfig` is to define all parameters that are necessary
+for configuring an aggregator. It includes all the fields to be
 associated with a task (see task configuration in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Besides, `TaskConfig` also includes fields
 that useful for configuring a task in-band:

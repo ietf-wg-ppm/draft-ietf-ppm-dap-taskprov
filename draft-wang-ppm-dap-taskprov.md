@@ -196,7 +196,7 @@ enum {
     Prio3Aes128Sum(0x00000001),
     Prio3Aes128Histogram(0x00000002),
     Poplar1Aes128(0x00001000),
-    (255)
+    (2^32-1)
 } VdafType;
 ~~~
 

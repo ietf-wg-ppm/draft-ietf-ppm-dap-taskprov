@@ -61,8 +61,8 @@ own mechanism.
 
 This document describes a mechanism for configuring tasks that may be useful in
 many deployments. The goal of this mechanism is to add transparency to the
-task provision process, and define a task provision method that does not rely
-on deployment specific leader-helper out-of-band agreement.
+task provision process, and define a task provision method that utilizes just
+the upload channel and the metadata in the `Report` itself.
 
 At a high level, this extension asks client to include all the task
 configuration parameters it received out-of-band from task author, in the
@@ -81,21 +81,10 @@ deployments implementing this extension:
 1. Task transparency is enforced since aggregator task must be created using
 the same parameters client sent.
 
-2. No need for out-of-band task orchestration between leader and helpers, any
-leaders and helpers can work on the same DAP task, therefore making adoption of
-DAP easier.
-
-3. A "task" now means the same task ID and same task configuration, including
-parameters for choosing VDAF. Therefore, reports from one task will only be
-aggregated with one VDAF. For the same reason, if a malicious client changes
-the task ID or task configuration, its report will be aggregated in a different
-task, with other poison reports from the same malicious attack. The "good"
-reports will not be polluted.
-
-Because extension is used in HPKE's AAD, by including all task configurations
-in the extension, malicious leader cannot change the task configuration to
-mislead helpers to reduce privacy guarantee, for e.g. by reducing
-`min_batch_size`.
+2. No need for out-of-band task orchestration between leader and helpers, all
+information required for aggregating a report is included in the report itself.
+Any leaders and helpers can work on the same DAP task, therefore making adoption
+of DAP easier.
 
 This extension affects upload, aggregate and collect sub-protocols.
 
@@ -231,9 +220,11 @@ struct {
 The definition of Time, Duration, Url, QueryType follow those in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.
 
-Note that the parameters that are not necessarily tied to a task (for e.g.
-collector hpke config), and secrets that should not be known by clients, like
-`vdaf_verify_key`, MUST still be exchanged out-of-band among aggregators.
+Note that `TaskConfig` does not encode all of the parameters required for the
+aggregator to run a task. In particular, parameters that should not be known to
+clients, like the VDAF verification key, the collector HPKE configuration, and
+whatever assets are required for HTTP request authentication are still
+established out-of-band.
 
 # Client Behavior
 
@@ -248,34 +239,26 @@ client.
 To use this extension, the client should first decide what is the task ID, see
 {{construct-task-id}}.
 
-## Construct task ID {#construct-task-id}
-
-For `task-prov` extension, a DAP task is not created before distributing task
-configuration to clients. Therefore, a DAP task ID may not be available to
-clients, aggregators and collector before uploading. Aggregator or collector
-MAY still choose a task ID for this task and deliver it to all clients along
-with `TaskConfig`. In this case, client MUST use that task ID. This arrangement
-SHOULD be agreed by aggregators, collector and clients out-of-band.
-
-Alternatively, task ID can be constructed from `task_info` and any other part
-of task configuration, as long as the generated task ID is determinstic and
-stay consistent across all parties. For example, the task ID can be a SHA256
-hash of the entire serialized `TaskConfig`. In this case, the `task_info`
-serves as an unique byte array to distinguish different tasks that share the
-same task parameters. Task ID can be constructed on server side and then
-distributed to clients, or constructed independently on clients and servers.
-When constructed independently, the mechanism used for creating the task ID
-must be known to both clients and the collector.
-
-> OPEN ISSUE: Should task ID construction from TaskConfig be enforeced?
-
-## Construct extension body
-
 Client constructs this extension during the upload flow, after hpke config
 (see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.).
 Client typically sets `extension_type` to `task-prov` codepoint in
 `ReportMetadata`'s extension field, and save the encoded `TaskConfig` in
 `extension_data` field.
+
+## Construct task ID {#construct-task-id}
+
+For `task-prov` extension, a DAP task is not created before distributing task
+configuration to clients. Therefore, a DAP task ID may not be available to
+clients, aggregators and collector before uploading. Task ID can be constructed
+from `task_info` and any other part of task configuration, as long as the
+generated task ID is determinstic and stay consistent across all parties. For
+example, the task ID can be a SHA256 hash of the entire serialized
+`TaskConfig`. In this case, the `task_info` serves as an unique byte array to
+distinguish different tasks that share the same task parameters. Task ID can be
+constructed on server side and then distributed to clients, or constructed
+independently on clients and servers. When constructed independently, the
+mechanism used for creating the task ID must be known to both clients and the
+collector.
 
 # Leader Behavior
 
@@ -375,9 +358,14 @@ If Collector supports `task-prov` extension and receives a HTTP status code
 it SHOULD retry with the same `CollectReq`, potentially using an interval from
 the Retry-After header in the received response.
 
-# Operational Considerations
+# Implementation and Operational Considerations
 
 > NOTE(shan) Do we want to include this section in the beginning?
+
+A "task" now means the same task ID and same task configuration, if a malicious
+client changes the task ID or task configuration, its report will be aggregated
+in a different task, with other poison reports from the same malicious attack.
+The "good" reports will not be polluted.
 
 The in-band task provision mechanism is easy to implement with streaming
 framework that has `groupBy` operator. In fact, task as an object doesn't have
@@ -393,6 +381,11 @@ one copy of extension in `AggregateInitializeReq`.
 > NOTE(cjpatton) In this section we would describe any security goals we have
 > that go beyond the core DAP spec. We will also discuss if/how the extension
 > impacts the security of DAP itself.
+
+> Because extension is used in HPKE's AAD, by including all task configurations
+> in the extension, malicious leader cannot change the task configuration to
+> mislead helpers to reduce privacy guarantee, for e.g. by reducing
+> `min_batch_size`.
 
 
 # IANA Considerations

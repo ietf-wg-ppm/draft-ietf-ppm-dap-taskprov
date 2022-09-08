@@ -193,9 +193,40 @@ that useful for configuring a task in-band:
 string describing the purpose of this task. It can also be the DAP task ID
 chosen by task author.
 
-* An opaque `vdaf_data` that contains any VDAF specific parameters for the
-chosen `vdaf_type`. The aggregators MUST pass `vdaf_data` to VDAF initialiser,
+* An opaque `vdaf_config` that contains any VDAF specific parameters for the
+chosen `vdaf_type`. The aggregators MUST pass `vdaf_config` to VDAF initialiser,
 based on the chosen `vdaf_type`.
+
+The codepoints for standardized (V)DAFs are listed below:
+
+~~~
+/* Codepoint for each standardized VDAF. Defined in
+ I-D.draft-irtf-cfrg-vdaf-02 */
+enum {
+    Prio3Aes128Count(0x00000000),
+    Prio3Aes128Sum(0x00000001),
+    Prio3Aes128Histogram(0x00000002),
+    Poplar1Aes128(0x00001000),
+    (255)
+} VdafType;
+~~~
+
+`VdafConfig` is not specified in this document, instead it should be defined by
+each VDAF implementation, for example, the simplest VDAF config for Prio3 can
+be defined as:
+
+~~~
+struct {
+    select (vdaf_type) {
+        case Prio3Aes128Count: Empty;
+        case Prio3Aes128Sum: uint8 bits;
+        case Prio3Aes128Histogram: uint32 buckets;
+    }
+} VdafConfig;
+~~~
+
+> OPEN ISSUE: Should DP parameters be defined as a different "dimension" to
+> VDAF, given that it's likely various DP mechanisms can be applied to any VDAF.
 
 The definition of Time, Duration, Url, QueryType follow those in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.
@@ -278,7 +309,7 @@ abort the upload protocol and alert the client with error
 
 If the decode succeeds, leader should create a new task using the task ID from
 the decoded report, and save task configuration with the newly created task. In
-particular, leader should deserialize `vdaf_data` corresponding to `vdaf_type`,
+particular, leader should deserialize `vdaf_config` corresponding to `vdaf_type`,
 and pass the relevant parameters to the VDAF initializer. At this point, the
 task provision step has completed, and leader should continue to the rest of
 upload flow.
@@ -331,7 +362,7 @@ it MUST abort the aggregate protocol and alert the leader with error
 
 If the decode succeeds, helper should create a new task using the task ID from
 the decoded report share, and save task configuration with the newly created
-task. In particular, helper should pass `vdaf_data` to the VDAF initializer,
+task. In particular, helper should pass `vdaf_config` to the VDAF initializer,
 based on `vdaf_type` in `TaskConfig`. At this point, the task provision step has
 completed, and helper should continue to the rest of helper initialization.
 

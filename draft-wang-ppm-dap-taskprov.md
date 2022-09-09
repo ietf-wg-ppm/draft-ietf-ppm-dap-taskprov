@@ -192,7 +192,7 @@ The codepoints for standardized (V)DAFs are listed below:
 /* Codepoint for each standardized VDAF. Defined in
  I-D.draft-irtf-cfrg-vdaf-02 */
 enum {
-    Prio3Aes128Count(0x00000000),
+    prio3-aes128-count(0x00000000),
     Prio3Aes128Sum(0x00000001),
     Prio3Aes128Histogram(0x00000002),
     Poplar1Aes128(0x00001000),
@@ -200,7 +200,7 @@ enum {
 } VdafType;
 ~~~
 
-`VdafConfig` is not specified in this document, instead it should be defined by
+The structure of the `vdaf_config` field is not specified in this document, instead it should be defined by
 each VDAF implementation, for example, the simplest VDAF config for Prio3 can
 be defined as:
 
@@ -209,7 +209,7 @@ struct {
     select (vdaf_type) {
         case Prio3Aes128Count: Empty;
         case Prio3Aes128Sum: uint8 bits;
-        case Prio3Aes128Histogram: uint32 buckets;
+        case Prio3Aes128Histogram: uint64 buckets<8, 2^16-8>;
     }
 } VdafConfig;
 ~~~
@@ -236,14 +236,7 @@ parameters required for `TaskConfig` prior to constructing the extension
 body, either out-of-band from aggregators, or from information already saved on
 client.
 
-To use this extension, the client should first decide what is the task ID, see
-{{construct-task-id}}.
-
-Client constructs this extension during the upload flow, after hpke config
-(see update flow and hpke-config in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.).
-Client typically sets `extension_type` to `task-prov` codepoint in
-`ReportMetadata`'s extension field, and save the encoded `TaskConfig` in
-`extension_data` field.
+To offer the "task-prov" extension, the client adds the `TaskConfig` structure it received from the task author in the extensions field of its `Report`. It computes the task ID as described in {{construct-task-id}}.
 
 ## Construct task ID {#construct-task-id}
 

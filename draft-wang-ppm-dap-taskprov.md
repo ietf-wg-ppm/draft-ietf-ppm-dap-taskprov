@@ -60,9 +60,9 @@ collector). Thus it is up to each deployment of DAP to securely implement its
 own mechanism.
 
 This document describes a mechanism for configuring tasks that may be useful in
-many deployments. The goal of this mechanism is to add transparency to the
-task provision process, and define a task provision method that utilizes just
-the upload channel and the metadata in the `Report` itself.
+many deployments. The goal of this mechanism is to define a task provision
+method that utilizes just the upload channel and the metadata in the `Report`
+itself.
 
 At a high level, this extension asks client to include all the task
 configuration parameters it received out-of-band from task author, in the
@@ -70,21 +70,16 @@ extension field of the `Report` it uploads to aggregators. The aggregators will
 create a DAP task upon receiving `Report` with such extension (or `ReportShare`
 in the case of helper.)
 
-By sending task configuration parameters to clients, we add transparency to the
-task that clients participate in. Client can see what privacy parameters has
-been configured for a task (for e.g. `min_batch_size`, or any differential
-privacy parameters if that's the privacy guarantee used).
-
 By defining this mechanism as an extension, we can guarantee that for any
-deployments implementing this extension:
+deployments implementing this extension, all information required for
+aggregating a report is included in the report itself. There is no need for
+out-of-band task orchestration between leader and helpers, therefore making
+adoption of DAP easier.
 
-1. Task transparency is enforced since aggregator task must be created using
-the same parameters client sent.
-
-2. No need for out-of-band task orchestration between leader and helpers, all
-information required for aggregating a report is included in the report itself.
-Any leaders and helpers can work on the same DAP task, therefore making adoption
-of DAP easier.
+Implementations of this extension also has better privacy and security since
+aggregators must create tasks using the same parameters client sent. Task
+authors cannot give clients and aggregators different task parameters to reduce
+privacy guarantee on the aggregate result.
 
 This extension affects upload, aggregate and collect sub-protocols.
 
@@ -153,8 +148,8 @@ struct {
     in I-D.draft-ietf-ppm-dap-02. */
     Time task_expiration;
 
-    /* A codepoint defined in I-D.draft-irtf-cfrg-vdaf-03 or reserved for private
-    use. */
+    /* A codepoint defined in I-D.draft-irtf-cfrg-vdaf-03 or reserved
+     for private use. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type. */
@@ -190,32 +185,36 @@ The codepoints for standardized (V)DAFs are listed below:
 
 ~~~
 /* Codepoint for each standardized VDAF. Defined in
- I-D.draft-irtf-cfrg-vdaf-02 */
+ I-D.draft-irtf-cfrg-vdaf-03 */
 enum {
     prio3-aes128-count(0x00000000),
-    Prio3Aes128Sum(0x00000001),
-    Prio3Aes128Histogram(0x00000002),
-    Poplar1Aes128(0x00001000),
+    prio3-aes128-sum(0x00000001),
+    prio3-aes128-histogram(0x00000002),
+    poplar1-aes128(0x00001000),
     (2^32-1)
 } VdafType;
 ~~~
 
-The structure of the `vdaf_config` field is not specified in this document, instead it should be defined by
-each VDAF implementation, for example, the simplest VDAF config for Prio3 can
-be defined as:
+The structure of the `vdaf_config` field is not specified in this document,
+instead it should be defined by each VDAF implementation. For VDAFs specified
+in {{?VDAF=I-D.draft-irtf-cfrg-vdaf-01}}, implementations SHOULD use the
+following structure:
 
 ~~~
 struct {
     select (vdaf_type) {
-        case Prio3Aes128Count: Empty;
-        case Prio3Aes128Sum: uint8 bits;
-        case Prio3Aes128Histogram: uint64 buckets<8, 2^16-8>;
+        case prio3-aes128-count: Empty;
+        case prio3-aes128-sum: uint8 bits;
+        case prio3-aes128-histogram: uint64 buckets<8, 2^16-8>;
+        case poplar1-aes128: uint16 bits;
     }
 } VdafConfig;
 ~~~
 
 > OPEN ISSUE: Should DP parameters be defined as a different "dimension" to
 > VDAF, given that it's likely various DP mechanisms can be applied to any VDAF.
+> See issue [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for
+> discussion.
 
 The definition of Time, Duration, Url, QueryType follow those in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.
@@ -225,6 +224,9 @@ aggregator to run a task. In particular, parameters that should not be known to
 clients, like the VDAF verification key, the collector HPKE configuration, and
 whatever assets are required for HTTP request authentication are still
 established out-of-band.
+
+> OPEN ISSUE: VDAF verification key needs to be unique per task, spell out
+> derivation of it.
 
 # Client Behavior
 
@@ -236,22 +238,25 @@ parameters required for `TaskConfig` prior to constructing the extension
 body, either out-of-band from aggregators, or from information already saved on
 client.
 
-To offer the "task-prov" extension, the client adds the `TaskConfig` structure it received from the task author in the extensions field of its `Report`. It computes the task ID as described in {{construct-task-id}}.
+To offer the `task-prov` extension, the client adds the `TaskConfig` structure
+it received from the task author in the extensions field of its `Report`. It
+computes the task ID as described in {{construct-task-id}}.
 
 ## Construct task ID {#construct-task-id}
 
 For `task-prov` extension, a DAP task is not created before distributing task
 configuration to clients. Therefore, a DAP task ID may not be available to
-clients, aggregators and collector before uploading. Task ID can be constructed
-from `task_info` and any other part of task configuration, as long as the
-generated task ID is determinstic and stay consistent across all parties. For
-example, the task ID can be a SHA256 hash of the entire serialized
-`TaskConfig`. In this case, the `task_info` serves as an unique byte array to
-distinguish different tasks that share the same task parameters. Task ID can be
-constructed on server side and then distributed to clients, or constructed
-independently on clients and servers. When constructed independently, the
-mechanism used for creating the task ID must be known to both clients and the
-collector.
+clients, aggregators and collector before uploading. When the `task-prov`
+extension is used, the task ID is computed as follows:
+
+~~~
+task_id = SHA-256(task_config)
+~~~
+
+Task ID can be constructed on server side and then distributed to clients,
+or constructed independently on clients and servers. When constructed
+independently, the mechanism used for creating the task ID must be known to
+both clients and the collector.
 
 # Leader Behavior
 
@@ -380,7 +385,6 @@ one copy of extension in `AggregateInitializeReq`.
 > mislead helpers to reduce privacy guarantee, for e.g. by reducing
 > `min_batch_size`.
 
-
 # IANA Considerations
 
 > NOTE(cjpatton) Eventually we'll have IANA considerations (at the very least
@@ -414,3 +418,6 @@ Christopher A. Wood
 Cloudflare
 caw@heapingbits.net
 
+Kunal Talwar
+Apple Inc.
+ktalwar@apple.com

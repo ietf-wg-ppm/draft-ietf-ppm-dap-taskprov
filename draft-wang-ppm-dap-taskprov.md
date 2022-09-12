@@ -74,12 +74,10 @@ By defining this mechanism as an extension, we can guarantee that for any
 deployments implementing this extension, all information required for
 aggregating a report is included in the report itself. There is no need for
 out-of-band task orchestration between leader and helpers, therefore making
-adoption of DAP easier.
-
-Implementations of this extension also has better privacy and security since
-aggregators must create tasks using the same parameters client sent. Task
-authors cannot give clients and aggregators different task parameters to reduce
-privacy guarantee on the aggregate result.
+adoption of DAP easier. Since aggregators must create tasks using the same
+parameters client sent, this extension prevents task authors from giving clients
+and aggregators different task parameters in order to achieve reduced privacy
+guarantee, without requiring an out-of-band mechanism.
 
 This extension affects upload, aggregate and collect sub-protocols.
 
@@ -217,6 +215,8 @@ struct {
 The definition of Time, Duration, Url, QueryType follow those in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.
 
+## Out-of-band parameters {#out-of-band-parameters}
+
 Note that `TaskConfig` does not encode all of the parameters required for the
 aggregator to run a task. In particular, parameters that should not be known to
 clients, like the VDAF verification key, the collector HPKE configuration, and
@@ -227,9 +227,6 @@ established out-of-band.
 > derivation of it.
 
 # Client Behavior
-
-> TODO(wangshan) Say how the Client constructs the extension body. Does the
-> extension change anything else about the upload flow?
 
 The client should know whether `task-prov` extension will be used and all
 parameters required for `TaskConfig` prior to constructing the extension
@@ -243,63 +240,57 @@ computes the task ID as described in {{construct-task-id}}.
 ## Construct task ID {#construct-task-id}
 
 For `task-prov` extension, a DAP task is not created before distributing task
-configuration to clients. Therefore, a DAP task ID is not available to
-clients, aggregators and collector before uploading. When the `task-prov`
-extension is used, the task ID is computed as follows:
+configuration to clients. Therefore, clients, aggregators and collector should
+construct a DAP task ID prior to uploading. A DAP task ID is computed as
+follows:
 
 ~~~
 task_id = SHA-256(task_config)
 ~~~
 
-Task ID can be constructed on server side and then distributed to clients,
-or constructed independently on clients and servers. When constructed
-independently, the mechanism used for creating the task ID must be known to
-both clients and the collector.
+# Provisioning a task {#provisioning-a-task}
+
+Upon receiving the payload containing extension, leader and helpers perform
+similar steps to provision a task.
+
+If aggregator supports `task-prov` extension, it should first check if the
+task ID already exists, if so the aggregator continues to the rest of the flow
+being processed. Note if the existing tasks's configuration is different from
+the one in extension, HPKE decryption will fail due to mismatched AAD.
+
+If the task ID has not been seen before, aggregator should read and decode
+`extension_data` with the `TaskConfig` schema. If the decoding failed, it MUST
+abort the sub protocol with error "unrecognizedMessage".
+
+If the decoding succeeds, aggregator should create a new task using the task ID
+from the decoded extension, and save task configuration with the newly created
+task. In particular, aggregator should deserialize `vdaf_config` corresponding
+to `vdaf_type`, and pass the relevant parameters to the VDAF initializer. At
+this point, the task provision step has completed.
 
 # Leader Behavior
 
-> TODO(wangshan) Say what the Leader does when it receives a report with this
-> extension. What do Leaders do if they *don't* support this extension? Is it
-> safe to ignore it? How are the upload, aggregate, and collect flows impacted?
-
-Leader should have saved any information that is not always tied to a
-particular task, for e.g. `vdaf_verify_key`. Leader may not know the task ID of
-the current task before receiving the first upload request.
+Leader should have saved any parameters described in {{out-of-band-parameters}}.
+Leader may not know the task ID of the current task before receiving the first
+upload request.
 
 ## Change to upload sub-protocol
 
 Upon receiving a report, leader reads the extension codepoint in
-`extension_type`. If the leader does not support this extension, it MUST ignore it. In particular, if the task ID is not known, then it MUST abort the handshake with "unrecognizedTask".
+`extension_type`. If the leader does not support this extension, it MUST ignore
+it. In particular, if the task ID is not known, then it MUST abort the handshake
+with "unrecognizedTask".
 
 > reason for aborting: if leader ignores it, then there is no way to ensure
 > clients that the extension is used and task parameters are respected in
 > aggregators
 
-If leader supports `task-prov` extension, it should first check if the task ID
-already exists, if so leader continues to the rest of upload flow as usual.
-Note if the existing tasks's configuration is different from the one in report
-extension, HPKE decryption will fail due to mismatched AAD.
-
-If the task ID has not been seen before, leader should read and decode report's
-`extension_data` with the `TaskConfig` schema. If the decoding failed, it MUST
-abort the upload protocol and alert the client with error
-"unrecognizedMessage".
-
-If the decode succeeds, leader should create a new task using the task ID from
-the decoded report, and save task configuration with the newly created task. In
-particular, leader should deserialize `vdaf_config` corresponding to `vdaf_type`,
-and pass the relevant parameters to the VDAF initializer. At this point, the
-task provision step has completed, and leader should continue to the rest of
-upload flow.
+If aggregator supports `task-prov` extension, it should proceed to
+{{provisioning-a-task}}. If task provision failed, leader MUST alert the client
+with error from {{provisioning-a-task}}. If task provision succeeded, leader
+should continue to the rest of upload flow.
 
 Leader MAY return error to the client if task creation failed.
-
-> OPEN ISSUE: would returning error reveal the position of the client in the
-> batch of reports received? if so is this a security or privacy threat?
-
-## Change to aggregate sub-protocol
-
-There is no change to the aggregate sub-protocol on leader side.
 
 ## Change to collect sub-protocol
 
@@ -311,42 +302,32 @@ arrived yet. In this case the leader MAY respond with HTTP status code 404
 Not Found and an error of type `unrecognizedTask`. The response MAY include a
 Retry-After header field to suggest a pulling interval to the collector.
 
-> Alternatively the leader can just response with 303 and continue waiting.
+> OPEN ISSUE: Alternatively the leader can just response with 303 and continue
+> waiting.
 
 # Helper Behavior
 
-Helper should have received out-of-band from leader any information that is not
-always tied to a particular task, for e.g. `vdaf_verify_key`. Similar to
-leader, helper may not know the task ID of the current task before receiving
-the first `AggregateInitializeReq` message from the leader.
+Helper should have saved any parameters described in {{out-of-band-parameters}}.
+Similar to leader, helper may not know the task ID of the current task before
+receiving the first `AggregateInitializeReq` message from the leader.
 
 ## Change to helper aggregate sub-protocol
 
 Upon receipt of a `AggregateInitializeReq`, helper reads the extension
 codepoint in `extension_type`. If helper does not support this extension, it
-SHOULD abort the aggregate protocol and alert the leader with error
+MUST abort the aggregate protocol and alert the leader with error
 "unrecognizedMessage".
 
-If helper supports `task-prov` extension, it should first check if the task ID
-already exists, if so helper continues to the rest of helper initialization as
-usual (see helper initialization in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.)
-Note if the existing task's configuration is different from the one in report
-share extension, HPKE decryption will fail due to mismatched AAD.
+> OPEN ISSUE: Alternatively Helpr MUST ignore the unrecognized extension, see
+> [#334](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/334) for
+> discussion.
 
-If the task ID has not been seen before, helper should read and decode report
-share's `extension_data` with the `TaskConfig` schema. If the decode failed,
-it MUST abort the aggregate protocol and alert the leader with error
-"unrecognizedMessage".
-
-If the decode succeeds, helper should create a new task using the task ID from
-the decoded report share, and save task configuration with the newly created
-task. In particular, helper should pass `vdaf_config` to the VDAF initializer,
-based on `vdaf_type` in `TaskConfig`. At this point, the task provision step has
-completed, and helper should continue to the rest of helper initialization.
+If helper supports `task-prov` extension, it should proceed to
+{{provisioning-a-task}}. If task provision failed, helper MUST alert the leader
+with error from {{provisioning-a-task}}. If task provision succeeded, helper
+should continue to the rest of helper initialization.
 
 # Collector Behavior
-
-> TODO(wangshan) Describe if/how this extension impacts Collector behavior.
 
 If Collector supports `task-prov` extension and receives a HTTP status code
 404 Not Found with error type `unrecognizedTask` after sending a `CollectReq`,
@@ -355,21 +336,9 @@ the Retry-After header in the received response.
 
 # Implementation and Operational Considerations
 
-> NOTE(shan) Do we want to include this section in the beginning?
-
-A "task" now means the same task ID and same task configuration, if a malicious
-client changes the task ID or task configuration, its report will be aggregated
-in a different task, with other poison reports from the same malicious attack.
-The "good" reports will not be polluted.
-
-The in-band task provision mechanism is easy to implement with streaming
-framework that has `groupBy` operator. In fact, task as an object doesn't have
-to exist in aggregators, it mainly becomes an identifier to group aggregations
-together.
-
-> OPEN ISSUE: This mechanism brings added overhead in `Report` and `ReportShare` since more
-> duplicated data is passed around. Some optimisation can be done by sending only
-> one copy of extension in `AggregateInitializeReq`.
+> OPEN ISSUE: This mechanism brings added overhead in `Report` and `ReportShare`
+> since more duplicated data is passed around. Some optimisation can be done in
+> the core protocol to reduce this overhead.
 
 # Security Considerations
 
@@ -377,10 +346,10 @@ together.
 > that go beyond the core DAP spec. We will also discuss if/how the extension
 > impacts the security of DAP itself.
 
-> Because extension is used in HPKE's AAD, by including all task configurations
-> in the extension, malicious leader cannot change the task configuration to
-> mislead helpers to reduce privacy guarantee, for e.g. by reducing
-> `min_batch_size`.
+A "task" now means the same task ID and same task configuration, if a malicious
+client changes the task ID or task configuration, its report will be aggregated
+in a different task, with other poison reports from the same malicious attack.
+The "good" reports will not be polluted.
 
 # IANA Considerations
 

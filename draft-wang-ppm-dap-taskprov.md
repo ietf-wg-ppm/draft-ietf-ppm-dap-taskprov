@@ -131,12 +131,12 @@ struct {
     opaque task_info<1..2^8-1>;
 
     /* A list of URLs relative to which an aggregator's API endpoints
-     can be found. Defined in I-D.draft-ietf-ppm-dap-02. */
+    can be found. Defined in I-D.draft-ietf-ppm-dap-02. */
     Url aggregator_endpoints<1..2^16-1>;
 
     /* This determines the query type for batch selection and the
     properties that all batches for this task must have. Defined in
-     I-D.draft-ietf-ppm-dap-02. */
+    I-D.draft-ietf-ppm-dap-02. */
     QueryConfig query_config;
 
     /* The maximum number of times a batch of reports may be queried by
@@ -162,7 +162,7 @@ struct {
     uint32 min_batch_size;
     select (query_type) {
         case time-interval: Empty;
-        case fixed-size: uint32 max_batch_size;
+        case fixed-size:     uint32 max_batch_size;
     }
 } QueryConfig;
 ~~~
@@ -174,18 +174,16 @@ associated with a task (see task configuration in
 that useful for configuring a task in-band:
 
 * An opaque `task_info` that is specific to a task. For e.g. this can be a
-string describing the purpose of this task. It can also be the DAP task ID
-chosen by task author.
+  string describing the purpose of this task.
 
 * An opaque `vdaf_config` that contains any VDAF specific parameters for the
-chosen `vdaf_type`. The aggregators MUST pass `vdaf_config` to VDAF initialiser,
-based on the chosen `vdaf_type`.
+  chosen `vdaf_type`.
 
 The codepoints for standardized (V)DAFs are listed below:
 
 ~~~
 /* Codepoint for each standardized VDAF. Defined in
- I-D.draft-irtf-cfrg-vdaf-03 */
+ I-D.draft-irtf-cfrg-vdaf-03. */
 enum {
     prio3-aes128-count(0x00000000),
     prio3-aes128-sum(0x00000001),
@@ -196,7 +194,7 @@ enum {
 ~~~
 
 The structure of the `vdaf_config` field is not specified in this document,
-instead it should be defined by each VDAF implementation. For VDAFs specified
+instead it needs to be defined by the VDAF itself. For VDAFs specified
 in {{?VDAF=I-D.draft-irtf-cfrg-vdaf-01}}, implementations SHOULD use the
 following structure:
 
@@ -245,7 +243,7 @@ computes the task ID as described in {{construct-task-id}}.
 ## Construct task ID {#construct-task-id}
 
 For `task-prov` extension, a DAP task is not created before distributing task
-configuration to clients. Therefore, a DAP task ID may not be available to
+configuration to clients. Therefore, a DAP task ID is not available to
 clients, aggregators and collector before uploading. When the `task-prov`
 extension is used, the task ID is computed as follows:
 
@@ -268,11 +266,10 @@ Leader should have saved any information that is not always tied to a
 particular task, for e.g. `vdaf_verify_key`. Leader may not know the task ID of
 the current task before receiving the first upload request.
 
-## Change to update sub-protocol
+## Change to upload sub-protocol
 
 Upon receiving a report, leader reads the extension codepoint in
-`extension_type`. If leader does not support this extension, it SHOULD abort
-the upload protocol and alert the client with error "unrecognizedMessage".
+`extension_type`. If the leader does not support this extension, it MUST ignore it. In particular, if the task ID is not known, then it MUST abort the handshake with "unrecognizedTask".
 
 > reason for aborting: if leader ignores it, then there is no way to ensure
 > clients that the extension is used and task parameters are respected in
@@ -300,7 +297,7 @@ Leader MAY return error to the client if task creation failed.
 > OPEN ISSUE: would returning error reveal the position of the client in the
 > batch of reports received? if so is this a security or privacy threat?
 
-## Change to leader aggregate sub-protocol
+## Change to aggregate sub-protocol
 
 There is no change to the aggregate sub-protocol on leader side.
 
@@ -370,9 +367,9 @@ framework that has `groupBy` operator. In fact, task as an object doesn't have
 to exist in aggregators, it mainly becomes an identifier to group aggregations
 together.
 
-This mechanism brings added overhead in `Report` and `ReportShare` since more
-duplicated data is passed around. Some optimisation can be done by sending only
-one copy of extension in `AggregateInitializeReq`.
+> OPEN ISSUE: This mechanism brings added overhead in `Report` and `ReportShare` since more
+> duplicated data is passed around. Some optimisation can be done by sending only
+> one copy of extension in `AggregateInitializeReq`.
 
 # Security Considerations
 

@@ -149,7 +149,7 @@ struct {
     Time task_expiration;
 
     /* A codepoint defined in I-D.draft-irtf-cfrg-vdaf-03 or reserved
-     for private use. */
+    for private use. */
     VdafType vdaf_type;
 
     /* Additional parameters relevant for the vdaf_type. */

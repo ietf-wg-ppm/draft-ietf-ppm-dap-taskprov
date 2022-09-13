@@ -101,6 +101,7 @@ Task configuration:
 Task author:
 : The entity that defines the parameters of a task.
 
+> TODO: clarify the definition of task author.
 
 # The "task-prov" Extension
 
@@ -146,21 +147,17 @@ struct {
     in I-D.draft-ietf-ppm-dap-02. */
     Time task_expiration;
 
-    /* A codepoint defined in I-D.draft-irtf-cfrg-vdaf-03 or reserved
-    for private use. */
-    VdafType vdaf_type;
-
-    /* Additional parameters relevant for the vdaf_type. */
-    opaque vdaf_config<1..2^16-1>;
+    /* Determines the VDAF type and its config parameters. */
+    VdafConfig vdaf_config<1..2^16-1>;
 } TaskConfig;
 
 struct {
-    QueryType query_type;    // Defined in I-D.draft-ietf-ppm-dap-02
-    Duration time_precision; // Defined in I-D.draft-ietf-ppm-dap-02
+    QueryType query_type;    /* Defined in I-D.draft-ietf-ppm-dap-02 */
+    Duration time_precision; /* Defined in I-D.draft-ietf-ppm-dap-02 */
     uint32 min_batch_size;
-    select (query_type) {
+    select (QueryConfig.query_type) {
         case time-interval: Empty;
-        case fixed-size:     uint32 max_batch_size;
+        case fixed-size:    uint32 max_batch_size;
     }
 } QueryConfig;
 ~~~
@@ -181,7 +178,7 @@ The codepoints for standardized (V)DAFs are listed below:
 
 ~~~
 /* Codepoint for each standardized VDAF. Defined in
- I-D.draft-irtf-cfrg-vdaf-03. */
+I-D.draft-irtf-cfrg-vdaf-03. */
 enum {
     prio3-aes128-count(0x00000000),
     prio3-aes128-sum(0x00000001),
@@ -198,17 +195,36 @@ following structure:
 
 ~~~
 struct {
-    select (vdaf_type) {
+    PrivacyParams privacy_params;
+    VdafType vdaf_type;
+    select (VdafConfig.vdaf_type) {
         case prio3-aes128-count: Empty;
         case prio3-aes128-sum: uint8 bits;
         case prio3-aes128-histogram: uint64 buckets<8, 2^24-8>;
         case poplar1-aes128: uint16 bits;
     }
 } VdafConfig;
+
+enum {
+    reserved(0), /* Reserved for testing purposes */
+    none(1),
+    (255)
+} PrivacyMechanism;
+
+struct {
+    PrivacyMechanism privacy_mechanism;
+    select (PrivacyParams.privacy_mechanism) {
+        case none: Empty;
+    }
+} PrivacyParams;
 ~~~
 
-> OPEN ISSUE: Should DP parameters be defined as a different "dimension" to
-> VDAF, given that it's likely various DP mechanisms can be applied to any VDAF.
+`PrivacyParams` defines the privacy mechanism and additional parameters that,
+when combined with privacy related parameters in `TaskConfig` like
+`min_batch_size`, can determine the VDAF's privacy guarantee.
+
+> OPEN ISSUE: Should spell out definition of `PrivacyParams` for various
+> differential privacy mechanisms and parameters.
 > See issue [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for
 > discussion.
 

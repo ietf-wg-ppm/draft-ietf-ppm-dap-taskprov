@@ -281,6 +281,8 @@ Upon receiving a report, leader reads the extension codepoint in
 it. In particular, if the task ID is not known, then it MUST abort the handshake
 with "unrecognizedTask".
 
+> See [#334](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/334) for
+> discussion.
 
 If aggregator supports `task-prov` extension, it should proceed to
 {{provisioning-a-task}}. If task provision failed, leader MUST alert the client
@@ -312,12 +314,8 @@ receiving the first `AggregateInitializeReq` message from the leader.
 
 Upon receipt of a `AggregateInitializeReq`, helper reads the extension
 codepoint in `extension_type`. If helper does not support this extension, it
-MUST abort the aggregate protocol and alert the leader with error
-"unrecognizedMessage".
-
-> OPEN ISSUE: Alternatively Helpr MUST ignore the unrecognized extension, see
-> [#334](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/334) for
-> discussion.
+MUST ignore it. If the task ID is not known, then it MUST abort the aggregate
+protocol and alert the leader with error "unrecognizedTask".
 
 If helper supports `task-prov` extension, it should proceed to
 {{provisioning-a-task}}. If task provision failed, helper MUST alert the leader

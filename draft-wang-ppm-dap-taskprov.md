@@ -201,7 +201,7 @@ struct {
     select (vdaf_type) {
         case prio3-aes128-count: Empty;
         case prio3-aes128-sum: uint8 bits;
-        case prio3-aes128-histogram: uint64 buckets<8, 2^16-8>;
+        case prio3-aes128-histogram: uint64 buckets<8, 2^24-8>;
         case poplar1-aes128: uint16 bits;
     }
 } VdafConfig;
@@ -240,8 +240,8 @@ computes the task ID as described in {{construct-task-id}}.
 ## Construct task ID {#construct-task-id}
 
 For `task-prov` extension, a DAP task is not created before distributing task
-configuration to clients. Therefore, clients, aggregators and collector should
-construct a DAP task ID prior to uploading. A DAP task ID is computed as
+configuration to clients. Therefore, clients, aggregators and collector
+construct the DAP task ID prior to uploading. A DAP task ID is computed as
 follows:
 
 ~~~
@@ -262,7 +262,7 @@ If the task ID has not been seen before, aggregator should read and decode
 `extension_data` with the `TaskConfig` schema. If the decoding failed, it MUST
 abort the sub protocol with error "unrecognizedMessage".
 
-If the decoding succeeds, aggregator should create a new task using the task ID
+If the decoding succeeds, aggregator creates a new task using the task ID
 from the decoded extension, and save task configuration with the newly created
 task. In particular, aggregator should deserialize `vdaf_config` corresponding
 to `vdaf_type`, and pass the relevant parameters to the VDAF initializer. At
@@ -281,9 +281,6 @@ Upon receiving a report, leader reads the extension codepoint in
 it. In particular, if the task ID is not known, then it MUST abort the handshake
 with "unrecognizedTask".
 
-> reason for aborting: if leader ignores it, then there is no way to ensure
-> clients that the extension is used and task parameters are respected in
-> aggregators
 
 If aggregator supports `task-prov` extension, it should proceed to
 {{provisioning-a-task}}. If task provision failed, leader MUST alert the client

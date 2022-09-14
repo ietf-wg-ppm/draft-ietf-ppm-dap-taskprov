@@ -213,7 +213,7 @@ struct {
 > discussion.
 
 The definition of Time, Duration, Url, QueryType follow those in
-{{?DAP=I-D.draft-ietf-ppm-dap-01}}.
+{{?DAP=I-D.draft-ietf-ppm-dap-02}}.
 
 ## Out-of-band parameters {#out-of-band-parameters}
 

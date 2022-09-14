@@ -122,7 +122,7 @@ enum {
 > See [#314](ietf-wg-ppm/draft-ietf-ppm-dap#314) for discussion.
 
 When the Client includes this extension with its report, the body of the
-extension is structured as follows:
+extension is a `TaskConfig` defined follows:
 
 ~~~
 struct {
@@ -148,9 +148,22 @@ struct {
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
-    VdafConfig vdaf_config<1..2^16-1>;
+    VdafConfig vdaf_config;
 } TaskConfig;
+~~~
 
+The purpose of `TaskConfig` is to define all parameters that are necessary for
+configuring an aggregator. It includes all the fields to be associated with a
+task. (See task configuration in {{?DAP=I-D.draft-ietf-ppm-dap-01}}.) In
+addition to the aggregator endpoints, maximum batch lifetime, and task
+expriation, the structure includes an opaque `task_info` field that is specific
+to a deployment. For example, this can be a string describing the purpose of
+this task.
+
+The `query_config` field defines the DAP query configuration used to guide batch
+selection. It is defined as follows:
+
+~~~
 struct {
     QueryType query_type;    /* Defined in I-D.draft-ietf-ppm-dap-02 */
     Duration time_precision; /* Defined in I-D.draft-ietf-ppm-dap-02 */
@@ -162,40 +175,20 @@ struct {
 } QueryConfig;
 ~~~
 
-The purpose of `TaskConfig` is to define all parameters that are necessary
-for configuring an aggregator. It includes all the fields to be
-associated with a task (see task configuration in
-{{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Besides, `TaskConfig` also includes fields
-that are useful for configuring a task in-band:
-
-* An opaque `task_info` that is specific to a task. For e.g. this can be a
-  string describing the purpose of this task.
-
-* An opaque `vdaf_config` that contains any VDAF specific parameters for the
-  chosen `vdaf_type`.
-
-The codepoints for standardized (V)DAFs are listed below:
+The `vdaf_config` defines the configuration of the VDAF in use for this task. It
+is structured as follows:
 
 ~~~
-/* Codepoint for each standardized VDAF. Defined in
-I-D.draft-irtf-cfrg-vdaf-03. */
 enum {
-    prio3-aes128-count(0x00000000),
-    prio3-aes128-sum(0x00000001),
-    prio3-aes128-histogram(0x00000002),
-    poplar1-aes128(0x00001000),
+    prio3-aes128-count(0x00000000),     /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3-aes128-sum(0x00000001),       /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3-aes128-histogram(0x00000002), /* I-D.draft-irtf-cfrg-vdaf-03 */
+    poplar1-aes128(0x00001000),         /* I-D.draft-irtf-cfrg-vdaf-03 */
     (2^32-1)
 } VdafType;
-~~~
 
-The structure of the `vdaf_config` field is not specified in this document,
-instead it needs to be defined by the VDAF itself. For VDAFs specified
-in {{?VDAF=I-D.draft-irtf-cfrg-vdaf-01}}, implementations SHOULD use the
-following structure:
-
-~~~
 struct {
-    PrivacyParams privacy_params;
+    DpConfig dp_config;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3-aes128-count: Empty;
@@ -204,31 +197,31 @@ struct {
         case poplar1-aes128: uint16 bits;
     }
 } VdafConfig;
+~~~
 
+Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). This field, `dp_config`, is structured as follows:
+
+~~~
 enum {
     reserved(0), /* Reserved for testing purposes */
     none(1),
     (255)
-} PrivacyMechanism;
+} DpMechanism;
 
 struct {
-    PrivacyMechanism privacy_mechanism;
-    select (PrivacyParams.privacy_mechanism) {
+    DpMechanism dp_mechanism;
+    select (DpConfig.dp_mechanism) {
         case none: Empty;
     }
-} PrivacyParams;
+} DpConfig;
 ~~~
 
-`PrivacyParams` defines the privacy mechanism and additional parameters that,
-when combined with privacy related parameters in `TaskConfig` like
-`min_batch_size`, can determine the VDAF's privacy guarantee.
+> OPEN ISSUE: Should spell out definition of `DcConfig` for various differential
+> privacy mechanisms and parameters. See issue
+> [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for discussion.
 
-> OPEN ISSUE: Should spell out definition of `PrivacyParams` for various
-> differential privacy mechanisms and parameters.
-> See issue [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for
-> discussion.
-
-The definition of Time, Duration, Url, QueryType follow those in
+The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{?DAP=I-D.draft-ietf-ppm-dap-02}}.
 
 ## Out-of-band parameters {#out-of-band-parameters}

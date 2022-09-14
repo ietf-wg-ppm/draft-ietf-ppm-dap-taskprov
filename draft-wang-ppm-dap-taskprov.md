@@ -307,19 +307,6 @@ should continue to the rest of upload flow.
 
 Leader MAY return error to the client if task creation failed.
 
-## Change to collect sub-protocol
-
-During collect init, leader must perform batch validation (see batch-validation
-in {{?DAP=I-D.draft-ietf-ppm-dap-01}}) to the `CollectReq`. This requires leader
-to know the parameters associated with the DAP task. However, upon receipt of
-`CollectReq`, leader may not know the parameters if the first upload has not
-arrived yet. In this case the leader MAY respond with HTTP status code 404
-Not Found and an error of type `unrecognizedTask`. The response MAY include a
-Retry-After header field to suggest a pulling interval to the collector.
-
-> OPEN ISSUE: Alternatively the leader can just response with 303 and continue
-> waiting.
-
 # Helper Behavior
 
 Helper should have saved any parameters described in {{out-of-band-parameters}}.
@@ -340,10 +327,12 @@ should continue to the rest of helper initialization.
 
 # Collector Behavior
 
-If Collector supports `task-prov` extension and receives a HTTP status code
-404 Not Found with error type `unrecognizedTask` after sending a `CollectReq`,
-it SHOULD retry with the same `CollectReq`, potentially using an interval from
-the Retry-After header in the received response.
+Collector should behave the same whether it supports `task-prov` extension or
+not. In particular, if leader does not recognize the task ID in the
+`CollectReq`, it will return HTTP status code 400 Bad Request with error type
+`unrecognizedTask` and an optional Retry-After header. Collector SHOULD retry
+with the same `CollectReq`, using interval in the Retry-After header if one
+exists.
 
 # Implementation and Operational Considerations
 

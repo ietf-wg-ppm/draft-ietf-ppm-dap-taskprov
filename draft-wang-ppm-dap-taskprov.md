@@ -169,7 +169,7 @@ The purpose of `TaskConfig` is to define all parameters that are necessary
 for configuring an aggregator. It includes all the fields to be
 associated with a task (see task configuration in
 {{?DAP=I-D.draft-ietf-ppm-dap-01}}.). Besides, `TaskConfig` also includes fields
-that useful for configuring a task in-band:
+that are useful for configuring a task in-band:
 
 * An opaque `task_info` that is specific to a task. For e.g. this can be a
   string describing the purpose of this task.

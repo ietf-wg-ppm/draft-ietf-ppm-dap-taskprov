@@ -83,9 +83,9 @@ Client-Aggregator, Collector-Aggregator, and Aggregator-Aggregator
 relationships. These include:
 
 * The Collector's HPKE {{?RFC9180}} configuration used by the Aggregators to
-  encrypt aggregate shares
+  encrypt aggregate shares.
 
-* Any assets required for authenticating HTTP requests
+* Any assets required for authenticating HTTP requests.
 
 This specification does not specify a mechanism for provisioning these assets;
 as in the core DAP protocol, these are presumed to be configured out-of-band.
@@ -372,7 +372,7 @@ Next, the Helper decides whether to opt in to the task as described in
 > OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
 > this to the Author?
 
-Finally, the Helper completes the upload request as usual, deriving the VDAF
+Finally, the Helper completes the aggregate initialize request as usual, deriving the VDAF
 verification key for the task as described in {{vdaf-verify-key}}.
 
 # Collector Behavior

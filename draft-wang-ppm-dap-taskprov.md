@@ -167,9 +167,9 @@ selection. It is defined as follows:
 
 ~~~
 struct {
-    QueryType query_type;      /* Defined in I-D.draft-ietf-ppm-dap-02 */
-    Duration time_precision;   /* Defined in I-D.draft-ietf-ppm-dap-02 */
-    uint16 max_batch_lifetime; /* Defined in I-D.draft-ietf-ppm-dap-02 */
+    QueryType query_type;         /* Defined in I-D.draft-ietf-ppm-dap-02 */
+    Duration time_precision;      /* Defined in I-D.draft-ietf-ppm-dap-02 */
+    uint16 max_batch_query_count; /* Defined in I-D.draft-ietf-ppm-dap-02 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
         case time-interval: Empty;

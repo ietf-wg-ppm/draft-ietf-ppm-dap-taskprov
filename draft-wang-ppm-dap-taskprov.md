@@ -404,7 +404,7 @@ then aggregation of reports will fail. This is guaranteed by the binding of
 report metadata to encrypted input shares provided by HPKE encryption.
 
 > OPEN ISSUE: What if the Collector and Aggregators don't agree on the task
-> configuration? Consider adding
+> configuration? Decryption should fail.
 
 A "task" now means the same task ID and same task configuration, if a malicious
 client changes the task ID or task configuration, its report will be aggregated

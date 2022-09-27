@@ -351,18 +351,18 @@ to the same task. In particular, it checks that:
 1. Either all report shares have the `task_prov` extension or none do. If not
    the Helper MUST abort with "unrecognizedMessage".
 
-1. All report shares with the `task_prov` extension have the same payload. If
+1. All report shares with the `task_prov` extension have the same extension payload. If
    not, the Helper MUST abort with "unrecognizedMessage".
 
 > OPEN ISSUE: This awkward input validation step could be skipped if
 > `AggregateInitializeReq` had an extension field that we could stick the task
 > configuration in. This would also save significantly in overhead.
 
-Next, the Helper attempts to parse the extension paylaod. If parsing fails, it
+Next, the Helper attempts to parse the extension payload. If parsing fails, it
 MUST abort with "unrecognizedMessage".
 
 Next, the Helper checks that the task ID included in the message matches the
-task ID derived from the extension payload ad defined in {{construct-task-id}}.
+task ID derived from the extension payload as defined in {{construct-task-id}}.
 If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in

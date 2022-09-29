@@ -435,18 +435,22 @@ Junye Chen
 Apple Inc.
 junyec@apple.com
 
-Michael Scaria
-Apple Inc.
-mscaria@apple.com
-
 Suman Ganta
 Apple Inc.
 sganta2@apple.com
 
-Christopher A. Wood
-Cloudflare
-caw@heapingbits.net
+Gianni Parsa
+Apple Inc.
+gianni_parsa@apple.com
+
+Michael Scaria
+Apple Inc.
+mscaria@apple.com
 
 Kunal Talwar
 Apple Inc.
 ktalwar@apple.com
+
+Christopher A. Wood
+Cloudflare
+caw@heapingbits.net

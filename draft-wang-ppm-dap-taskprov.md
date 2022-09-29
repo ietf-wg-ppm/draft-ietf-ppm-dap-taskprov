@@ -194,9 +194,9 @@ struct {
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3_aes128_count: Empty;
-        case prio3_aes128_sum: uint8 bits;
-        case prio3_aes128_histogram: uint64 buckets<8..2^24-8>;
-        case poplar1_aes128: uint16 bits;
+        case prio3_aes128_sum: uint8 prio3_aes128_sum_bits;
+        case prio3_aes128_histogram: uint64 prio3_aes128_histogram_buckets<8..2^24-8>;
+        case poplar1_aes128: uint16 poplar1_aes128_bits;
     }
 } VdafConfig;
 ~~~

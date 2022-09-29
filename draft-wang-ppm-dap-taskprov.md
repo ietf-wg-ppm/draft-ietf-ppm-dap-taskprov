@@ -47,11 +47,11 @@ allows the task configuration to be provisioned in-band.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-01}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-02}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{?VDAF=I-D.draft-irtf-cfrg-vdaf-01}}), how reports are partitioned into
+{{?VDAF=I-D.draft-irtf-cfrg-vdaf-03}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. Before a
 task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration.
@@ -100,14 +100,14 @@ which in turn is presumed to be configured out-of-band.
 {::boilerplate bcp14-tagged}
 
 This document uses the same conventions for error handling as
-{{!DAP=I-D.draft-ietf-ppm-dap-01}}. In addition, this document extends the core
+{{!DAP=I-D.draft-ietf-ppm-dap-02}}. In addition, this document extends the core
 specification by adding the following error types:
 
 | Type        | Description                                                                               |
 |:------------|:------------------------------------------------------------------------------------------|
 | invalidTask | An Aggregator has opted out of the indicated task as described in {{provisioning-a-task}} |
 
-The terms used follow those described in {{!DAP=I-D.draft-ietf-ppm-dap-01}}. The
+The terms used follow those described in {{!DAP=I-D.draft-ietf-ppm-dap-02}}. The
 following new terms are used:
 
 Task configuration:
@@ -156,7 +156,7 @@ struct {
 
 The purpose of `TaskConfig` is to define all parameters that are necessary for
 configuring an Aggregator. It includes all the fields to be associated with a
-task. (See task configuration in {{!DAP=I-D.draft-ietf-ppm-dap-01}}.) In
+task. (See task configuration in {{!DAP=I-D.draft-ietf-ppm-dap-02}}.) In
 addition to the Aggregator endpoints, maximum batch lifetime, and task
 expiration, the structure includes an opaque `task_info` field that is specific
 to a deployment. For example, this can be a string describing the purpose of

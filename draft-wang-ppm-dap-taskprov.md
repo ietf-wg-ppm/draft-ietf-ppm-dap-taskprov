@@ -144,9 +144,8 @@ struct {
     I-D.draft-ietf-ppm-dap-02. */
     QueryConfig query_config;
 
-    /* Time up to which Clients are allowed to upload to this task. See
-    https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/304. Defined
-    in I-D.draft-ietf-ppm-dap-02. */
+    /* Time up to which Clients are allowed to upload to this task.
+    Defined in I-D.draft-ietf-ppm-dap-02. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
@@ -172,8 +171,8 @@ struct {
     uint16 max_batch_query_count; /* Defined in I-D.draft-ietf-ppm-dap-02 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
-        case time-interval: Empty;
-        case fixed-size:    uint32 max_batch_size;
+        case time_interval: Empty;
+        case fixed_size:    uint32 max_batch_size;
     }
 } QueryConfig;
 ~~~
@@ -183,10 +182,10 @@ is structured as follows:
 
 ~~~
 enum {
-    prio3-aes128-count(0x00000000),     /* I-D.draft-irtf-cfrg-vdaf-03 */
-    prio3-aes128-sum(0x00000001),       /* I-D.draft-irtf-cfrg-vdaf-03 */
-    prio3-aes128-histogram(0x00000002), /* I-D.draft-irtf-cfrg-vdaf-03 */
-    poplar1-aes128(0x00001000),         /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3_aes128_count(0x00000000),     /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3_aes128_sum(0x00000001),       /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3_aes128_histogram(0x00000002), /* I-D.draft-irtf-cfrg-vdaf-03 */
+    poplar1_aes128(0x00001000),         /* I-D.draft-irtf-cfrg-vdaf-03 */
     (2^32-1)
 } VdafType;
 
@@ -194,10 +193,10 @@ struct {
     DpConfig dp_config;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
-        case prio3-aes128-count: Empty;
-        case prio3-aes128-sum: uint8 bits;
-        case prio3-aes128-histogram: uint64 buckets<8..2^24-8>;
-        case poplar1-aes128: uint16 bits;
+        case prio3_aes128_count: Empty;
+        case prio3_aes128_sum: uint8 bits;
+        case prio3_aes128_histogram: uint64 buckets<8..2^24-8>;
+        case poplar1_aes128: uint16 bits;
     }
 } VdafConfig;
 ~~~

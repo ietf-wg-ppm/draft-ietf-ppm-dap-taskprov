@@ -405,19 +405,14 @@ report metadata to encrypted input shares provided by HPKE encryption.
 > OPEN ISSUE: What if the Collector and Aggregators don't agree on the task
 > configuration? Decryption should fail.
 
-A "task" now means the same task ID and same task configuration, if a malicious
-client changes the task ID or task configuration, its report will be aggregated
-in a different task, with other poison reports from the same malicious attack.
-The "good" reports will not be polluted.
-
-> CP: I don't understand the threat here. Is it that the client may lie about
-> which task its report is for? The same is true for vanilla DAP, right?
-
 A malicious coalition of Clients might attempt to pollute an Aggregator's
 long-term storage by uploading reports for many (thousands or perhaps millions)
-of distinct tasks.
+of distinct tasks. While this does not direclty impact tasks used by honest
+Clients, it does present a Denial-of-Service risk for the Aggregators
+themselves.
 
-> TODO: Suggest mitigations for this.
+> TODO: Suggest mitigations for this. Perhaps the Aggregators need to keep track
+> of how many tasks in total they are opted in to?
 
 # IANA Considerations
 

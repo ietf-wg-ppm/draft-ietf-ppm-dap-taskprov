@@ -27,6 +27,7 @@ author:
     fullname: Shan Wang
     organization: Apple Inc.
     email: "shan_wang@apple.com"
+
  -
     fullname: Christopher Patton
     organization: Cloudflare
@@ -72,7 +73,7 @@ The extension is designed with the same security and privacy considerations of
 the core DAP protocol. The Author is not regarded as a trusted third party: It
 is incumbent on all protocol participants to verify the task configuration
 disseminated by the Author and opt-out if the parameters are deemed insufficient
-for privacy. In particular, adopters of this extensions should presume the
+for privacy. In particular, adopters of this extension should presume the
 Author is under the adversary's control. In fact, we expect in a real-world
 deployment that the Author may be implemented by one of the Aggregators or
 Collector.
@@ -156,7 +157,7 @@ struct {
 The purpose of `TaskConfig` is to define all parameters that are necessary for
 configuring an Aggregator. It includes all the fields to be associated with a
 task. (See task configuration in {{!DAP=I-D.draft-ietf-ppm-dap-02}}.) In
-addition to the Aggregator endpoints, maximum batch lifetime, and task
+addition to the Aggregator endpoints, maximum batch query count, and task
 expiration, the structure includes an opaque `task_info` field that is specific
 to a deployment. For example, this can be a string describing the purpose of
 this task.
@@ -388,8 +389,8 @@ task ID derived from the extension payload as defined in {{construct-task-id}}.
 If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in
-{{provisioning-a-task}}. If it opts out, it MUST abort the upload request with
-"invalidTask".
+{{provisioning-a-task}}. If it opts out, it MUST abort the aggregate request
+with "invalidTask".
 
 > OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
 > this to the Author?

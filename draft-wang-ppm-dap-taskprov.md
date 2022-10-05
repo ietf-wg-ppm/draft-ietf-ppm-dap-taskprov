@@ -219,7 +219,7 @@ struct {
 } DpConfig;
 ~~~
 
-> OPEN ISSUE: Should spell out definition of `DcConfig` for various differential
+> OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See issue
 > [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for discussion.
 
@@ -231,20 +231,43 @@ The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 When using the `task_prov` extension, the task ID is computed as follows:
 
 ~~~
-task_id = SHA-256(task_config)
+task_id = HKDF-Extract(task_prov_salt, task_config)
 ~~~
 
 where `task_config` is the `TaskConfig` structure disseminated by the Author.
-
-> OPEN ISSUE: Consider using a randomness extractor, such has `HKDF-Extract()`,
-> so that we can treat the `task_id` as pseudorandom in cases where
-> `task_config` has high min-entropy
-
-> TODO: Add RFC reference for SHA-256.
+String `task_prov_salt` is defined to be the SHA-256 hash of the octet string
+"dap-taskprov-00". Function HKDF-Extract() denotes the HKDF extraction function
+defined in {{!RFC5869}} instantiated with SHA-256.
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}
 
-> TODO
+When a Leader and Helper implement the `task_prov` extension in the context of a
+particular DAP deployment, they SHOULD compute the shared VDAF verification key
+{{!VDAF}} as described in this section.
+
+The Aggregators are presumed to have securely exchanged a pre-shared secret
+out-of-band. The length of this secret MUST be 32 bytes. Let us denote this
+secret by `verify_key_init`.
+
+Let `VERIFY_KEY_SIZE` denote the length of the verification key for the VDAF
+indicated by the task configuration. (See {{!VDAF}}, Section 5.)
+
+The VDAF verification key used for the task is computed as follows:
+
+~~~
+verify_key = HKDF-Expand(
+    HKDF-Extract(
+        task_prov_salt,  # salt
+        verify_key_init, # IKM
+    ),
+    task_id,             # info
+    VERIFY_KEY_SIZE,     # L
+)
+~~~
+
+where `task_prov_salt` and `task_id` are as defined in {{construct-task-id}}.
+Functions HKDF-Extract() and HKDF-Expand() are as defined in {{!RFC5869}}. Both
+functions are instantiated with SHA-256.
 
 ## Configuring a Task {#provisioning-a-task}
 
@@ -418,6 +441,16 @@ long-term storage by uploading reports for many (thousands or perhaps millions)
 of distinct tasks.
 
 > TODO: Suggest mitigations for this.
+
+The HKDF {{!RFC5869}} extraction function is used to derive the task ID. An
+extractor is not required for security. In fact, a collision-resistant hash
+function would be sufficient for our application. The choice to use an extractor
+is conservative in that it allows the derived task ID to be treated as
+pseudorandom whenever the task configuration itself has high min-entropy from
+the perspective of the adversary. However, whether this is the case depends on
+the specific threat model. We note that, in the the threat model for the core
+DAP protocol, the task configuration is known to the attacker and thus has no
+entropy.
 
 # IANA Considerations
 

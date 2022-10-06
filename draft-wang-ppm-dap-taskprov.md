@@ -296,6 +296,26 @@ A protocol participant MUST opt out if the task has expired.
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.
 
+## Supporting HPKE Configurations Independent of Tasks {#hpke-config-no-task-id}
+
+In DAP, Clients need to know the HPKE configuration of each Aggregator before
+sending reports. (See HPKE Configuration Request in
+{{!DAP=I-D.draft-ietf-ppm-dap-02}}.) However, in a DAP deployment that supports
+the `task_prov` extension, if a Client requests the Aggregator's HPKE
+configuration with the task ID computed as described in {{construct-task-id}},
+the task ID may not be configured in the Aggregator yet, because the Aggregator
+is still waiting for the first Client report with the `task_prov` extension
+to arrive.
+
+To mitigate this issue, if an Aggregator wants to support the `task_prov`
+extension, it SHOULD choose which HPKE configuration to advertise to Clients
+independent of the task ID. It MAY continue to support per-task HPKE
+configurations for other tasks that are configured out-of-band.
+
+In addition, if a Client wants to include the `task_prov` extension in its
+report, it SHOULD NOT specify the `task_id` parameter when requesting the HPKE
+configuration from an Aggregator.
+
 # Client Behavior
 
 Upon receiving a `TaskConfig` from the Author, the Client decides whether to

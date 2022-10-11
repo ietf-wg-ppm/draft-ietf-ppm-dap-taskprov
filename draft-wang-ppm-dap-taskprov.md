@@ -52,7 +52,7 @@ The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-02}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{?VDAF=I-D.draft-irtf-cfrg-vdaf-03}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-03}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. Before a
 task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration.
@@ -83,7 +83,7 @@ assets that are not task-specific, but are important for establishing
 Client-Aggregator, Collector-Aggregator, and Aggregator-Aggregator
 relationships. These include:
 
-* The Collector's HPKE {{?RFC9180}} configuration used by the Aggregators to
+* The Collector's HPKE {{!RFC9180}} configuration used by the Aggregators to
   encrypt aggregate shares.
 
 * Any assets required for authenticating HTTP requests.
@@ -167,9 +167,9 @@ selection. It is defined as follows:
 
 ~~~
 struct {
-    QueryType query_type;         /* Defined in I-D.draft-ietf-ppm-dap-02 */
-    Duration time_precision;      /* Defined in I-D.draft-ietf-ppm-dap-02 */
-    uint16 max_batch_query_count; /* Defined in I-D.draft-ietf-ppm-dap-02 */
+    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-02 */
+    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-02 */
+    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-02 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
         case time_interval: Empty;
@@ -179,14 +179,14 @@ struct {
 ~~~
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task. It
-is structured as follows:
+is structured as follows (codepoints are as defined in {{!VDAF}}):
 
 ~~~
 enum {
-    prio3_aes128_count(0x00000000),     /* I-D.draft-irtf-cfrg-vdaf-03 */
-    prio3_aes128_sum(0x00000001),       /* I-D.draft-irtf-cfrg-vdaf-03 */
-    prio3_aes128_histogram(0x00000002), /* I-D.draft-irtf-cfrg-vdaf-03 */
-    poplar1_aes128(0x00001000),         /* I-D.draft-irtf-cfrg-vdaf-03 */
+    prio3_aes128_count(0x00000000),
+    prio3_aes128_sum(0x00000001),
+    prio3_aes128_histogram(0x00000002),
+    poplar1_aes128(0x00001000),
     (2^32-1)
 } VdafType;
 
@@ -196,7 +196,7 @@ struct {
     select (VdafConfig.vdaf_type) {
         case prio3_aes128_count: Empty;
         case prio3_aes128_sum: uint8; /* bit length of the summand */
-        case prio3_aes128_histogram: uint64<8..2^24-8>; /* bucket boundaries */
+        case prio3_aes128_histogram: uint64<8..2^24-8>; /* buckets */
         case poplar1_aes128: uint16; /* bit length of input string */
     }
 } VdafConfig;
@@ -323,7 +323,7 @@ abort the upload request with "unrecognizedTask".
 > [#334](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/334) for
 > discussion.
 
-Otherwise, if the Leader does support the extension, it first attemps to parse
+Otherwise, if the Leader does support the extension, it first attempts to parse
 the payload. If parsing fails, it MUST abort with "unrecognizedMessage".
 
 Next, it checks that the task ID included in the report matches the task ID
@@ -431,7 +431,7 @@ report metadata to encrypted input shares provided by HPKE encryption.
 
 A malicious coalition of Clients might attempt to pollute an Aggregator's
 long-term storage by uploading reports for many (thousands or perhaps millions)
-of distinct tasks. While this does not direclty impact tasks used by honest
+of distinct tasks. While this does not directly impact tasks used by honest
 Clients, it does present a Denial-of-Service risk for the Aggregators
 themselves.
 

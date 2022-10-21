@@ -141,8 +141,7 @@ struct {
     Url aggregator_endpoints<1..2^16-1>;
 
     /* This determines the query type for batch selection and the
-    properties that all batches for this task must have. Defined in
-    I-D.draft-ietf-ppm-dap-02. */
+    properties that all batches for this task must have. */
     QueryConfig query_config;
 
     /* Time up to which Clients are allowed to upload to this task.

@@ -35,6 +35,11 @@ author:
 
 normative:
 
+  SHS:
+     title: "Secure Hash Standard"
+     date: 2015-08-04
+     seriesinfo: FIPS PUB 180-4
+
 informative:
 
 
@@ -231,13 +236,11 @@ The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 When using the `task_prov` extension, the task ID is computed as follows:
 
 ~~~
-task_id = HKDF-Extract(task_prov_salt, task_config)
+task_id = SHA-256(task_config)
 ~~~
 
 where `task_config` is the `TaskConfig` structure disseminated by the Author.
-String `task_prov_salt` is defined to be the SHA-256 hash of the octet string
-"dap-taskprov". Function HKDF-Extract() denotes the HKDF extraction function
-defined in {{!RFC5869}} instantiated with SHA-256.
+Function SHA-256() is as defined in {{SHS}}.
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}
 
@@ -265,9 +268,10 @@ verify_key = HKDF-Expand(
 )
 ~~~
 
-where `task_prov_salt` and `task_id` are as defined in {{construct-task-id}}.
-Functions HKDF-Extract() and HKDF-Expand() are as defined in {{!RFC5869}}. Both
-functions are instantiated with SHA-256.
+where `task_prov_salt` is defined to be the SHA-256 hash of the octet string
+"dap-taskprov" and `task_id` is as defined in {{construct-task-id}}. Functions
+HKDF-Extract() and HKDF-Expand() are as defined in {{!RFC5869}}. Both functions
+are instantiated with SHA-256.
 
 ## Configuring a Task {#provisioning-a-task}
 

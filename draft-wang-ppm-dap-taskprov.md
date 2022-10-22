@@ -236,7 +236,7 @@ task_id = HKDF-Extract(task_prov_salt, task_config)
 
 where `task_config` is the `TaskConfig` structure disseminated by the Author.
 String `task_prov_salt` is defined to be the SHA-256 hash of the octet string
-"dap-taskprov-00". Function HKDF-Extract() denotes the HKDF extraction function
+"dap-taskprov". Function HKDF-Extract() denotes the HKDF extraction function
 defined in {{!RFC5869}} instantiated with SHA-256.
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}

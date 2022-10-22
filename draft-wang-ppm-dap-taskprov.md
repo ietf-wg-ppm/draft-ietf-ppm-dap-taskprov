@@ -197,6 +197,7 @@ enum {
 struct {
     DpConfig dp_config;
     VdafType vdaf_type;
+    uint16_t length; /* length in bytes of the next field */
     select (VdafConfig.vdaf_type) {
         case prio3_aes128_count: Empty;
         case prio3_aes128_sum: uint8; /* bit length of the summand */
@@ -205,6 +206,11 @@ struct {
     }
 } VdafConfig;
 ~~~
+
+Field `VdafConfig.length` is set to the length of the remainder of the
+structure, which includes the parameters specific to the VDAF in use. This
+ensures the structure can be parsed even if `VdafConfig.vdaf_type` is not
+recognized.
 
 Apart from the VDAF-specific parameters, this structure includes a mechanism for
 differential privacy (DP). This field, `dp_config`, is structured as follows:
@@ -218,11 +224,16 @@ enum {
 
 struct {
     DpMechanism dp_mechanism;
+    uint16_t length; /* length in bytes of the next field */
     select (DpConfig.dp_mechanism) {
         case none: Empty;
     }
 } DpConfig;
 ~~~
+
+Field `DpConfig.length` is set to the length of the remainder of the structure,
+which includes the parameters specific to the DP mechanism. This ensures the
+structure can be parsed even if `DpConfig.dp_pmechanism` is not recognized.
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See issue
@@ -294,7 +305,8 @@ A protocol participant MAY "opt out" of a task if:
 
 1. The task lifetime is too long.
 
-A protocol participant MUST opt out if the task has expired.
+A protocol participant MUST opt out if the task has expired or if it does not
+recognize the VDAF type or DP mechanism.
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.

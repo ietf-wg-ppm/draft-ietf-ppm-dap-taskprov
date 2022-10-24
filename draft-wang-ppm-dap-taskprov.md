@@ -171,10 +171,10 @@ selection. It is defined as follows:
 
 ~~~
 struct {
+    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-02 */
     Duration time_precision;      /* I-D.draft-ietf-ppm-dap-02 */
     uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-02 */
     uint32 min_batch_size;
-    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-02 */
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;

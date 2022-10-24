@@ -298,6 +298,8 @@ A protocol participant MAY "opt out" of a task if:
    configuration disseminated by the Author does not match the existing
    configuration.
 
+1. The VDAF type or DP mechanism is not recognized.
+
 1. The VDAF, DP, or query configuration is deemed insufficient for privacy.
 
 1. A secure connection to one or both of the Aggregator endpoints could not be
@@ -305,8 +307,7 @@ A protocol participant MAY "opt out" of a task if:
 
 1. The task lifetime is too long.
 
-A protocol participant MUST opt out if the task has expired or if it does not
-recognize the VDAF type or DP mechanism.
+A protocol participant MUST opt out if the task has expired.
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.

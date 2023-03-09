@@ -53,19 +53,19 @@ allows the task configuration to be provisioned in-band.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-02}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-04}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-03}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-05}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. Before a
 task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration.
 
-However, The core DAP specification does not define a mechanism for provisioning
-tasks. this document describes a mechanism designed to fill this gap. Its key
-feature is that task configuration is performed completely in-band. It relies
-solely on the upload channel and the metadata carried by reports themselves.
+The core DAP specification does not define a mechanism for provisioning tasks.
+This document describes a mechanism designed to fill this gap. Its key feature
+is that task configuration is performed completely in-band. It relies solely on
+the upload channel and the metadata carried by reports themselves.
 
 This method presumes the existence of a logical "task author" (written as
 "Author" hereafter) who is capable of pushing configurations to Clients. All
@@ -93,8 +93,8 @@ relationships. These include:
 
 * Any assets required for authenticating HTTP requests.
 
-This specification does not specify a mechanism for provisioning these assets;
-as in the core DAP protocol, these are presumed to be configured out-of-band.
+This document does not specify a mechanism for provisioning these assets; as in
+the core DAP protocol; these are presumed to be configured out-of-band.
 
 Note that we consider the VDAF verification key {{!VDAF}}, used by the
 Aggregators to aggregate reports, to be a task-specific asset. This document
@@ -105,36 +105,43 @@ which in turn is presumed to be configured out-of-band.
 
 {::boilerplate bcp14-tagged}
 
-This document uses the same conventions for error handling as
-{{!DAP=I-D.draft-ietf-ppm-dap-02}}. In addition, this document extends the core
-specification by adding the following error types:
+This document uses the same conventions for error handling as {{!DAP}}. In
+addition, this document extends the core specification by adding the following
+error types:
 
 | Type        | Description                                                                               |
 |:------------|:------------------------------------------------------------------------------------------|
 | invalidTask | An Aggregator has opted out of the indicated task as described in {{provisioning-a-task}} |
 
-The terms used follow those described in {{!DAP=I-D.draft-ietf-ppm-dap-02}}. The
-following new terms are used:
+The terms used follow those described in {{!DAP}}. The following new terms are
+used:
 
 Task configuration:
-: The non-secret parameters required to create a task in task provision.
+: The non-secret parameters of a task.
 
 Task author:
 : The entity that defines a task's configuration.
 
-# The "task_prov" Extension
+# The Taskprov Extension
 
-A new extension is defined:
+The process of provisioning a task begins when the Author disseminates the task
+configuration to the Collector and each of the Clients. When a Client issues an
+upload request to the Leader (as described in {{Section 4.3 of !DAP}}), it
+includes in an HTTP header the task configuration it used to generate the
+report. We refer to this process as "task advertisement". Before consuming the
+report, the Leader parses the configuration and decides whether to opt-in; if
+not, the task's execution halts.
 
-~~~
-enum {
-    task_prov(0xff00),
-    (65535)
-} ExtensionType;
-~~~
+Otherwise, if the Leader does opt-in, it advertises the task to the Helpers
+during the aggregate protocol ({{Section 4.4 of !DAP}}). In particular, it
+includes the task configuration in an HTTP header of its first aggregate request
+for that task. Before proceeding, the Helper must first parse the configuration
+and decide whether to opt-in; if not, the task's execution halts.
 
-When the Client includes this extension with its report, the body of the
-extension is a `TaskConfig` defined follows:
+To advertise a task to its peer, a Taskprov participant includes a header
+"dap-taskprov" with a request incident to the task execution. The value is the
+`TaskConfig` structure defined below, expanded into its URL-safe, unpadded Base
+64 representation as specified in {{Sections 5 and 3.2 of !RFC4648}}.
 
 ~~~
 struct {
@@ -142,7 +149,7 @@ struct {
     opaque task_info<1..2^8-1>;
 
     /* A list of URLs relative to which an Aggregator's API endpoints
-    can be found. Defined in I-D.draft-ietf-ppm-dap-02. */
+    can be found. Defined in I-D.draft-ietf-ppm-dap-04. */
     Url aggregator_endpoints<1..2^16-1>;
 
     /* This determines the query type for batch selection and the
@@ -150,7 +157,7 @@ struct {
     QueryConfig query_config;
 
     /* Time up to which Clients are allowed to upload to this task.
-    Defined in I-D.draft-ietf-ppm-dap-02. */
+    Defined in I-D.draft-ietf-ppm-dap-04. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
@@ -160,20 +167,19 @@ struct {
 
 The purpose of `TaskConfig` is to define all parameters that are necessary for
 configuring an Aggregator. It includes all the fields to be associated with a
-task. (See task configuration in {{!DAP=I-D.draft-ietf-ppm-dap-02}}.) In
-addition to the Aggregator endpoints, maximum batch query count, and task
-expiration, the structure includes an opaque `task_info` field that is specific
-to a deployment. For example, this can be a string describing the purpose of
-this task.
+task. In addition to the Aggregator endpoints, maximum batch query count, and
+task expiration, the structure includes an opaque `task_info` field that is
+specific to a deployment. For example, this can be a string describing the
+purpose of this task.
 
 The `query_config` field defines the DAP query configuration used to guide batch
 selection. It is defined as follows:
 
 ~~~
 struct {
-    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-02 */
-    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-02 */
-    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-02 */
+    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-04 */
+    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-04 */
+    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-04 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
         case time_interval: Empty;
@@ -187,10 +193,10 @@ is structured as follows (codepoints are as defined in {{!VDAF}}):
 
 ~~~
 enum {
-    prio3_aes128_count(0x00000000),
-    prio3_aes128_sum(0x00000001),
-    prio3_aes128_histogram(0x00000002),
-    poplar1_aes128(0x00001000),
+    prio3_count(0x00000000),
+    prio3_sum(0x00000001),
+    prio3_histogram(0x00000002),
+    poplar1(0x00001000),
     (2^32-1)
 } VdafType;
 
@@ -198,10 +204,10 @@ struct {
     DpConfig dp_config;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
-        case prio3_aes128_count: Empty;
-        case prio3_aes128_sum: uint8; /* bit length of the summand */
-        case prio3_aes128_histogram: uint64<8..2^24-8>; /* buckets */
-        case poplar1_aes128: uint16; /* bit length of input string */
+        case prio3_count: Empty;
+        case prio3_sum: uint8; /* bit length of the summand */
+        case prio3_histogram: uint64<8..2^24-8>; /* buckets */
+        case poplar1: uint16; /* bit length of input string */
     }
 } VdafConfig;
 ~~~
@@ -229,11 +235,11 @@ struct {
 > [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for discussion.
 
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
-{{!DAP=I-D.draft-ietf-ppm-dap-02}}.
+{{!DAP}}.
 
 ## Deriving the Task ID {#construct-task-id}
 
-When using the `task_prov` extension, the task ID is computed as follows:
+When using the Taskprov extension, the task ID is computed as follows:
 
 ~~~
 task_id = SHA-256(task_config)
@@ -253,7 +259,7 @@ out-of-band. The length of this secret MUST be 32 bytes. Let us denote this
 secret by `verify_key_init`.
 
 Let `VERIFY_KEY_SIZE` denote the length of the verification key for the VDAF
-indicated by the task configuration. (See {{!VDAF}}, Section 5.)
+indicated by the task configuration. (See {{!VDAF, Section 5}}.)
 
 The VDAF verification key used for the task is computed as follows:
 
@@ -302,21 +308,20 @@ opt in to a task.
 ## Supporting HPKE Configurations Independent of Tasks {#hpke-config-no-task-id}
 
 In DAP, Clients need to know the HPKE configuration of each Aggregator before
-sending reports. (See HPKE Configuration Request in
-{{!DAP=I-D.draft-ietf-ppm-dap-02}}.) However, in a DAP deployment that supports
-the `task_prov` extension, if a Client requests the Aggregator's HPKE
-configuration with the task ID computed as described in {{construct-task-id}},
-the task ID may not be configured in the Aggregator yet, because the Aggregator
-is still waiting for the first Client report with the `task_prov` extension
-to arrive.
+sending reports. (See HPKE Configuration Request in {{!DAP}}.) However, in a DAP
+deployment that supports the Taskprov extension, if a Client requests the
+Aggregator's HPKE configuration with the task ID computed as described in
+{{construct-task-id}}, the task ID may not be configured in the Aggregator yet,
+because the Aggregator is still waiting for the task to be advertised by a
+Client.
 
-To mitigate this issue, if an Aggregator wants to support the `task_prov`
+To mitigate this issue, if an Aggregator wants to support the Taskprov
 extension, it SHOULD choose which HPKE configuration to advertise to Clients
 independent of the task ID. It MAY continue to support per-task HPKE
 configurations for other tasks that are configured out-of-band.
 
-In addition, if a Client wants to include the `task_prov` extension in its
-report, it SHOULD NOT specify the `task_id` parameter when requesting the HPKE
+In addition, if a Client intends to advertise a task via the Taskprov extension,
+it SHOULD NOT specify the `task_id` parameter when requesting the HPKE
 configuration from an Aggregator.
 
 # Client Behavior
@@ -329,29 +334,27 @@ out, it MUST not attempt to upload reports for the task.
 > this to the Author?
 
 Once the client opts in to a task, it MAY begin uploading reports for the task.
-Each report MUST offer the `task_prov` extension with the `TaskConfig`
-disseminated by the Author as the extension payload. In addition, the report's
-task ID MUST be computed as described in {{construct-task-id}}.
+Each upload request for that task MUST advertise the task configuration. In
+addition, each report's task ID MUST be computed as described in
+{{construct-task-id}}.
 
 # Leader Behavior
 
 ## Upload Protocol
 
-Upon receiving a `Report` from the Client with the `task_prov` extension, if the
-Leader does not support the extension, it MUST ignore the extension payload and
-proceed as usual. In particular, if the task ID is not recognized, then it MUST
-abort the upload request with "unrecognizedTask".
-
-> NOTE: This behavior assumes unrecognized extensions are to be ignored. See
-> [#334](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/334) for
-> discussion.
+Upon receiving a task advertisement from a Client, if the Leader does not
+support the extension, it will ignore the HTTP header. In particular, if the
+task ID is not recognized, then it MUST abort the upload request with
+"unrecognizedTask".
 
 Otherwise, if the Leader does support the extension, it first attempts to parse
-the payload. If parsing fails, it MUST abort with "unrecognizedMessage".
+the "dap-taskprov" HTTP header payload. If parsing fails, it MUST abort with
+"unrecognizedMessage".
 
-Next, it checks that the task ID included in the report matches the task ID
-derived from the extension payload as specified in {{construct-task-id}}. If the
-task ID does not match, then the Leader MUST abort with "unrecognizedTask".
+Next, it checks that the task ID indicated by the upload request matches the
+task ID derived from the extension payload as specified in
+{{construct-task-id}}. If the task ID does not match, then the Leader MUST abort
+with "unrecognizedTask".
 
 The Leader then decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the upload request with
@@ -365,13 +368,16 @@ request as usual.
 
 ## Aggregate Protocol
 
-When the Leader opts in to a task, it derives the VDAF verification key for that
-task as described in {{vdaf-verify-key}}.
+When the Leader opts in to a task, it SHOULD derive the VDAF verification key
+for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise the
+task to the Helper in its first aggregate request incident to the task. It MAY
+also include the advertisement subsequent requests; if opted in, the Helper MUST
+ignore these advertisements.
 
 ## Collect Protocol
 
 The Collector might issue a collect request for a task provisioned by the
-`task_prov` extension prior to opting in to the task. In this case, the Leader
+Taskprov extension prior to opting in to the task. In this case, the Leader
 would need to abort the collect request with "unrecognizedTask". When it does
 so, it SHOULD also include a "Retry-After" header in its HTTP response
 indicating the time after which the Collector should retry its request.
@@ -380,35 +386,20 @@ indicating the time after which the Collector should retry its request.
 
 > OPEN ISSUE: This semantics is awkward, as there's no way for the Leader to
 > distinguish between Collectors who support the extension and those that don't.
-> We should consider adding an extension field to `CollectReq`.
 
 # Helper Behavior
 
-Upon receiving of an `AggregateInitializeReq` from the Leader, If the Helper
-does not support the `task_prov` extension, it MUST ignore the extension
-payload and process each `ReportShare` as usual. In particular, if the Helper
-does not recognize the task ID, it MUST abort the aggregate request with error
-"unrecognizedTask". Otherwise, if the Helper supports the extension, it proceeds
-as follows.
+Upon receiving a task advertisement from the Leader,  If the Helper does not
+support the Taskprov extension, it will ignore the extension payload and process
+the qggregate request as usual. In particular, if the Helper does not recognize
+the task ID, it MUST abort the aggregate request with error "unrecognizedTask".
+Otherwise, if the Helper supports the extension, it proceeds as follows.
 
-First, the Helper checks that all report shares carried by the request pertain
-to the same task. In particular, it checks that:
+First, the Helper attempts to parse payload of the "dap-taskprov" HTTP header.
+If this step fails, the Helper MUST abort with "unrecognizedMessage".
 
-1. Either all report shares have the `task_prov` extension or none do. If not
-   the Helper MUST abort with "unrecognizedMessage".
-
-1. All report shares with the `task_prov` extension have the same extension payload. If
-   not, the Helper MUST abort with "unrecognizedMessage".
-
-> OPEN ISSUE: This awkward input validation step could be skipped if
-> `AggregateInitializeReq` had an extension field that we could stick the task
-> configuration in. This would also save significantly in overhead.
-
-Next, the Helper attempts to parse the extension payload. If parsing fails, it
-MUST abort with "unrecognizedMessage".
-
-Next, the Helper checks that the task ID included in the message matches the
-task ID derived from the extension payload as defined in {{construct-task-id}}.
+Next, the Helper checks that the task ID indicated in the upload request matches
+the task ID derived from the `TaskConfig` as defined in {{construct-task-id}}.
 If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in
@@ -443,11 +434,12 @@ specification. In particular, for privacy we consider the Author to be under
 control of the adversary. It is therefore incumbent on protocol participants to
 verify the privacy parameters of a task before opting in.
 
-In addition, the `task_prov` extension is designed to maintain robustness even
-when the Author misbehaves, or is merely misconfigured. In particular, if the
-Clients and Aggregators have an inconsistent view of the the task configuration,
-then aggregation of reports will fail. This is guaranteed by the binding of
-report metadata to encrypted input shares provided by HPKE encryption.
+In addition, the Taskprov extension is designed to maintain robustness even when
+the Author misbehaves, or is merely misconfigured. In particular, if the Clients
+and Aggregators have an inconsistent view of the the task configuration, then
+aggregation of reports will fail. This is guaranteed by the binding of the task
+ID (derived from the task configuration) to report shares provided by HPKE
+encryption.
 
 > OPEN ISSUE: What if the Collector and Aggregators don't agree on the task
 > configuration? Decryption should fail.
@@ -460,16 +452,6 @@ themselves.
 
 > TODO: Suggest mitigations for this. Perhaps the Aggregators need to keep track
 > of how many tasks in total they are opted in to?
-
-The HKDF {{!RFC5869}} extraction function is used to derive the task ID. An
-extractor is not required for security. In fact, a collision-resistant hash
-function would be sufficient for our application. The choice to use an extractor
-is conservative in that it allows the derived task ID to be treated as
-pseudorandom whenever the task configuration itself has high min-entropy from
-the perspective of the adversary. However, whether this is the case depends on
-the specific threat model. We note that, in the the threat model for the core
-DAP protocol, the task configuration is known to the attacker and thus has no
-entropy.
 
 # IANA Considerations
 

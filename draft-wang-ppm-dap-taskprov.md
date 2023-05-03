@@ -122,7 +122,7 @@ Task configuration:
 Task author:
 : The entity that defines a task's configuration.
 
-# The Taskprov Extension
+# The Taskprov Extension {#definition}
 
 The process of provisioning a task begins when the Author disseminates the task
 configuration to the Collector and each of the Clients. When a Client issues an
@@ -369,10 +369,9 @@ request as usual.
 ## Aggregate Protocol
 
 When the Leader opts in to a task, it SHOULD derive the VDAF verification key
-for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise the
-task to the Helper in its first aggregate request incident to the task. It MAY
-also include the advertisement subsequent requests; if opted in, the Helper MUST
-ignore these advertisements.
+for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise
+the task to the Helper in every request incident to the task as described in
+{{definition}}.
 
 ## Collect Protocol
 
@@ -387,13 +386,17 @@ indicating the time after which the Collector should retry its request.
 > OPEN ISSUE: This semantics is awkward, as there's no way for the Leader to
 > distinguish between Collectors who support the extension and those that don't.
 
+The Leader MUST advertise the task in every aggregate share request issued to
+the Helper as described in {{definition}}.
+
 # Helper Behavior
 
-Upon receiving a task advertisement from the Leader,  If the Helper does not
-support the Taskprov extension, it will ignore the extension payload and process
-the qggregate request as usual. In particular, if the Helper does not recognize
-the task ID, it MUST abort the aggregate request with error "unrecognizedTask".
-Otherwise, if the Helper supports the extension, it proceeds as follows.
+Upon receiving a task advertisement from the Leader, If the Helper does not
+support the Taskprov extension, it will ignore the "dap-taskprov" HTTP header
+and process the aggregate request as usual. In particular, if the Helper does
+not recognize the task ID, it MUST abort the aggregate request with error
+"unrecognizedTask". Otherwise, if the Helper supports the extension, it
+proceeds as follows.
 
 First, the Helper attempts to parse payload of the "dap-taskprov" HTTP header.
 If this step fails, the Helper MUST abort with "unrecognizedMessage".
@@ -420,7 +423,8 @@ Collector opts out, it MUST not attempt to upload reports for the task.
 
 Otherwise, once opted in, the Collector MAY begin to issue collect requests for
 the task. The task ID for each request MUST be derived from the `TaskConfig` as
-described in {{provisioning-a-task}}.
+described in {{provisioning-a-task}}. The Collector MUST advertise the task as
+described in {{definition}}.
 
 If the Leader responds to a collect request with an "unrecognizedTask" error,
 but the HTTP response includes a "Retry-After" header, the Collector SHOULD
@@ -452,6 +456,19 @@ themselves.
 
 > TODO: Suggest mitigations for this. Perhaps the Aggregators need to keep track
 > of how many tasks in total they are opted in to?
+
+# Operational Considerations
+
+The taskprov extension is designed so that the Aggregators do not need to store
+individual task configurations long-term. Because the task configuration is
+advertised in each request in the upload, aggregation, and colletion protocols,
+the process of opting-in and deriving the task ID and VDAF verify key can be
+re-run on the fly for each request. This is useful if a large number of
+concurrent tasks are expected.
+
+Once an Aggregator has opted-in to a task, the expectation is that the task is
+supported until it expires. In particular, Aggregators that operate in this
+manner MUST NOT opt out once they have opted in.
 
 # IANA Considerations
 

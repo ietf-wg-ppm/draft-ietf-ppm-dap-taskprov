@@ -53,11 +53,11 @@ allows the task configuration to be provisioned in-band.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-04}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-06}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-05}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-07}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. Before a
 task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration.
@@ -149,7 +149,7 @@ struct {
     opaque task_info<1..2^8-1>;
 
     /* A list of URLs relative to which an Aggregator's API endpoints
-    can be found. Defined in I-D.draft-ietf-ppm-dap-04. */
+    can be found. Defined in I-D.draft-ietf-ppm-dap-06. */
     Url aggregator_endpoints<1..2^16-1>;
 
     /* This determines the query type for batch selection and the
@@ -157,7 +157,7 @@ struct {
     QueryConfig query_config;
 
     /* Time up to which Clients are allowed to upload to this task.
-    Defined in I-D.draft-ietf-ppm-dap-04. */
+    Defined in I-D.draft-ietf-ppm-dap-06. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
@@ -177,9 +177,9 @@ selection. It is defined as follows:
 
 ~~~
 struct {
-    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-04 */
-    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-04 */
-    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-04 */
+    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-06 */
+    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-06 */
+    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-06 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
         case time_interval: Empty;
@@ -195,7 +195,8 @@ is structured as follows (codepoints are as defined in {{!VDAF}}):
 enum {
     prio3_count(0x00000000),
     prio3_sum(0x00000001),
-    prio3_histogram(0x00000002),
+    prio3_sum_vec(0x00000002),
+    prio3_histogram(0x00000003),
     poplar1(0x00001000),
     (2^32-1)
 } VdafType;
@@ -204,10 +205,19 @@ struct {
     DpConfig dp_config;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
-        case prio3_count: Empty;
-        case prio3_sum: uint8; /* bit length of the summand */
-        case prio3_histogram: uint64<8..2^24-8>; /* buckets */
-        case poplar1: uint16; /* bit length of input string */
+        case prio3_count:
+            Empty;
+        case prio3_sum:
+            uint8 bits;          /* bit length of each summand */
+        case prio3_sum_vec:
+            uint8 bits;          /* bit length of each summand */
+            uint32 length;       /* number of summands */
+            uint32 chunk_length; /* size of each proof chunk */
+        case prio3_histogram:
+            uint32 length;       /* number of buckets */
+            uint32 chunk_length; /* size of each proof chunk */
+        case poplar1:
+            uint16 bits;         /* bit length of input string */
     }
 } VdafConfig;
 ~~~

@@ -53,7 +53,7 @@ allows the task configuration to be provisioned in-band.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-06}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-07}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
@@ -149,7 +149,7 @@ struct {
     opaque task_info<1..2^8-1>;
 
     /* A list of URLs relative to which an Aggregator's API endpoints
-    can be found. Defined in I-D.draft-ietf-ppm-dap-06. */
+    can be found. Defined in I-D.draft-ietf-ppm-dap-07. */
     Url aggregator_endpoints<1..2^16-1>;
 
     /* This determines the query type for batch selection and the
@@ -157,7 +157,7 @@ struct {
     QueryConfig query_config;
 
     /* Time up to which Clients are allowed to upload to this task.
-    Defined in I-D.draft-ietf-ppm-dap-06. */
+    Defined in I-D.draft-ietf-ppm-dap-07. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
@@ -177,9 +177,9 @@ selection. It is defined as follows:
 
 ~~~
 struct {
-    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-06 */
-    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-06 */
-    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-06 */
+    QueryType query_type;         /* I-D.draft-ietf-ppm-dap-07 */
+    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-07 */
+    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-07 */
     uint32 min_batch_size;
     select (QueryConfig.query_type) {
         case time_interval: Empty;
@@ -208,16 +208,16 @@ struct {
         case prio3_count:
             Empty;
         case prio3_sum:
-            uint8 bits;          /* bit length of each summand */
+            uint8;          /* bit length of each summand */
         case prio3_sum_vec:
-            uint8 bits;          /* bit length of each summand */
-            uint32 length;       /* number of summands */
-            uint32 chunk_length; /* size of each proof chunk */
+            uint8;          /* bit length of each summand */
+            uint32;         /* number of summands */
+            uint32;         /* size of each proof chunk */
         case prio3_histogram:
-            uint32 length;       /* number of buckets */
-            uint32 chunk_length; /* size of each proof chunk */
+            uint32;         /* number of buckets */
+            uint32;         /* size of each proof chunk */
         case poplar1:
-            uint16 bits;         /* bit length of input string */
+            uint16;         /* bit length of input string */
     }
 } VdafConfig;
 ~~~
@@ -241,8 +241,8 @@ struct {
 ~~~
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
-> privacy mechanisms and parameters. See issue
-> [#94](https://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/94) for discussion.
+> privacy mechanisms and parameters. See draft
+> [draft](https://github.com/wangshan/draft-wang-ppm-differential-privacy) for discussion.
 
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.

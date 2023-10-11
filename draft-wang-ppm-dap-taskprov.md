@@ -374,7 +374,7 @@ task ID is not recognized, then it MUST abort the upload request with
 
 Otherwise, if the Leader does support the extension, it first attempts to parse
 the "dap-taskprov" HTTP header payload. If parsing fails, it MUST abort with
-"unrecognizedMessage".
+"invalidMessage".
 
 Next, it checks that the task ID indicated by the upload request matches the
 task ID derived from the extension payload as specified in
@@ -389,7 +389,9 @@ The Leader then decides whether to opt in to the task as described in
 > this to the Author?
 
 Finally, once the Leader has opted in to the task, it completes the upload
-request as usual.
+request as usual. During the process, if Leader's report share does not present
+a `task_prov` extension type, Leader SHOULD abort the upload request with
+"invalidMessage".
 
 ## Aggregate Protocol
 
@@ -424,7 +426,7 @@ not recognize the task ID, it MUST abort the aggregate request with error
 proceeds as follows.
 
 First, the Helper attempts to parse payload of the "dap-taskprov" HTTP header.
-If this step fails, the Helper MUST abort with "unrecognizedMessage".
+If this step fails, the Helper MUST abort with "invalidMessage".
 
 Next, the Helper checks that the task ID indicated in the upload request matches
 the task ID derived from the `TaskConfig` as defined in {{construct-task-id}}.
@@ -439,7 +441,9 @@ with "invalidTask".
 
 Finally, the Helper completes the aggregate initialize request as usual,
 deriving the VDAF verification key for the task as described in
-{{vdaf-verify-key}}.
+{{vdaf-verify-key}}. During the process, if Helper's report share does not
+present a `task_prov` extension type, Helper SHOULD abort the aggregate request
+with "invalidMessage".
 
 # Collector Behavior
 

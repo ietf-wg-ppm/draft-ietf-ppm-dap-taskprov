@@ -405,10 +405,7 @@ the task to the Helper in every request incident to the task as described in
 The Collector might issue a collect request for a task provisioned by the
 Taskprov extension prior to opting in to the task. In this case, the Leader
 would need to abort the collect request with "unrecognizedTask". When it does
-so, it SHOULD also include a "Retry-After" header in its HTTP response
-indicating the time after which the Collector should retry its request.
-
-> TODO: Find RFC reference for "Retry-After".
+so, it is up to the Collector to retry its request.
 
 > OPEN ISSUE: This semantics is awkward, as there's no way for the Leader to
 > distinguish between Collectors who support the extension and those that don't.
@@ -457,8 +454,7 @@ described in {{provisioning-a-task}}. The Collector MUST advertise the task as
 described in {{definition}}.
 
 If the Leader responds to a collect request with an "unrecognizedTask" error,
-but the HTTP response includes a "Retry-After" header, the Collector SHOULD
-retry its collect request after waiting for the duration indicated by the
+the Collector MAY retry its collect request after waiting for a duration.
 header.
 
 # Security Considerations

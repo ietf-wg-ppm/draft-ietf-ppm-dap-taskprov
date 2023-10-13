@@ -247,7 +247,7 @@ struct {
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.
 
-In addition, a new `task_prov` extension is offered in both Leader and Helper's
+In addition, a new `taskprov` extension is offered in both Leader and Helper's
 report share:
 
 ~~~

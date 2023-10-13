@@ -247,20 +247,6 @@ struct {
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.
 
-In addition, a new `taskprov` extension is offered in both Leader and Helper's
-report share:
-
-~~~
-enum {
-    task_prov(0xff00),
-    (65535)
-} ExtensionType;
-~~~
-
-The extension data in report share for `task_prov` is zero length, since its
-content is transported in "dap-taskprov" header.
-
-
 ## Deriving the Task ID {#construct-task-id}
 
 When using the Taskprov extension, the task ID is computed as follows:
@@ -274,7 +260,7 @@ Function SHA-256() is as defined in {{SHS}}.
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}
 
-When a Leader and Helper implement the `task_prov` extension in the context of a
+When a Leader and Helper implement the `taskprov` extension in the context of a
 particular DAP deployment, they SHOULD compute the shared VDAF verification key
 {{!VDAF}} as described in this section.
 
@@ -290,7 +276,7 @@ The VDAF verification key used for the task is computed as follows:
 ~~~
 verify_key = HKDF-Expand(
     HKDF-Extract(
-        task_prov_salt,  # salt
+        taskprov_salt,  # salt
         verify_key_init, # IKM
     ),
     task_id,             # info
@@ -298,7 +284,7 @@ verify_key = HKDF-Expand(
 )
 ~~~
 
-where `task_prov_salt` is defined to be the SHA-256 hash of the octet string
+where `taskprov_salt` is defined to be the SHA-256 hash of the octet string
 "dap-taskprov" and `task_id` is as defined in {{construct-task-id}}. Functions
 HKDF-Extract() and HKDF-Expand() are as defined in {{!RFC5869}}. Both functions
 are instantiated with SHA-256.
@@ -359,9 +345,22 @@ out, it MUST not attempt to upload reports for the task.
 
 Once the client opts in to a task, it MAY begin uploading reports for the task.
 Each upload request for that task MUST advertise the task configuration. The
-extension codepoint `task_prov` MUST be offered in the `extensions` field of
+extension codepoint `taskprov` MUST be offered in the `extensions` field of
 both leader and helper's `PlaintextInputShare`. In addition, each report's task
 ID MUST be computed as described in {{construct-task-id}}.
+
+The `taskprov` extension type is defined as follows:
+
+~~~
+enum {
+    taskprov(0xff00),
+    (65535)
+} ExtensionType;
+~~~
+
+The extension data in report share for `taskprov` is zero length, since its
+content is transported in "dap-taskprov" header.
+
 
 # Leader Behavior
 
@@ -389,9 +388,10 @@ The Leader then decides whether to opt in to the task as described in
 > this to the Author?
 
 Finally, once the Leader has opted in to the task, it completes the upload
-request as usual. During the process, if Leader's report share does not present
-a `task_prov` extension type, Leader SHOULD abort the upload request with
-"invalidMessage".
+request as usual.
+
+During the upload flow, if Leader's report share does not present a `taskprov`
+extension type, Leader MUST abort the upload request wit "invalidMessage".
 
 ## Aggregate Protocol
 
@@ -438,8 +438,10 @@ with "invalidTask".
 
 Finally, the Helper completes the aggregate initialize request as usual,
 deriving the VDAF verification key for the task as described in
-{{vdaf-verify-key}}. During the process, if Helper's report share does not
-present a `task_prov` extension type, Helper SHOULD abort the aggregate request
+{{vdaf-verify-key}}.
+
+During Helper aggregate initialization, if Helper's report share does not
+present a `taskprov` extension type, Helper MUST abort the aggregate request
 with "invalidMessage".
 
 # Collector Behavior
@@ -469,11 +471,11 @@ the Author misbehaves, or is merely misconfigured. In particular, if the Clients
 and Aggregators have an inconsistent view of the the task configuration, then
 aggregation of reports will fail. This is guaranteed by the binding of the task
 ID (derived from the task configuration) to report shares provided by HPKE
-encryption. Furthermore, the presence of `task_prov` extension type in the report
+encryption. Furthermore, the presence of `taskprov` extension type in the report
 share means Aggregators that do not recognize Taskprov extension must abort with
 `invalidMessage`, as described in ({{Section 4.4.3 of !DAP}}). This prevents a
-malicious Leader from provisioning a modified task in Helper with other means,
-which can lead to compromised privacy guarantee in aggregation results.
+malicious Author from provisioning a modified task to each party with other
+means, which can lead to compromised privacy guarantee in aggregate result.
 
 > OPEN ISSUE: What if the Collector and Aggregators don't agree on the task
 > configuration? Decryption should fail.

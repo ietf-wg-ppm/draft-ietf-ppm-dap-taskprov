@@ -148,9 +148,11 @@ struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
 
-    /* A list of URLs relative to which an Aggregator's API endpoints
-    can be found. Defined in I-D.draft-ietf-ppm-dap-07. */
-    Url aggregator_endpoints<1..2^16-1>;
+    /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-07. */
+    Url leader_aggregator_endpoint`;
+
+    /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-07. */
+    Url helper_aggregator_endpoint`;
 
     /* This determines the query type for batch selection and the
     properties that all batches for this task must have. */

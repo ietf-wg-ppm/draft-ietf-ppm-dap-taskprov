@@ -473,7 +473,7 @@ the Author misbehaves, or is merely misconfigured. In particular, if the Clients
 and Aggregators have an inconsistent view of the the task configuration, then
 aggregation of reports will fail. This is guaranteed by the binding of the task
 ID (derived from the task configuration) to report shares provided by HPKE
-encryption. Furthermore, the presence of `task_prov` extension type in report
+encryption. Furthermore, the presence of `task_prov` extension type in the report
 share means Aggregators that do not recognize Taskprov extension must abort with
 `invalidMessage`, as described in ({{Section 4.4.3 of !DAP}}). This prevents a
 malicious Leader from provisioning a modified task in Helper with other means,

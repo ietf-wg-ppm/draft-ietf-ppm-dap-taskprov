@@ -440,9 +440,9 @@ Finally, the Helper completes the aggregate initialize request as usual,
 deriving the VDAF verification key for the task as described in
 {{vdaf-verify-key}}.
 
-During Helper aggregate initialization, if Helper's report share does not
-present a `taskprov` extension type, Helper MUST abort the aggregate request
-with "invalidMessage".
+During Helper aggregate initialization, if any Helper's report share does not
+include the `taskprov` extension with an empty payload, then the Helper MUST
+abort the aggregate request with "invalidMessage".
 
 # Collector Behavior
 

@@ -64,8 +64,8 @@ Aggregators, and Collector with the task's configuration.
 
 The core DAP specification does not define a mechanism for provisioning tasks.
 This document describes a mechanism designed to fill this gap. Its key feature
-is that task configuration is performed completely in-band. It relies solely on
-the upload channel and the metadata carried by reports themselves.
+is that task configuration is performed completely in-band, via HTTP request
+headers.
 
 This method presumes the existence of a logical "task author" (written as
 "Author" hereafter) who is capable of pushing configurations to Clients. All
@@ -133,10 +133,10 @@ report, the Leader parses the configuration and decides whether to opt-in; if
 not, the task's execution halts.
 
 Otherwise, if the Leader does opt-in, it advertises the task to the Helpers
-during the aggregate protocol ({{Section 4.4 of !DAP}}). In particular, it
-includes the task configuration in an HTTP header of its first aggregate request
-for that task. Before proceeding, the Helper must first parse the configuration
-and decide whether to opt-in; if not, the task's execution halts.
+during the aggregation protocol ({{Section 4.4 of !DAP}}). In particular, it
+includes the task configuration in an HTTP header of each aggregation job
+request for that task. Before proceeding, the Helper must first parse the
+configuration and decide whether to opt-in; if not, the task's execution halts.
 
 To advertise a task to its peer, a Taskprov participant includes a header
 "dap-taskprov" with a request incident to the task execution. The value is the
@@ -213,16 +213,16 @@ struct {
         case prio3_count:
             Empty;
         case prio3_sum:
-            uint8;          /* bit length of each summand */
+            uint8;  /* bit length of each summand */
         case prio3_sum_vec:
-            uint8;          /* bit length of each summand */
-            uint32;         /* number of summands */
-            uint32;         /* size of each proof chunk */
+            uint8;  /* bit length of each summand */
+            uint32; /* number of summands */
+            uint32; /* size of each proof chunk */
         case prio3_histogram:
-            uint32;         /* number of buckets */
-            uint32;         /* size of each proof chunk */
+            uint32; /* number of buckets */
+            uint32; /* size of each proof chunk */
         case poplar1:
-            uint16;         /* bit length of input string */
+            uint16; /* bit length of input string */
         default:
             opaque[VdafConfig.vdaf_type_param_len];
     }
@@ -285,7 +285,7 @@ The VDAF verification key used for the task is computed as follows:
 ~~~
 verify_key = HKDF-Expand(
     HKDF-Extract(
-        taskprov_salt,  # salt
+        taskprov_salt,   # salt
         verify_key_init, # IKM
     ),
     task_id,             # info
@@ -353,7 +353,7 @@ out, it MUST not attempt to upload reports for the task.
 > OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
 > this to the Author?
 
-Once the client opts in to a task, it MAY begin uploading reports for the task.
+Once the client opts into a task, it may begin uploading reports for the task.
 Each upload request for that task MUST advertise the task configuration. The
 extension codepoint `taskprov` MUST be offered in the `extensions` field of
 both leader and helper's `PlaintextInputShare`. In addition, each report's task
@@ -400,8 +400,9 @@ The Leader then decides whether to opt in to the task as described in
 Finally, once the Leader has opted in to the task, it completes the upload
 request as usual.
 
-During the upload flow, if Leader's report share does not present a `taskprov`
-extension type, Leader MUST abort the upload request wit "invalidMessage".
+During the upload flow, if the Leader's report share does not present a
+`taskprov` extension type, Leader MUST abort the upload request with
+"invalidMessage".
 
 ## Aggregate Protocol
 
@@ -440,15 +441,14 @@ the task ID derived from the `TaskConfig` as defined in {{construct-task-id}}.
 If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in
-{{provisioning-a-task}}. If it opts out, it MUST abort the aggregate request
-with "invalidTask".
+{{provisioning-a-task}}. If it opts out, it MUST abort the aggregation job
+request with "invalidTask".
 
 > OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
 > this to the Author?
 
-Finally, the Helper completes the aggregate initialize request as usual,
-deriving the VDAF verification key for the task as described in
-{{vdaf-verify-key}}.
+Finally, the Helper completes the request as usual, deriving the VDAF
+verification key for the task as described in {{vdaf-verify-key}}.
 
 During Helper aggregate initialization, if any Helper's report share does not
 include the `taskprov` extension with an empty payload, then the Helper MUST
@@ -482,10 +482,11 @@ and Aggregators have an inconsistent view of the the task configuration, then
 aggregation of reports will fail. This is guaranteed by the binding of the task
 ID (derived from the task configuration) to report shares provided by HPKE
 encryption. Furthermore, the presence of `taskprov` extension type in the report
-share means Aggregators that do not recognize Taskprov extension must abort with
-`invalidMessage`, as described in ({{Section 4.4.3 of !DAP}}). This prevents a
-malicious Author from provisioning a modified task to each party with other
-means, which can lead to compromised privacy guarantee in aggregate result.
+share means Aggregators that do not recognize the Taskprov extension will abort
+with `invalidMessage`, as described in ({{Section 4.4.3 of !DAP}}). This
+prevents a malicious Author from provisioning a modified task to each party
+with other means, which can lead to compromised privacy guarantee in aggregate
+result.
 
 > OPEN ISSUE: What if the Collector and Aggregators don't agree on the task
 > configuration? Decryption should fail.

@@ -183,9 +183,11 @@ struct {
     Duration time_precision;      /* I-D.draft-ietf-ppm-dap-07 */
     uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-07 */
     uint32 min_batch_size;
+    uint16_t query_type_param_len; /* length of the remainder */
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
+        default:            opaque[QueryConfig.query_type_param_len];
     }
 } QueryConfig;
 ~~~
@@ -206,6 +208,7 @@ enum {
 struct {
     DpConfig dp_config;
     VdafType vdaf_type;
+    uint16_t vdaf_type_param_len; /* length of the remainder */
     select (VdafConfig.vdaf_type) {
         case prio3_count:
             Empty;
@@ -220,6 +223,8 @@ struct {
             uint32;         /* size of each proof chunk */
         case poplar1:
             uint16;         /* bit length of input string */
+        default:
+            opaque[VdafConfig.vdaf_type_param_len];
     }
 } VdafConfig;
 ~~~
@@ -236,8 +241,10 @@ enum {
 
 struct {
     DpMechanism dp_mechanism;
+    uint16_t dp_mechanism_param_len; /* length of the remainder */
     select (DpConfig.dp_mechanism) {
         case none: Empty;
+        default:   opaque[DpConfig.dp_mechanism_param_len];
     }
 } DpConfig;
 ~~~
@@ -312,7 +319,8 @@ A protocol participant MAY "opt out" of a task if:
 
 1. The task lifetime is too long.
 
-A protocol participant MUST opt out if the task has expired.
+A protocol participant MUST opt out if the task has expired or if it does not
+support an indicated task parameter (e.g., VDAF, DP mechanism, or query type).
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.

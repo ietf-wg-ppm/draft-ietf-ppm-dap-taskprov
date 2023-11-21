@@ -183,7 +183,7 @@ struct {
     Duration time_precision;      /* I-D.draft-ietf-ppm-dap-07 */
     uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-07 */
     uint32 min_batch_size;
-    uint16_t query_type_param_len; /* length of the remainder */
+    uint16 query_type_param_len; /* length of the remainder */
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
@@ -208,7 +208,7 @@ enum {
 struct {
     DpConfig dp_config;
     VdafType vdaf_type;
-    uint16_t vdaf_type_param_len; /* length of the remainder */
+    uint16 vdaf_type_param_len; /* length of the remainder */
     select (VdafConfig.vdaf_type) {
         case prio3_count:
             Empty;
@@ -241,7 +241,7 @@ enum {
 
 struct {
     DpMechanism dp_mechanism;
-    uint16_t dp_mechanism_param_len; /* length of the remainder */
+    uint16 dp_mechanism_param_len; /* length of the remainder */
     select (DpConfig.dp_mechanism) {
         case none: Empty;
         default:   opaque[DpConfig.dp_mechanism_param_len];

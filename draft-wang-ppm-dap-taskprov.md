@@ -356,7 +356,7 @@ out, it MUST not attempt to upload reports for the task.
 Once the client opts into a task, it may begin uploading reports for the task.
 Each upload request for that task MUST advertise the task configuration. The
 extension codepoint `taskprov` MUST be offered in the `extensions` field of
-both leader and helper's `PlaintextInputShare`. In addition, each report's task
+both Leader and Helper's `PlaintextInputShare`. In addition, each report's task
 ID MUST be computed as described in {{construct-task-id}}.
 
 The `taskprov` extension type is defined as follows:
@@ -368,8 +368,8 @@ enum {
 } ExtensionType;
 ~~~
 
-The extension data in report share for `taskprov` is zero length, since its
-content is transported in "dap-taskprov" header.
+The extension data in report share for `taskprov` MUST be zero length. The task
+config is transported by the "dap-taskprov" header.
 
 
 # Leader Behavior
@@ -448,11 +448,10 @@ request with "invalidTask".
 > this to the Author?
 
 Finally, the Helper completes the request as usual, deriving the VDAF
-verification key for the task as described in {{vdaf-verify-key}}.
-
-During Helper aggregate initialization, if any Helper's report share does not
-include the `taskprov` extension with an empty payload, then the Helper MUST
-abort the aggregate request with "invalidMessage".
+verification key for the task as described in {{vdaf-verify-key}}. For any
+report share that does not include the `taskprov` extension with an empty
+payload, then the Helper MUST mark the report as invalid with error
+"invalid_message" and reject it.
 
 # Collector Behavior
 

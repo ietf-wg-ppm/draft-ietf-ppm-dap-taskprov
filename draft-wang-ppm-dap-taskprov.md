@@ -450,7 +450,7 @@ request with "invalidTask".
 Finally, the Helper completes the request as usual, deriving the VDAF
 verification key for the task as described in {{vdaf-verify-key}}. For any
 report share that does not include the `taskprov` extension with an empty
-payload, then the Helper MUST mark the report as invalid with error
+payload, the Helper MUST mark the report as invalid with error
 "invalid_message" and reject it.
 
 # Collector Behavior

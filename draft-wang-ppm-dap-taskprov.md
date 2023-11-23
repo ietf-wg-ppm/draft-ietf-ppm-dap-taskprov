@@ -188,7 +188,7 @@ struct {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
         default:            opaque[QueryConfig.query_type_param_len];
-    }
+    };
 } QueryConfig;
 ~~~
 
@@ -225,7 +225,7 @@ struct {
             uint16; /* bit length of input string */
         default:
             opaque[VdafConfig.vdaf_type_param_len];
-    }
+    };
 } VdafConfig;
 ~~~
 
@@ -245,7 +245,7 @@ struct {
     select (DpConfig.dp_mechanism) {
         case none: Empty;
         default:   opaque[DpConfig.dp_mechanism_param_len];
-    }
+    };
 } DpConfig;
 ~~~
 

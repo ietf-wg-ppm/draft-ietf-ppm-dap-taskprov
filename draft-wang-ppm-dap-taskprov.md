@@ -192,6 +192,10 @@ struct {
 } QueryConfig;
 ~~~
 
+In particular, if `query_type` is `fixed_size` and `max_batch_size` is 0,
+then it means `max_batch_size` is optional. Aggregators should provision the
+task without a `max_batch_size` limitation.
+
 The `vdaf_config` defines the configuration of the VDAF in use for this task. It
 is structured as follows (codepoints are as defined in {{!VDAF}}):
 

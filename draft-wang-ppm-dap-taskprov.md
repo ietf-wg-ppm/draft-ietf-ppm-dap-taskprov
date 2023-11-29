@@ -192,9 +192,12 @@ struct {
 } QueryConfig;
 ~~~
 
-In particular, if `query_type` is `fixed_size` and `max_batch_size` is 0,
-then it means `max_batch_size` is optional. Aggregators should provision the
-task without a `max_batch_size` limitation.
+The maximum batch size for `fixed_size` query is optional. If `query_type` is
+`fixed_size` and `max_batch_size` is 0, Aggregator should provision the task
+without maximum batch size limit. Which means during batch validation
+({{Section 4.6.5.2.2 of !DAP}}), Aggregator does not check
+`len(X) <= max_batch_size`, where `X` is the set of reports successfully
+aggregated into the batch.
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task. It
 is structured as follows (codepoints are as defined in {{!VDAF}}):

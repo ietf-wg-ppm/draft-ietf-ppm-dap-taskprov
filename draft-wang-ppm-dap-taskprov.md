@@ -187,10 +187,12 @@ struct {
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
-        default:            opaque[QueryConfig.query_type_param_len];
     };
 } QueryConfig;
 ~~~
+
+The value `query_type_param_len` field MUST match length of the remainder of
+the structure.
 
 The maximum batch size for `fixed_size` query is optional. If `query_type` is
 `fixed_size` and `max_batch_size` is 0, Aggregator should provision the task
@@ -230,11 +232,12 @@ struct {
             uint32; /* size of each proof chunk */
         case poplar1:
             uint16; /* bit length of input string */
-        default:
-            opaque[VdafConfig.vdaf_type_param_len];
     };
 } VdafConfig;
 ~~~
+
+The value `vdaf_type_param_len` field MUST match length of the remainder of
+the structure.
 
 Apart from the VDAF-specific parameters, this structure includes a mechanism for
 differential privacy (DP). This field, `dp_config`, is structured as follows:
@@ -251,7 +254,6 @@ struct {
     uint16 dp_mechanism_param_len; /* length of the remainder */
     select (DpConfig.dp_mechanism) {
         case none: Empty;
-        default:   opaque[DpConfig.dp_mechanism_param_len];
     };
 } DpConfig;
 ~~~
@@ -259,6 +261,9 @@ struct {
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See draft
 > [draft](https://github.com/wangshan/draft-wang-ppm-differential-privacy) for discussion.
+
+The value `dp_mechansim_param_len` field MUST match length of the remainder of
+the structure.
 
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.

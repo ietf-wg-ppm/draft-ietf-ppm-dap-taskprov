@@ -53,11 +53,11 @@ allows the task configuration to be provisioned in-band.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-07}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-09}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-07}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-08}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. Before a
 task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration.
@@ -148,10 +148,10 @@ struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
 
-    /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-07. */
+    /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
     Url leader_aggregator_endpoint;
 
-    /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-07. */
+    /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
     Url helper_aggregator_endpoint;
 
     /* This determines the query type for batch selection and the
@@ -159,7 +159,7 @@ struct {
     QueryConfig query_config;
 
     /* Time up to which Clients are allowed to upload to this task.
-    Defined in I-D.draft-ietf-ppm-dap-07. */
+    Defined in I-D.draft-ietf-ppm-dap-09. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
@@ -179,10 +179,10 @@ selection. It is defined as follows:
 
 ~~~
 struct {
-    Duration time_precision;      /* I-D.draft-ietf-ppm-dap-07 */
-    uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-07 */
+    Duration time_precision;
+    uint16 max_batch_query_count;
     uint32 min_batch_size;
-    QueryType query_type;        /* I-D.draft-ietf-ppm-dap-07 */
+    QueryType query_type;
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;

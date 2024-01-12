@@ -183,16 +183,12 @@ struct {
     uint16 max_batch_query_count; /* I-D.draft-ietf-ppm-dap-07 */
     uint32 min_batch_size;
     QueryType query_type;        /* I-D.draft-ietf-ppm-dap-07 */
-    uint16 query_type_param_len; /* length of the remainder */
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
     };
 } QueryConfig;
 ~~~
-
-The value `query_type_param_len` field MUST match length of the remainder of
-the structure.
 
 The maximum batch size for `fixed_size` query is optional. If `query_type` is
 `fixed_size` and `max_batch_size` is 0, Aggregator should provision the task
@@ -215,9 +211,8 @@ enum {
 } VdafType;
 
 struct {
-    DpConfig dp_config;
+    opaque dp_config<1..2^16-1>;  /* Encoded differential privacy parameters */
     VdafType vdaf_type;
-    uint16 vdaf_type_param_len; /* length of the remainder */
     select (VdafConfig.vdaf_type) {
         case prio3_count:
             Empty;
@@ -236,34 +231,17 @@ struct {
 } VdafConfig;
 ~~~
 
-The value `vdaf_type_param_len` field MUST match length of the remainder of
-the structure.
+An extension of this draft may define additional VDAF codepoints in `VdafType`,
+but if an Aggregator doesn't recognize a VDAF codepoint, it MUST opt out of the
+task.
 
-Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). This field, `dp_config`, is structured as follows:
-
-~~~
-enum {
-    reserved(0), /* Reserved for testing purposes */
-    none(1),
-    (255)
-} DpMechanism;
-
-struct {
-    DpMechanism dp_mechanism;
-    uint16 dp_mechanism_param_len; /* length of the remainder */
-    select (DpConfig.dp_mechanism) {
-        case none: Empty;
-    };
-} DpConfig;
-~~~
+Apart from the VDAF-specific parameters, this structure includes an opaque
+field `dp_config` to encode differential privacy (DP) parameters. This draft
+doesn't mandate the underlying structure for this field yet.
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See draft
 > [draft](https://github.com/wangshan/draft-wang-ppm-differential-privacy) for discussion.
-
-The value `dp_mechansim_param_len` field MUST match length of the remainder of
-the structure.
 
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.

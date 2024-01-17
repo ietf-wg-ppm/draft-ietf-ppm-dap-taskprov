@@ -183,12 +183,16 @@ struct {
     uint16 max_batch_query_count;
     uint32 min_batch_size;
     QueryType query_type;
+    uint16 query_type_param_len; /* length of the remainder */
     select (QueryConfig.query_type) {
         case time_interval: Empty;
         case fixed_size:    uint32 max_batch_size;
     };
 } QueryConfig;
 ~~~
+
+The value `query_type_param_len` field MUST match length of the remainder of
+the structure.
 
 The maximum batch size for `fixed_size` query is optional. If `query_type` is
 `fixed_size` and `max_batch_size` is 0, Aggregator should provision the task
@@ -213,6 +217,7 @@ enum {
 struct {
     opaque dp_config<1..2^16-1>;  /* Encoded differential privacy parameters */
     VdafType vdaf_type;
+    uint16 vdaf_type_param_len; /* length of the remainder */
     select (VdafConfig.vdaf_type) {
         case prio3_count:
             Empty;
@@ -231,13 +236,26 @@ struct {
 } VdafConfig;
 ~~~
 
-An extension of this draft may define additional VDAF codepoints in `VdafType`,
-but if an Aggregator doesn't recognize a VDAF codepoint, it MUST opt out of the
-task.
+The value `vdaf_type_param_len` field MUST match length of the remainder of
+the structure.
 
-Apart from the VDAF-specific parameters, this structure includes an opaque
-field `dp_config` to encode differential privacy (DP) parameters. This draft
-doesn't mandate the underlying structure for this field yet.
+Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). The opaaque `dp_config` contains the following structure:
+
+~~~
+enum {
+    reserved(0), /* Reserved for testing purposes */
+    none(1),
+    (255)
+} DpMechanism;
+
+struct {
+    DpMechanism dp_mechanism;
+    select (DpConfig.dp_mechanism) {
+        case none: Empty;
+    };
+} DpConfig;
+~~~
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See draft

@@ -217,10 +217,10 @@ struct {
         case prio3_count:
             Empty;
         case prio3_sum:
-            uint8;  /* bit length of each summand */
+            uint8;  /* bit length of the summand */
         case prio3_sum_vec:
+            uint32; /* length of the vector */
             uint8;  /* bit length of each summand */
-            uint32; /* number of summands */
             uint32; /* size of each proof chunk */
         case prio3_histogram:
             uint32; /* number of buckets */

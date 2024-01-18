@@ -156,14 +156,14 @@ struct {
 
     /* This determines the query type for batch selection and the
     properties that all batches for this task must have. */
-    QueryConfig query_config;
+    opaque query_config<1..2^16-1>;
 
     /* Time up to which Clients are allowed to upload to this task.
     Defined in I-D.draft-ietf-ppm-dap-09. */
     Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
-    VdafConfig vdaf_config;
+    opaque vdaf_config<1..2^16-1>;
 } TaskConfig;
 ~~~
 
@@ -174,8 +174,8 @@ task expiration, the structure includes an opaque `task_info` field that is
 specific to a deployment. For example, this can be a string describing the
 purpose of this task.
 
-The `query_config` field defines the DAP query configuration used to guide batch
-selection. It is defined as follows:
+The opaque `query_config` field defines the DAP query configuration used to
+guide batch selection. Its content is structured as follows:
 
 ~~~
 struct {
@@ -190,6 +190,10 @@ struct {
 } QueryConfig;
 ~~~
 
+The length prefix of the `query_config` ensures that the `QueryConfig` structure
+can be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented query type).
+
 The maximum batch size for `fixed_size` query is optional. If `query_type` is
 `fixed_size` and `max_batch_size` is 0, Aggregator should provision the task
 without maximum batch size limit. Which means during batch validation
@@ -197,8 +201,8 @@ without maximum batch size limit. Which means during batch validation
 `len(X) <= max_batch_size`, where `X` is the set of reports successfully
 aggregated into the batch.
 
-The `vdaf_config` defines the configuration of the VDAF in use for this task. It
-is structured as follows (codepoints are as defined in {{!VDAF}}):
+The `vdaf_config` defines the configuration of the VDAF in use for this task.
+Its content is as follows (codepoints are as defined in {{!VDAF}}):
 
 ~~~
 enum {
@@ -231,17 +235,35 @@ struct {
 } VdafConfig;
 ~~~
 
-An extension of this draft may define additional VDAF codepoints in `VdafType`,
-but if an Aggregator doesn't recognize a VDAF codepoint, it MUST opt out of the
-task.
+The length prefix of the `vdaf_config` ensures that the `VdafConfig` structure
+can be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented VDAF).
 
-Apart from the VDAF-specific parameters, this structure includes an opaque
-field `dp_config` to encode differential privacy (DP) parameters. This draft
-doesn't mandate the underlying structure for this field yet.
+Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). The opaque `dp_config` contains the following structure:
+
+~~~
+enum {
+    reserved(0), /* Reserved for testing purposes */
+    none(1),
+    (255)
+} DpMechanism;
+
+struct {
+    DpMechanism dp_mechanism;
+    select (DpConfig.dp_mechanism) {
+        case none: Empty;
+    };
+} DpConfig;
+~~~
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See draft
 > [draft](https://github.com/wangshan/draft-wang-ppm-differential-privacy) for discussion.
+
+The length prefix of the `dp_config` ensures that the `DpConfig` structure can
+be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented DP mechanism).
 
 The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
 {{!DAP}}.

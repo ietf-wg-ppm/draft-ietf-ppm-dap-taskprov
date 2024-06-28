@@ -451,29 +451,38 @@ out, it MUST not attempt to upload reports for the task.
 > OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
 > this to the Author?
 
-Once the client opts into a task, it may begin uploading reports for the task.
-Each upload request for that task MUST advertise the task configuration. The
-extension codepoint `taskbind` MUST be offered in the `extensions` field of
-both Leader and Helper's `PlaintextInputShare`. In addition, each report's task
-ID MUST be computed as described in {{definition}}.
+Once the client opts into a task, it may begin uploading reports for the task
+to the Leader. The extension codepoint `taskbind` MUST be offered in the
+`extensions` field of both Leader and Helper's `PlaintextInputShare`. In
+addition, each report's task ID MUST be computed as described in {{definition}}.
+
+The Client SHOULD advertise the task configuration by specifying the encoded
+`TaskConfig` described in {{definition}} in the "dap-taskprov" HTTP header, but
+MAY choose to omit this header in order to save network bandwidth. However, the
+Leader may respond with "unrecognizedTask" if it has not been configured with
+this task. In this case, the Client MUST retry the upload request with the
+"dap-taskprov" HTTP header.
 
 ## Leader Behavior
 
 ### Upload Protocol
 
-Upon receiving a task advertisement from a Client, if the Leader does not
-support this mechanism, it will ignore the HTTP header. In particular, if the
+Upon receiving a Client report, if the Leader does not support the {{taskprov}}
+mechanism, it will ignore the "dap-taskprov" HTTP header. In particular, if the
 task ID is not recognized, then it MUST abort the upload request with
 "unrecognizedTask".
 
-Otherwise, if the Leader does support this mechanism, it first attempts to
-parse the "dap-taskprov" HTTP header payload. If parsing fails, it MUST abort
-with "invalidMessage".
+Otherwise, if the Leader does support this mechanism, it first checks if the
+"dap-taskprov" HTTP header is specified. If not, that means the Client has
+skipped task advertisement. If the Leader recognizes the task ID, it will
+include the client report in the aggregation of that task ID. Otherwise, it
+MUST abort with "unrecognizedTask". The Client will then retry with the task
+advertisement.
 
-Next, it checks that the task ID indicated by the upload request matches the
-task ID derived from the extension payload as specified in
-{{definition}}. If the task ID does not match, then the Leader MUST abort
-with "unrecognizedTask".
+If the Client advertises the task, the Leader checks that the task ID indicated
+by the upload request matches the task ID derived from the extension payload as
+specified in {{definition}}. If the task ID does not match, then the Leader MUST
+abort with "unrecognizedTask".
 
 The Leader then decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the upload request with

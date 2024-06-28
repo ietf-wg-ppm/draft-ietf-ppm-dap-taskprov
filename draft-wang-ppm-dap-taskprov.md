@@ -579,13 +579,26 @@ Author to be under control of the adversary. It is therefore incumbent on
 protocol participants to verify the privacy parameters of a task before opting
 in.
 
-Another risk is that a malicious coalition of Clients might attempt to pollute
-an Aggregator's long-term storage by uploading reports for many (thousands or
-perhaps millions) of distinct tasks. While this does not directly impact tasks
-used by honest Clients, it does present a Denial-of-Service risk for the
-Aggregators themselves. This can be mitigated by limiting the rate at which new
-tasks or configured. In addition, deployments SHOULD arrange for the Author to
-digitally sign the task configuration so that Clients cannot forge task creation.
+Another risk is that the Author could configure a unique task to fingerprint a
+Client. Although Client anonymization is not guaranteed by DAP, some systems
+built on top of DAP may hope to achieve this property by using a proxy server
+with Oblivious HTTP {{!RFC9458}} to forward Client reports to the Leader. If the
+Author colludes with the Leader, the attacker can learn some metadata
+information about the Client, e.g., the Client IP, user agent string, which may
+deanonymize the Client. However, even if the Author succeeds in doing so, the
+Author should learn nothing other than the fact that the Client has uploaded a
+report, assuming the Client has verified the privacy parameters of the task
+before opting into it. For example, if a task is uniquely configured for the
+Client, the Client can enforce the minimum batch size is strictly more than 1.
+
+Another risk for the Aggregators is that a malicious coalition of Clients might
+attempt to pollute an Aggregator's long-term storage by uploading reports for
+many (thousands or perhaps millions) of distinct tasks. While this does not
+directly impact tasks used by honest Clients, it does present a
+Denial-of-Service risk for the Aggregators themselves. This can be mitigated by
+limiting the rate at which new tasks or configured. In addition, deployments
+SHOULD arrange for the Author to digitally sign the task configuration so that
+Clients cannot forge task creation.
 
 # Operational Considerations
 

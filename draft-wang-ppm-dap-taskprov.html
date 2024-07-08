@@ -15,13 +15,13 @@ will only aggregate the report if all parties agree on the task parameters.
 This document also specifies an optional mechanism for in-band task
 provisioning that builds on the report extension. 
     " name="description">
-<meta content="xml2rfc 3.21.0" name="generator">
+<meta content="xml2rfc 3.22.0" name="generator">
 <meta content="next generation" name="keyword">
 <meta content="unicorn" name="keyword">
 <meta content="sparkling distributed ledger" name="keyword">
 <meta content="draft-wang-ppm-dap-taskprov-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.21.0
+  xml2rfc 3.22.0
     Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
@@ -31,9 +31,8 @@ provisioning that builds on the report extension.
     platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
-    requests 2.31.0
+    requests 2.32.3
     setuptools 69.5.1
-    six 1.16.0
     wcwidth 0.2.13
 -->
 <link href="draft-wang-ppm-dap-taskprov.xml" rel="alternate" type="application/rfc+xml">
@@ -1033,11 +1032,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Task Binding and In-Band Provisioning fo</td>
-<td class="right">June 2024</td>
+<td class="right">July 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wang &amp; Patton</td>
-<td class="center">Expires 30 December 2024</td>
+<td class="center">Expires 9 January 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1050,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-wang-ppm-dap-taskprov-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-06-28" class="published">28 June 2024</time>
+<time datetime="2024-07-08" class="published">8 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-12-30">30 December 2024</time></dd>
+<dd class="expires"><time datetime="2025-01-09">9 January 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1114,7 +1113,7 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 9 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1811,13 +1810,25 @@ for configuring Clients prior to task execution. For privacy we consider the
 Author to be under control of the adversary. It is therefore incumbent on
 protocol participants to verify the privacy parameters of a task before opting
 in.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<p id="section-5-3">Another risk is that a malicious coalition of Clients might attempt to pollute
-an Aggregator's long-term storage by uploading reports for many (thousands or
-perhaps millions) of distinct tasks. While this does not directly impact tasks
-used by honest Clients, it does present a Denial-of-Service risk for the
-Aggregators themselves. This can be mitigated by limiting the rate at which new
-tasks or configured. In addition, deployments <span class="bcp14">SHOULD</span> arrange for the Author to
-digitally sign the task configuration so that Clients cannot forge task creation.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-3">Another risk is that the Author could configure a unique task to fingerprint a
+Client. Although Client anonymization is not guaranteed by DAP, some systems
+built on top of DAP may hope to achieve this property by using a proxy server
+with Oblivious HTTP <span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span> to forward Client reports to the Leader. If the
+Author colludes with the Leader, the attacker can learn some metadata
+information about the Client, e.g., the Client IP, user agent string, which may
+deanonymize the Client. However, even if the Author succeeds in doing so, the
+Author should learn nothing other than the fact that the Client has uploaded a
+report, assuming the Client has verified the privacy parameters of the task
+before opting into it. For example, if a task is uniquely configured for the
+Client, the Client can enforce the minimum batch size is strictly more than 1.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">Another risk for the Aggregators is that a malicious coalition of Clients might
+attempt to pollute an Aggregator's long-term storage by uploading reports for
+many (thousands or perhaps millions) of distinct tasks. While this does not
+directly impact tasks used by honest Clients, it does present a
+Denial-of-Service risk for the Aggregators themselves. This can be mitigated by
+limiting the rate at which new tasks or configured. In addition, deployments
+<span class="bcp14">SHOULD</span> arrange for the Author to digitally sign the task configuration so that
+Clients cannot forge task creation.<a href="#section-5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="operational-considerations">
@@ -1880,6 +1891,10 @@ we'll need to allocate a codepoint) but we can leave this blank for now.<a href=
 <dt id="RFC9180">[RFC9180]</dt>
       <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="seriesInfo">RFC 9180</span>, <span class="seriesInfo">DOI 10.17487/RFC9180</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9180">https://www.rfc-editor.org/rfc/rfc9180</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9458">[RFC9458]</dt>
+      <dd>
+<span class="refAuthor">Thomson, M.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Oblivious HTTP"</span>, <span class="seriesInfo">RFC 9458</span>, <span class="seriesInfo">DOI 10.17487/RFC9458</span>, <time datetime="2024-01" class="refDate">January 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9458">https://www.rfc-editor.org/rfc/rfc9458</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
       <dd>

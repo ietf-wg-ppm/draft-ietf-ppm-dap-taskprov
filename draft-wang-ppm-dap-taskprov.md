@@ -530,8 +530,8 @@ proceeds as follows.
 First, the Helper attempts to parse payload of the "dap-taskprov" HTTP header.
 If this step fails, the Helper MUST abort with "invalidMessage".
 
-Next, the Helper checks that the task ID indicated in the upload request matches
-the task ID derived from the `TaskConfig` as defined in {{definition}}.
+Next, the Helper checks that the task ID indicated in the aggregation request
+matches the task ID derived from the `TaskConfig` as defined in {{definition}}.
 If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in
@@ -551,7 +551,7 @@ payload, the Helper MUST mark the report as invalid with error
 
 Upon receiving a `TaskConfig` from the Author, the Collector first decides
 whether to opt into the task as described in {{provisioning-a-task}}. If the
-Collector opts out, it MUST NOT attempt to upload reports for the task.
+Collector opts out, it MUST NOT attempt to issue collect requests for the task.
 
 Otherwise, once opted in, the Collector MAY begin to issue collect requests for
 the task. The task ID for each request MUST be derived from the `TaskConfig` as

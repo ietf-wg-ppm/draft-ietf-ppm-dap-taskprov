@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 9 January 2025                                       Cloudflare
-                                                             8 July 2024
+Expires: 10 February 2025                                     Cloudflare
+                                                           9 August 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 January 2025.
+   This Internet-Draft will expire on 10 February 2025.
 
 Copyright Notice
 
@@ -364,8 +364,8 @@ struct {
    This method presumes the existence of a logical "task author"
    (written as "Author" hereafter) who is capable of pushing
    configurations to Clients.  All parameters required by downstream
-   entities (the Aggregators and Collector) are carried by HTTP headers
-   piggy-backed on the protocol flow.
+   entities (the Aggregators) are carried by HTTP headers piggy-backed
+   on the protocol flow.
 
    This mechanism is designed with the same security and privacy
    considerations of the core DAP protocol.  The Author is not regarded
@@ -543,8 +543,8 @@ struct {
 
    If the Client advertises the task, the Leader checks that the task ID
    indicated by the upload request matches the task ID derived from the
-   extension payload as specified in Section 3.  If the task ID does not
-   match, then the Leader MUST abort with "unrecognizedTask".
+   "dap-taskprov" HTTP header as specified in Section 3.  If the task ID
+   does not match, then the Leader MUST abort with "unrecognizedTask".
 
    The Leader then decides whether to opt in to the task as described in
    Section 4.4.  If it opts out, it MUST abort the upload request with
@@ -596,7 +596,7 @@ struct {
    HTTP header.  If this step fails, the Helper MUST abort with
    "invalidMessage".
 
-   Next, the Helper checks that the task ID indicated in the upload
+   Next, the Helper checks that the task ID indicated in the aggregation
    request matches the task ID derived from the TaskConfig as defined in
    Section 3.  If not, the Helper MUST abort with "unrecognizedTask".
 
@@ -617,8 +617,8 @@ struct {
 
    Upon receiving a TaskConfig from the Author, the Collector first
    decides whether to opt into the task as described in Section 4.4.  If
-   the Collector opts out, it MUST NOT attempt to upload reports for the
-   task.
+   the Collector opts out, it MUST NOT attempt to issue collect requests
+   for the task.
 
    Otherwise, once opted in, the Collector MAY begin to issue collect
    requests for the task.  The task ID for each request MUST be derived
@@ -634,7 +634,7 @@ struct {
    The Taskbind extension has the same security and privacy
    considerations as the core DAP protocol.  In addition, successful
    execution of a DAP task implies agreement on the task configuration.
-   This is providing by binding the parameters to the task ID, which in
+   This is provided by binding the parameters to the task ID, which in
    turn is bound to each report uploaded for a task.  Furthermore,
    inclusion of the Taskbind extension in the report share means
    Aggregators that do not implement this extension will reject the
@@ -667,7 +667,7 @@ struct {
    distinct tasks.  While this does not directly impact tasks used by
    honest Clients, it does present a Denial-of-Service risk for the
    Aggregators themselves.  This can be mitigated by limiting the rate
-   at which new tasks or configured.  In addition, deployments SHOULD
+   at which new tasks are configured.  In addition, deployments SHOULD
    arrange for the Author to digitally sign the task configuration so
    that Clients cannot forge task creation.
 

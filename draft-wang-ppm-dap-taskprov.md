@@ -480,9 +480,9 @@ MUST abort with "unrecognizedTask". The Client will then retry with the task
 advertisement.
 
 If the Client advertises the task, the Leader checks that the task ID indicated
-by the upload request matches the task ID derived from the extension payload as
-specified in {{definition}}. If the task ID does not match, then the Leader MUST
-abort with "unrecognizedTask".
+by the upload request matches the task ID derived from the "dap-taskprov" HTTP
+header as specified in {{definition}}. If the task ID does not match, then the
+Leader MUST abort with "unrecognizedTask".
 
 The Leader then decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the upload request with

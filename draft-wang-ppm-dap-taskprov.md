@@ -566,7 +566,7 @@ of time.
 
 The Taskbind extension has the same security and privacy considerations as the
 core DAP protocol. In addition, successful execution of a DAP task implies
-agreement on the task configuration. This is providing by binding the
+agreement on the task configuration. This is provided by binding the
 parameters to the task ID, which in turn is bound to each report uploaded for a
 task. Furthermore, inclusion of the Taskbind extension in the report share
 means Aggregators that do not implement this extension will reject the report
@@ -596,7 +596,7 @@ attempt to pollute an Aggregator's long-term storage by uploading reports for
 many (thousands or perhaps millions) of distinct tasks. While this does not
 directly impact tasks used by honest Clients, it does present a
 Denial-of-Service risk for the Aggregators themselves. This can be mitigated by
-limiting the rate at which new tasks or configured. In addition, deployments
+limiting the rate at which new tasks are configured. In addition, deployments
 SHOULD arrange for the Author to digitally sign the task configuration so that
 Clients cannot forge task creation.
 

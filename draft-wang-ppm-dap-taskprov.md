@@ -314,8 +314,8 @@ performed completely in-band, via HTTP request headers.
 
 This method presumes the existence of a logical "task author" (written as
 "Author" hereafter) who is capable of pushing configurations to Clients. All
-parameters required by downstream entities (the Aggregators and Collector) are
-carried by HTTP headers piggy-backed on the protocol flow.
+parameters required by downstream entities (the Aggregators) are carried by HTTP
+headers piggy-backed on the protocol flow.
 
 This mechanism is designed with the same security and privacy considerations of
 the core DAP protocol. The Author is not regarded as a trusted third party: it

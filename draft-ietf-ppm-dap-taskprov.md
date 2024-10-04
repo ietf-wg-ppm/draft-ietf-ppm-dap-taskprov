@@ -58,11 +58,11 @@ provisioning that builds on the report extension.
 
 # Introduction
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-09}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-12}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-08}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-12}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. See
 {{Section 4.2 of !DAP}} for a complete listing.
 
@@ -235,15 +235,18 @@ of !DAP}}), the Aggregator does not check `len(X) <= max_batch_size`, where `X`
 is the set of reports successfully aggregated into the batch.
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task.
-Its content is as follows (codepoints are as defined in {{!VDAF}}):
+Its content is as follows (codepoints are as defined in
+{{Section 10 of !VDAF}}):
 
 ~~~
 enum {
-    prio3_count(0x00000000),
-    prio3_sum(0x00000001),
-    prio3_sum_vec(0x00000002),
-    prio3_histogram(0x00000003),
-    poplar1(0x00001000),
+    reserved(0x00000000),
+    prio3_count(0x00000001),
+    prio3_sum(0x00000002),
+    prio3_sum_vec(0x00000003),
+    prio3_histogram(0x00000004),
+    prio3_multihot_count_vec(0x00000005),
+    poplar1(0x00000006),
     (2^32-1)
 } VdafType;
 
@@ -279,7 +282,6 @@ differential privacy (DP). The opaque `dp_config` contains the following structu
 enum {
     reserved(0), /* Reserved for testing purposes */
     none(1),
-    aggregator_discrete_gaussian(5),
     (255)
 } DpMechanism;
 
@@ -287,9 +289,6 @@ struct {
     DpMechanism dp_mechanism;
     select (DpConfig.dp_mechanism) {
         case none: Empty;
-        case aggregator_discrete_gaussian:
-          RealNumber sigma;
-          RealNumber sensititivity;
     };
 } DpConfig;
 ~~~

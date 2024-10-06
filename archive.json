@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-11-15T01:18:20.671958+00:00",
+  "timestamp": "2024-10-06T01:06:03.826167+00:00",
   "repo": "wangshan/draft-wang-ppm-dap-taskprov",
   "labels": [
     {
@@ -52,6 +52,21 @@
       "name": "draft-01",
       "description": "",
       "color": "BE3365"
+    },
+    {
+      "name": "on-hold",
+      "description": "on-hold because it depends on other drafts",
+      "color": "d4c5f9"
+    },
+    {
+      "name": "wire breaking",
+      "description": "",
+      "color": "C7544A"
+    },
+    {
+      "name": "draft-07",
+      "description": "",
+      "color": "3A5517"
     }
   ],
   "issues": [
@@ -118,16 +133,31 @@
       "id": "I_kwDOH4FR585R3PXm",
       "title": "Consider renaming leader_url and helper_url",
       "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Deployments may end up putting place holders here or doing something else.",
       "createdAt": "2022-09-14T18:46:28Z",
-      "updatedAt": "2022-09-14T18:46:28Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2023-10-16T15:23:35Z",
+      "closedAt": "2023-10-16T15:23:35Z",
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@cjpatton can we close this one? I don't see leader_url/helper_url in the spec anymore",
+          "createdAt": "2023-10-11T19:20:30Z",
+          "updatedAt": "2023-10-11T19:20:30Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Actually we need to align these with DAP-07: https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/44 should close this.",
+          "createdAt": "2023-10-13T19:59:37Z",
+          "updatedAt": "2023-10-13T19:59:37Z"
+        }
+      ]
     },
     {
       "number": 8,
@@ -170,7 +200,7 @@
       "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/11",
       "state": "CLOSED",
       "author": "junyechen1996",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "If a deployment supports in-band task provisioning, then clients should not query `/hpke_config` with a specified `task_id`. The reason is:\r\n\r\n1. Aggregators need the first client report for a particular TaskID, in order for the task to be configured.\r\n2. Clients need the HPKE config to submit reports. If `task_id` parameter is included when clients query `/hpke_config` endpoint, the Aggregator may not know that TaskID yet, because it has not received any report for that.\r\n\r\nOne way is to advise deployment to support a global HPKE config, and also advise clients to not pass `task_id` to `/hpke_config` endpoint. The other way is to create the HPKE config on the fly for unseen task ID in `/hpke_config`.",
@@ -194,7 +224,7 @@
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "Addressed by https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/21",
           "createdAt": "2022-10-12T18:08:33Z",
           "updatedAt": "2022-10-12T18:08:33Z"
@@ -257,19 +287,21 @@
       "id": "I_kwDOH4FR585UfH-a",
       "title": "Decoding unrecognized message variants",
       "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [],
       "body": "The following messages have contents for which decoding depends on an `enum`:\r\n- VdafConfig (need to know the VdafType in order to decode the rest of the message)\r\n- DpConfig (need to know the DpMechanism in order to decode the rest of the message)\r\n- QueryConfig (need to know the QueryType in order to decode everything after min_batch_size)\r\n\r\nWhat do we do if we get a variant we don't recognize? How do we decode the rest of the message? The answer is we can't, since we don't know how many more bytes to consume. All we can do in taskprov-00 is abort with \"unrecgonizedMessage\", since we don't know how to parse.\r\n\r\nQuestion 1: Is this the intended behavior? Or would it be better \"opt-out\" by aborting with \"invalidTask\"?\r\n\r\nRegardless of the answer for taskprov-00, I think for the next version (taskprov-01) we ought to make sure messages can always be decoded, regardless of whether we know how to handle the parameters. The easiest way to do this would be to add a length prefix so that the contents can be handled as opaque blobs. This might look something like this (I'll have to double check if this is valid syntax; a similar situation arises in the TLS 1.3 record layer):\r\n\r\n```\r\nstruct {\r\n       DpConfig dp_config;\r\n       VdafType vdaf_type;\r\n+      uint16_t vdaf_param_len;\r\n       select (VdafConfig.vdaf_type) {\r\n           case prio3_aes128_count: Empty;\r\n           case prio3_aes128_sum: uint8; /* bit length of the summand */\r\n           case prio3_aes128_histogram: uint64<8..2^24-8>; /* buckets */\r\n           case poplar1_aes128: uint16; /* bit length of input string */\r\n+          default: opaque[VdafConfig.vdaf_param_len];\r\n       }\r\n   } VdafConfig;\r\n```\r\n\r\nThis came up while reviewing changes for Daphne: https://github.com/cloudflare/daphne/pull/148#discussion_r1001182181.",
       "createdAt": "2022-10-20T23:09:56Z",
-      "updatedAt": "2022-10-22T01:25:50Z",
-      "closedAt": null,
+      "updatedAt": "2023-10-24T18:07:53Z",
+      "closedAt": "2023-10-18T22:45:11Z",
       "comments": [
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "Won't this problem also exist for DAP as well, e.g. enums like `QueryType` and `PrepareStepResult` are needed to decode the rest of the messages? Is the concern that there is no text to recommend what kind of error an aggregator should abort with?\r\n\r\nIn DAP, I don't seem to find any recommendation for `unrecognizedMessage` when an enum value is an unknown variant. Could you point me to those if there is any?",
           "createdAt": "2022-10-20T23:25:22Z",
           "updatedAt": "2022-10-20T23:25:22Z"
@@ -283,7 +315,7 @@
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "I see, so I guess the concern is this draft doesn't have a clear guidance on what error each entity should throw when encountering an unknown enum.\r\n\r\nRegarding `DpMechanism`, it has implications on how DP noise is added on each entity (client or aggregator), we still need to define this better, but an entity in a deployment may not support all DP mechanisms, so it seems like it should opt out of the task if it cannot support a particular DP mechanism?\r\nRegarding `VdafType`, an entity may not know about all the VDAFs either, so it seems like it should opt out of the task as well?",
           "createdAt": "2022-10-21T18:00:55Z",
           "updatedAt": "2022-10-21T18:00:55Z"
@@ -297,7 +329,7 @@
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "I'm not sure about this requirement:\r\n\r\n> Makes sure DpConfig and VdafConfig can always be parsed even if the variant is not recognized.\r\n\r\nWon't DAP face this issue as well? For example, `PrepareStepResult` is an unrecognized enum (helper just sends this back intentionally), the rest of `PrepareStep` can't be parsed.",
           "createdAt": "2022-10-21T19:39:20Z",
           "updatedAt": "2022-10-21T19:39:20Z"
@@ -311,7 +343,7 @@
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "I think I see the motivation better after our discussion about an unknown `DpMechanism` in `VdafConfig`... so an aggregator can parse the whole `TaskConfig`, but then decide whether it should opt in or out of the task. For example, even though an aggregator doesn't know what `DpMechanism` that is, it can still run the VDAF (because it may not need the `DpMechanism`), so the aggregator may still opt into the task?",
           "createdAt": "2022-10-22T00:52:39Z",
           "updatedAt": "2022-10-22T00:52:39Z"
@@ -325,7 +357,7 @@
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "> If I don't recognize the VDAF, then there is nothing I can do but opt out;\r\n\r\nCertainly.\r\n\r\n> if I don't recognize the DP mechanism, it's possible that I'm actually supposed to ignore it. But how would I know that, unless I know the mechanism?\r\n\r\nI don't have a clear answer to this to be honest :) because DP is still vaguely defined in the DAP/VDAF context as of today. An unknown `DpMechanism` may not matter to an aggregator when it executes the VDAF, because some VDAFs may choose to only ask clients to add local DP, so there is no need for aggregators to add DP, if minimum batch size is already met. In fact, in Prio2 or Prio3Aes128CountVec, there is no guidance on how central DP is applied yet, so an aggregator has no choice but to ignore `DpMechanism`. A task \"Author\" simply logs the `DpMechanism` for transparency reasons, so clients are aware of what kind of overall DP guarantee they can get by participating in the task.",
           "createdAt": "2022-10-22T01:14:58Z",
           "updatedAt": "2022-10-22T01:19:17Z"
@@ -336,6 +368,48 @@
           "body": "I would suspect that, even if the DP mechanism is entirely local to the client, an aggregator may wish to opt-out if it decides the degree of privacy that is provided is too low. Of course, this decision process is beyond the scope of this document. The main thing for this issue, IMO, is to separate \"I don't know how to parse this\" from \"I don't know what to do with this\".",
           "createdAt": "2022-10-22T01:25:31Z",
           "updatedAt": "2022-10-22T01:25:50Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "will address this once https://github.com/wangshan/draft-wang-ppm-differential-privacy/blob/main/draft-wang-ppm-differential-privacy.md is in a good shape.",
+          "createdAt": "2023-10-11T19:21:03Z",
+          "updatedAt": "2023-10-11T19:21:03Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@wangshan I'd like to fix this before we cut the next draft. It's currently a bit of a headache. I'll propose some text.",
+          "createdAt": "2023-10-17T14:58:31Z",
+          "updatedAt": "2023-10-17T14:58:31Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@cjpatton just so I understand, the goal here is to make sure if any struct inside TaskConfig is unrecognised, the aggregator can still parse the rest of TaskConfig and decide what to do?",
+          "createdAt": "2023-10-18T13:40:26Z",
+          "updatedAt": "2023-10-18T13:40:26Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Precisely!",
+          "createdAt": "2023-10-18T21:27:31Z",
+          "updatedAt": "2023-10-18T21:27:31Z"
+        },
+        {
+          "author": "suman-ganta",
+          "authorAssociation": "NONE",
+          "body": "```\r\ndefault: opaque[VdafConfig.vdaf_param_len];\r\n```\r\nThe [RFC](https://datatracker.ietf.org/doc/html/rfc8446#section-3.8) doesn't define the following - a) `default` keyword b) non-literal vector length.\r\nAn alternative is to drop `select` construct from the structure altogether and interpret the opaque byte array at runtime based on value of enum.",
+          "createdAt": "2023-10-24T17:30:33Z",
+          "updatedAt": "2023-10-24T17:30:33Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Hey @suman-ganta, a comment on an already merged PR is easy to miss. I suggest raising an issue to discuss.",
+          "createdAt": "2023-10-24T18:07:52Z",
+          "updatedAt": "2023-10-24T18:07:52Z"
         }
       ]
     },
@@ -344,14 +418,515 @@
       "id": "I_kwDOH4FR585U58y1",
       "title": "DAP Error Addition",
       "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bhalleycf",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "This is ultimately something for the DAP spec, but as it came up in the context of taskprov we thought we'd discuss it here first.  We added a boolean config variable to control whether or not taskprov was allowed, but there is no good standard DAP error for operation refused / denied / forbidden due to local policy.  Perhaps we can add such an error to the spec?\r\n",
       "createdAt": "2022-10-26T17:55:48Z",
-      "updatedAt": "2022-10-26T17:55:48Z",
+      "updatedAt": "2024-09-25T18:21:42Z",
+      "closedAt": "2024-09-25T18:21:42Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It sounds like you'd like to see an explicit \"I have disabled this extension\" signal? I wonder if this is actually needed, given how the spec currently works.",
+          "createdAt": "2023-10-13T20:02:13Z",
+          "updatedAt": "2023-10-13T20:02:13Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "I think HTTP already gives us some good tools for this case. [HTTP 422 Unprocessable Content](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) or maybe [415 Unsupported Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/415) appear to have the right semantics. An implementation could then choose to include a problem document in the response body explaining exactly why the request was rejected (such as an unsupported extension). DAP allows for using problem types beyond the ones listed in the specification:\r\n\r\n> [This list is not exhaustive. The server MAY return errors set to a URI other than those defined above.](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-07#section-3.2-4)\r\n\r\nI don't think DAP should define a problem type specifically for unsupported extensions, unless there's some specific action that a client would automatically take in response to such an error. If it's just about providing a sufficiently descriptive errors for operators to notice a problem and do something about it, then HTTP and RFC 9457 problem details are already flexible enough for that without any additional text in DAP.",
+          "createdAt": "2023-10-17T14:53:22Z",
+          "updatedAt": "2023-10-17T14:53:22Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "[The latest DAP version now covers this case](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap/draft-ietf-ppm-dap.html#section-4.6.2-24):\r\n\r\n> If the Leader's input share contains an unrecognized extension, or if two extensions have the same ExtensionType, then the Leader MAY abort the upload request with error \"invalidMessage\". Note that this behavior is not mandatory because it requires the Leader to decrypt its input share.",
+          "createdAt": "2024-09-25T18:21:39Z",
+          "updatedAt": "2024-09-25T18:21:39Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "id": "I_kwDOH4FR585isZOG",
+      "title": "Aggregators should not have to store tasks",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/31",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I had hoped it would be possible to re-generate the task config on the fly from the long-lived pre-shared key, but this turned out to be somewhat tricky in the implementation of draft-02. In the next draft we should consider what changes would be needed to avoid replicating this data.\r\n\r\nSee https://github.com/cloudflare/daphne/issues/257.",
+      "createdAt": "2023-04-05T15:05:05Z",
+      "updatedAt": "2023-05-04T15:27:44Z",
+      "closedAt": "2023-05-04T15:27:44Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "A couple of observations:\r\n\r\n* The taskprov header should appear in all requests from Leader -> Helper for the aggregation and collection flows.l\r\n* If we re-generate the task config on-the-fly, then there is a chance of opting out of a task that we previously opted into. Should this be permissible in the spec? In practice it should be unlikely.",
+          "createdAt": "2023-04-07T18:12:34Z",
+          "updatedAt": "2023-04-21T00:38:21Z"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "I_kwDOH4FR585rhHJ7",
+      "title": "New histogram format in VDAF-06",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/33",
+      "state": "CLOSED",
+      "author": "tholop",
+      "authorAssociation": "NONE",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [],
+      "body": "The latest VDAF draft (version 6) modified the format for Prio3Histogram: https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-06#name-prio3histogram. To create a new Prio3Histogram we only need to know the number of buckets, and we no longer keep track of a vector of bucket boundaries. Measurements are now the bucket index (e.g. here is Libprio's implementation: https://github.com/divviup/libprio-rs/blob/a52c7d56e05741ae852166fd2cf2c223bc0c732b/src/vdaf/prio3_test.rs#L53). \r\n\r\nThis no longer matches TaskProv's `VdafConfig.vdaf_type`: https://wangshan.github.io/draft-wang-ppm-dap-taskprov/draft-wang-ppm-dap-taskprov.html#section-3-9.",
+      "createdAt": "2023-07-13T22:25:45Z",
+      "updatedAt": "2023-09-07T15:29:53Z",
+      "closedAt": "2023-09-07T15:29:53Z",
+      "comments": []
+    },
+    {
+      "number": 34,
+      "id": "I_kwDOH4FR585tgf6r",
+      "title": "Error type registration",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/34",
+      "state": "OPEN",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [],
+      "body": "The document currently suggests that the type `urn:ietf:params:ppm:dap:error:invalidTask` should be used in problem details responses. However, DAP says \"Servers MUST NOT use the DAP URN namespace for errors not listed in the appropriate IANA registry\". Thus, the taskprov document's 'IANA Considerations' section should either add an `invalidTask` entry to the contents of DAP's URN registry, or create a separate namespace of its own.",
+      "createdAt": "2023-08-04T19:25:11Z",
+      "updatedAt": "2024-09-25T18:16:10Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If/when this draft is adopted, I think we could make a case for extending the namespace. (i.e., say \"extensions to DAP MAY extend the namespace\"). In the meantime, I believe you're right.",
+          "createdAt": "2023-08-04T19:32:34Z",
+          "updatedAt": "2023-08-04T19:32:34Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@divergentdave @cjpatton please suggest what should I do to fix this. Am I right it blocked by DAP [section 8.3](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap/draft-ietf-ppm-dap.html#section-8.3)?",
+          "createdAt": "2023-10-11T21:37:56Z",
+          "updatedAt": "2023-10-11T21:37:56Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Let's hold this issue open until we get to WG call-for-adoption. If we discuss this at IETF 118, then I suggest bringing up the issue then.",
+          "createdAt": "2023-10-11T22:01:18Z",
+          "updatedAt": "2023-10-11T22:01:18Z"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOH4FR585txVwM",
+      "title": "Leader cannot usefully set `Retry-After` in collection req responses",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/35",
+      "state": "CLOSED",
+      "author": "tgeoghegan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The \"Collect Protocol\" section currently reads:\r\n\r\n> The Collector might issue a collect request for a task provisioned by the Taskprov extension prior to opting in to the task. In this case, the Leader would need to abort the collect request with \"unrecognizedTask\". When it does so, it SHOULD also include a \"Retry-After\" header in its HTTP response indicating the time after which the Collector should retry its request.\r\n\r\nThe collection job creation request will fail until a Client does an upload that contains a `dap-taskprov` header corresponding to the task ID. The Leader has no way to know when a Client will get around to doing that, so there's really nothing useful it can set as the value to the `Retry-After` header.\r\n\r\nIf the intent is to allow Leaders to rate limit Collectors, then I'd argue that is not DAP or taskprov's problem: a DAP Leader is an HTTP server and thus is free to use any rate-limiting mechanism that's composable with HTTP without requiring special permission from the application protocol.",
+      "createdAt": "2023-08-08T16:38:28Z",
+      "updatedAt": "2023-10-16T15:24:45Z",
+      "closedAt": "2023-10-16T15:24:45Z",
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@tgeoghegan I think the intention is to allow Leader to tell collector whether the requested task hasn't been created yet (in which case collector should retry), or there is a mismatch between of taskConfig. But I think your point is valid:\r\n\r\n>  a DAP Leader is an HTTP server and thus is free to use any rate-limiting mechanism that's composable with HTTP without requiring special permission from the application protocol.\r\n\r\nWe can either change the `SHOULD` to `MAY`, or remove the retry-after option",
+          "createdAt": "2023-09-29T20:50:30Z",
+          "updatedAt": "2023-09-29T20:50:30Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'd opt for removing the retry-after to simplify the spec.",
+          "createdAt": "2023-10-10T22:47:15Z",
+          "updatedAt": "2023-10-10T22:47:15Z"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "id": "I_kwDOH4FR585uTVnE",
+      "title": "Update histogram representation for VDAF-06",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/36",
+      "state": "CLOSED",
+      "author": "tgeoghegan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Taskprov currently has:\r\n```\r\nstruct {\r\n    DpConfig dp_config;\r\n    VdafType vdaf_type;\r\n    select (VdafConfig.vdaf_type) {\r\n        case prio3_aes128_count: Empty;\r\n        case prio3_aes128_sum: uint8; /* bit length of the summand */\r\n        case prio3_aes128_histogram: uint64<8..2^24-8>; /* buckets */\r\n        case poplar1_aes128: uint16; /* bit length of input string */\r\n    }\r\n} VdafConfig;\r\n```\r\n\r\nIn VDAF-06, rather than taking a list of bucket boundaries, the `Prio3Histogram` VDAF just takes a length, which is the number of buckets.\r\n\r\nAdditionally, all these VDAF names have `aes128` in them, which is also obsolete.",
+      "createdAt": "2023-08-14T21:24:36Z",
+      "updatedAt": "2023-09-05T21:14:08Z",
+      "closedAt": "2023-09-05T21:14:08Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This mostly duplicates https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/33.",
+          "createdAt": "2023-08-14T21:27:46Z",
+          "updatedAt": "2023-08-14T21:27:46Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "Oops, I should have checked for existing issues! Please feel free to close this in favor of #33.",
+          "createdAt": "2023-08-14T21:28:20Z",
+          "updatedAt": "2023-08-14T21:28:20Z"
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "id": "I_kwDOH4FR585u_V3x",
+      "title": "Future changes to VDAF algorithm IDs",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/37",
+      "state": "CLOSED",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [],
+      "body": "I wanted to give you a heads up that we're planning on changing the algorithm ID of Prio3Histogram in a future VDAF draft as part of cfrg/draft-irtf-cfrg-vdaf#284. This will affect the `VdafType` enum in future versions of this document.",
+      "createdAt": "2023-08-22T19:47:37Z",
+      "updatedAt": "2023-09-07T15:29:53Z",
+      "closedAt": "2023-09-07T15:29:53Z",
+      "comments": []
+    },
+    {
+      "number": 39,
+      "id": "I_kwDOH4FR585w-Ifo",
+      "title": "Non-Taskprov Aggregators may have an inconsistent view of task parameters",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/39",
+      "state": "CLOSED",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "wangshan"
+      ],
+      "labels": [],
+      "body": "The Security Considerations section currently says:\r\n\r\n> In particular, if the Clients and Aggregators have an inconsistent view of the the task configuration, then aggregation of reports will fail. This is guaranteed by the binding of the task ID (derived from the task configuration) to report shares provided by HPKE encryption.\r\n\r\nThis is not the case if one of the Aggregators doesn't use Taskprov, but instead accepts task parameters (including task ID and VDAF verify key) via some other means. A dishonest Aggregator could read the DAP-Taskprov header, rewrite parts of it, provision the rewritten task in the honest Aggregator using some other means, and then proceed to successfully aggregate reports. This could be addressed by adding a zero-length extension to report shares, as honest Aggregators that don't support Taskprov will reject reports with unknown extensions.\r\n\r\nThis attack scenario may be a little far-fetched, as in practice I think aggregators will advertise if they support Taskprov. Furthermore, I think it will be common for other kinds of DAP deployments to define their own incompatible derivation relationships between the `task_id` and `vdaf_verify_key`. This came up while writing up ietf-wg-ppm/draft-ietf-ppm-dap#500.",
+      "createdAt": "2023-09-13T22:13:14Z",
+      "updatedAt": "2023-10-16T15:24:10Z",
+      "closedAt": "2023-10-16T15:24:10Z",
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "> A dishonest Aggregator could read the DAP-Taskprov header, rewrite parts of it, provision the rewritten task in the honest Aggregator using some other means, and then proceed to successfully aggregate reports. \r\n\r\nYou are right the attack does exist, we should consider adding extension codepoint to report shares, it's a small cost to pay to resolve this issue (similar to what taskprov-02 did when dap-02 has extension on report level, but with zero length extension data).\r\n\r\nwhat do you think @cjpatton? Can we propose that and make taskprov a proper extension of DAP? ",
+          "createdAt": "2023-09-29T20:35:19Z",
+          "updatedAt": "2023-09-29T20:35:19Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(sorry for the late reply, I was busy at a conference last week) I agree this is a valid cross-protocol attack. Let's add a defense for it. Good catch @divergentdave as always.",
+          "createdAt": "2023-10-10T22:45:20Z",
+          "updatedAt": "2023-10-10T22:45:20Z"
+        }
+      ]
+    },
+    {
+      "number": 41,
+      "id": "I_kwDOH4FR585zayJ9",
+      "title": "Align with draft-wang-ppm-differential-privacy",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/41",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [],
+      "body": "Depending on where the DP draft lands, we may want to rethink `DpMechanism`.",
+      "createdAt": "2023-10-10T22:49:52Z",
+      "updatedAt": "2024-09-25T23:08:29Z",
+      "closedAt": "2024-09-25T23:08:29Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@wangshan I suggest we close this, since we don't yet know if/when we'll have a draft for DP mechanisms. We'll of course keep the `DpMechanism` here since we're likely going to need it in the future.",
+          "createdAt": "2024-09-25T16:51:30Z",
+          "updatedAt": "2024-09-25T16:51:30Z"
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "id": "I_kwDOH4FR5852Qrei",
+      "title": "Don't require the Client to advertise the task config in every upload request",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/47",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "draft-07"
+      ],
+      "body": "Currently the Client always advertised the task config in a header. We can save on bandwidth by having the Leader ask the Client for the task config only if it doesn't recognize the task.\r\n\r\nWe could consider doing something similar for the aggregation and collection flows, but (1) the bandwidth savings are less compelling and (2) we would probably need a signal that the sender (e.g., the Leader in the aggregation flow) is using taskprov.\r\n\r\nOriginally suggested by @martinthomson on the mailing list.",
+      "createdAt": "2023-11-08T17:26:50Z",
+      "updatedAt": "2024-06-28T23:13:26Z",
+      "closedAt": "2024-06-28T23:13:26Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I propose we do nothing about the aggregation and collection flows. For the upload flow, I think the following is sufficient:\r\n\r\nThe Client follows the taskprov-upload protocol as usual, except the \"dap-taskprov\" header has an empty value.* If the Leader doesn't recognize the task, it aborts with \"invalidTask\". (Optionally, the problem detail could indicate that it hasn't configured the task yet.) The Client then retries with the \"dap-taskprov\" header with the serialized task configuration as the value.\r\n\r\n----\r\n* I'm not quite sure if it's valid for an HTTP header to have an empty value. If not, then we can just have some short, sentinel value that the Leader interprets as empty.",
+          "createdAt": "2023-11-30T20:03:40Z",
+          "updatedAt": "2023-11-30T20:03:40Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "> I'm not quite sure if it's valid for an HTTP header to have an empty value\r\n\r\nIt is valid, but it is very much discouraged.  Omitting fields is preferable.  But then I have to ask why you are using fields, when this is more rightly a property of the payload.  See https://www.rfc-editor.org/rfc/rfc9205.html#name-specifying-http-header-fiel",
+          "createdAt": "2023-12-01T02:49:24Z",
+          "updatedAt": "2023-12-01T02:49:24Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Requirement: If the Leader speaks both taskprov and non-taskprov (this will usually be the case), then it needs some way to distinguish upload requests for taskprov tasks from all other upload requests.\r\n\r\nIf we stick the task config in the body, then we would need to encode the body such that the Leader can distinguish between `(report, task_config)` for taskprov tasks and `report` for other tasks. Further, the encoding will need to be backwards compatible, i.e., non-taskprov tasks should have no change to the request body. It's not immediately clear to me how to do this.\r\n\r\nThe \"dap-taskprov\" header is nice because it encodes intent in a way that's backwards compatible. Indeed, I think this is more or less the same reasoning as https://www.rfc-editor.org/rfc/rfc9205.html#section-4.7-2.3.\r\n\r\nOne potential option is to just omit the \"dap-taskprov\" header. We would lose a bit of information here, because we can't distinguish between unreocgnized tasks and tasks that have not yet been configured via taskprov. However I don't really know how useful this is. (@wangshan may have some insight here.)\r\n\r\nAnother option would be to encode the Client's intent in the header. In particular it would have one of two values:\"\r\n* `None` - please ask me to retry with the task config if you don't already have it\r\n* `Some(task_config)`",
+          "createdAt": "2023-12-01T20:16:07Z",
+          "updatedAt": "2023-12-01T20:16:07Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@martinthomson Having `task_config` in header also gives us the bandwidth save without making a wire breaking change in aggregate flow, since putting `task_config` in each reportShare will be very wasteful in aggregate flow, and there's no extension struct defined for aggregate flow yet.\r\n\r\nI think @cjpatton's solution is valid, I'll add that the re-try behaviour should be optional, for clients that don't want to/unable perform re-tries. If having empty header is very desirable, then perhaps adding a constant as content to indicate `taskprov` opt-in, for eg. the codepoint of taskprov extension?\r\n\r\nI also agree this is mainly an upload flow issue, not much benefit to optimize aggregate flow.\r\n\r\n\r\n \r\n",
+          "createdAt": "2023-12-04T18:41:30Z",
+          "updatedAt": "2023-12-04T18:45:54Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "> One potential option is to just omit the \"dap-taskprov\" header. We would lose a bit of information here, because we can't distinguish between unreocgnized tasks and tasks that have not yet been configured via taskprov. However I don't really know how useful this is. (@wangshan may have some insight here.)\r\n\r\nIt's probably not crucial. In either case the leader will have to abort. But unless we want to save a few bytes, I think having explicit information is always better than implicit.",
+          "createdAt": "2023-12-04T18:51:13Z",
+          "updatedAt": "2023-12-04T18:52:09Z"
+        },
+        {
+          "author": "bemasc",
+          "authorAssociation": "NONE",
+          "body": "Is there any work planned on this issue?  It would be nice to get the essential protocol components sorted out if you are still seeking adoption in PPM.",
+          "createdAt": "2024-05-03T19:57:48Z",
+          "updatedAt": "2024-05-03T19:57:48Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We're still interested in getting this adopted. We can definitely knock this out ahead of IETF 120.",
+          "createdAt": "2024-05-06T14:01:15Z",
+          "updatedAt": "2024-05-06T14:01:15Z"
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "id": "I_kwDOH4FR5852Qvm6",
+      "title": "Privacy considerations: Tracking users across tasks",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/48",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "draft-07"
+      ],
+      "body": "@bemasc pointed out the following attack at IETF 118. A malicious Author can provision a Client with a unique task that allows it to track uploads from the Client over time. This might allow it to collude with the Leader and track where they are.\r\n\r\nIs this an attack we're concerned about?",
+      "createdAt": "2023-11-08T17:38:09Z",
+      "updatedAt": "2024-07-08T16:17:36Z",
+      "closedAt": "2024-07-08T16:17:36Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think the only thing we can do here is not the attack in privacy considerations. Note that this is not an attack on the task binding property of the draft, but only the provisioning part.",
+          "createdAt": "2024-06-12T23:27:38Z",
+          "updatedAt": "2024-06-12T23:27:38Z"
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "id": "I_kwDOH4FR5854mUEz",
+      "title": "Separate transparency technique from in-line provisioning",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/54",
+      "state": "CLOSED",
+      "author": "simon-friedberger",
+      "authorAssociation": "NONE",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [
+        "draft-07"
+      ],
+      "body": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/500 was closed reasoning that the transparency problem can be solved by taskprov. @cjpatton suggested to split taskprov to enable using the transparency part without in-line provisioning.",
+      "createdAt": "2023-12-04T08:37:10Z",
+      "updatedAt": "2024-06-26T14:32:28Z",
+      "closedAt": "2024-06-26T14:32:27Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks Simon. Based on the feedback from IETF 118 I think we definitely need to implement this.\r\n\r\nFirst, we need to be very careful with the word \"transparency\". Taskprov does not provide transparency in the sense of \"Certificate Transparency\" or the newly formed Key Transparency WG at IETF. Instead what we get is a property we might call **task binding**: _Correct execution of a task implies agreement on the task config_. (Conversely, disagreement on the config implies abort.)\r\n\r\nI'd like to suggest the following rework. There will be two major sections.\r\n\r\nThe first section would describe how task binding works. In particular it would define `TaskConfig` and describe how to compute the task ID.\r\n\r\nThe second section would describe the `taskprov` report extension and attendant behavior changes. It would also describe deriving the VDAF verify key.",
+          "createdAt": "2023-12-04T20:23:00Z",
+          "updatedAt": "2023-12-04T20:23:00Z"
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "id": "I_kwDOH4FR5856DW3B",
+      "title": "Align with DAP-09",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/56",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Update references:\r\n* DAP https://datatracker.ietf.org/doc/draft-ietf-ppm-dap/09/\r\n* VDAF https://datatracker.ietf.org/doc/draft-irtf-cfrg-vdaf/08/",
+      "createdAt": "2023-12-19T00:14:44Z",
+      "updatedAt": "2024-01-16T16:44:20Z",
+      "closedAt": "2024-01-16T16:44:20Z",
+      "comments": []
+    },
+    {
+      "number": 62,
+      "id": "I_kwDOH4FR586HFv7O",
+      "title": "Consider adding task start time",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/62",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "wire breaking"
+      ],
+      "body": "When deciding whether to opt in to a task, a party knows only when the task expires, not how long the task was in use. Imagine for example a client uploads a report to a task that expires in two years; then two years minus one month later, the Leader wants to aggregate it. Should the Helper oblige?\r\n\r\nIt sounds reasonable to include in the `TaskConfig` an indication of when the task began.",
+      "createdAt": "2024-04-26T20:04:14Z",
+      "updatedAt": "2024-09-25T18:14:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 63,
+      "id": "I_kwDOH4FR586LuZjW",
+      "title": "Remove the Poplar1 VDAF variant",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/63",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Heavy hitters is no longer supported as of DAP-11. We could still use Poplar1 for some limited use cases, like splitting counts by client attributes. However [Mastic](https://github.com/jimouris/draft-mouris-cfrg-mastic) accomplishes a more general version of this functionality. If/when it's adopted, we may also want to add it to taskprov.",
+      "createdAt": "2024-06-10T15:22:28Z",
+      "updatedAt": "2024-06-11T23:03:36Z",
+      "closedAt": "2024-06-11T23:03:36Z",
+      "comments": []
+    },
+    {
+      "number": 64,
+      "id": "I_kwDOH4FR586MDjtt",
+      "title": "Consider salting the task ID computation",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/64",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [
+        "wire breaking"
+      ],
+      "body": "The task ID is just the SHA-256 hash of the `TaskConfig`. Prepending the input with a context string would make cross-protocol attacks on Taskprov less likely.",
+      "createdAt": "2024-06-12T21:53:25Z",
+      "updatedAt": "2024-09-25T18:09:27Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 70,
+      "id": "I_kwDOH4FR586Vq9gn",
+      "title": "Update codepoints for draft-irtf-cfrg-vdaf-12",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/70",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "wire breaking"
+      ],
+      "body": "We will likely re-assign codepoints in the next VDAF draft: https://github.com/cfrg/draft-irtf-cfrg-vdaf/pull/417",
+      "createdAt": "2024-09-06T19:25:04Z",
+      "updatedAt": "2024-09-25T18:03:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 71,
+      "id": "I_kwDOH4FR586W779y",
+      "title": "tls-presentation: Set limit for length-prefixed fields",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/71",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Along the same lines as https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/110.",
+      "createdAt": "2024-09-17T22:35:31Z",
+      "updatedAt": "2024-09-25T16:46:48Z",
+      "closedAt": "2024-09-25T16:46:48Z",
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It looks like the most likely outcome is that we'll set the lower limits to 0: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/587\r\n\r\nIf so, then there's no action to take here.",
+          "createdAt": "2024-09-25T14:51:38Z",
+          "updatedAt": "2024-09-25T14:51:38Z"
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "id": "I_kwDOH4FR586Yd2yN",
+      "title": "IANA considerations",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/72",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We will definitely need to ask IANA to register the codepoint in the upload extensions registry. One open quesiton is how to maintain taskprov as new query types or VDAFs are defined. We also don't yet have a registry (or request for a registry) for DP mecanisms.",
+      "createdAt": "2024-10-01T01:19:20Z",
+      "updatedAt": "2024-10-01T01:19:20Z",
       "closedAt": null,
       "comments": []
     }
@@ -758,7 +1333,7 @@
             "abbreviatedOid": "23cef9b"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "First pass mostly for spelling mistakes and wordings.",
           "createdAt": "2022-09-06T23:24:12Z",
@@ -1704,7 +2279,7 @@
             "abbreviatedOid": "b3a9ac4"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2022-09-14T12:08:29Z",
@@ -1750,7 +2325,7 @@
             "abbreviatedOid": "b3a9ac4"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2022-09-14T16:42:09Z",
@@ -2821,7 +3396,7 @@
       "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/21",
       "state": "MERGED",
       "author": "junyechen1996",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
@@ -2842,14 +3417,14 @@
       "comments": [
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "> I'm not sure \"SHOULD use a global config\" is the right guidance. It's possible that a single Aggregator would support taskprov tasks as well as non-taskprov tasks. Indeed, an Aggregator might want to be able to enforce key separation between tasks that are provisioned by taskprov and those that are not. Perhaps we can try to be more specific about this guidance?\r\n\r\nI added some text to recommend an Aggregator \"MAY continue to support per-task HPKE configurations for other tasks that are configured out-of-band\". Let me know if this makes things clearer.\r\n\r\n> \r\n> Another more minor issue: An Aggregator might want to periodically rotate the HPKE config it advertises to taskprov Clients.\r\n\r\nI think this can be up to the Aggregator, because key rotation needs to happen for per-task HPKE config as well. I can add some text to recommend key rotation though, let me know what you think.",
           "createdAt": "2022-10-07T03:30:18Z",
           "updatedAt": "2022-10-07T03:30:18Z"
         },
         {
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "I just squashed all commits into one.",
           "createdAt": "2022-10-12T04:17:00Z",
           "updatedAt": "2022-10-12T04:17:00Z"
@@ -2900,7 +3475,7 @@
             "abbreviatedOid": "f997686"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2022-10-07T03:26:51Z",
@@ -2952,7 +3527,7 @@
             "abbreviatedOid": "5f27d13"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2022-10-11T14:30:51Z",
@@ -2972,7 +3547,7 @@
             "abbreviatedOid": "5f27d13"
           },
           "author": "junyechen1996",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2022-10-11T14:33:35Z",
@@ -3145,7 +3720,7 @@
       "labels": [],
       "body": "Closes #23.\r\n\r\nTo do so, we need to ensure that VdafConfig and DpConfig can always be parsed properly.",
       "createdAt": "2022-10-22T00:34:27Z",
-      "updatedAt": "2022-11-14T20:44:00Z",
+      "updatedAt": "2024-10-03T22:31:06Z",
       "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "7ffa937d6ea20b85b7d7d944dd439009382fa9d9",
@@ -3237,7 +3812,7 @@
       ],
       "body": "",
       "createdAt": "2022-10-22T00:51:12Z",
-      "updatedAt": "2022-10-24T23:10:17Z",
+      "updatedAt": "2024-10-03T22:31:08Z",
       "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "f5967d68f853640087864bbbb76512d08fc4a760",
@@ -3335,6 +3910,2417 @@
           "body": "",
           "createdAt": "2022-10-22T01:01:06Z",
           "updatedAt": "2022-10-22T01:01:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDOH4FR585LoNnw",
+      "title": "Align taskprov with latest DAP draft",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/30",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "* Bump references to draft-ietf-ppm-dap-02 to 04\r\n\r\n* Bump references to draft-irtf-cfrg-vdaf-03 to 05\r\n\r\n* The latest DAP draft drops metadata extensions in favor of per-Aggregator extensions included in the report shares. These new extensions are not well-suited for shared extensions, since we end up blowing up communication cost by transmitting the task configuration twice in the same report.\r\n\r\n  Including the task configuration in the extensions has another problem: All reports include it, which means it is necessary for the Helper to check that each report in an aggregation job includes the exact same copy of this extension. This adds unnecessary complexity to the spec.\r\n\r\n  We solve these problems by advertising the task configuration in a header: The Client includes it in its upload request to he Helper, and the Leader includes it in the first aggregate request incident to the task.\r\n\r\n* Remove a security consideration about HKDF that no longer applies since we're using SHA-256 for task ID derivation.\r\n\r\n* Minor editorial nits.",
+      "createdAt": "2023-03-09T03:55:12Z",
+      "updatedAt": "2024-10-03T22:31:04Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "d44c0d7199ea044bd1d785bfbb0a6ae4202be69c",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/dap-04/1",
+      "headRefOid": "ee69f296c3dd8f7a3272733933f30ecda1ba29bf",
+      "closedAt": "2023-03-13T17:48:54Z",
+      "mergedAt": "2023-03-13T17:48:54Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "b6f61ed914177e3ce3bb6c76873261e4dc70ff92"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Note: Tests will fail until we have cut VDAF-05 and DAP-04. ",
+          "createdAt": "2023-03-09T03:59:15Z",
+          "updatedAt": "2023-03-09T03:59:15Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Pushed a couple of formatting issues.",
+          "createdAt": "2023-03-13T17:48:09Z",
+          "updatedAt": "2023-03-13T17:48:09Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585PmJZC",
+          "commit": {
+            "abbreviatedOid": "a717f59"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-03-10T18:27:28Z",
+          "updatedAt": "2023-03-10T18:27:28Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOH4FR585PuRFN",
+      "title": "Require advertisement in each request",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/32",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #31.\r\n\r\nThis addresses an operational consideration that is described in a new section.",
+      "createdAt": "2023-05-03T23:43:42Z",
+      "updatedAt": "2024-10-03T22:31:03Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "b6f61ed914177e3ce3bb6c76873261e4dc70ff92",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/31/1",
+      "headRefOid": "11631974db376c3e42a564a249c8397123ca567c",
+      "closedAt": "2023-05-04T15:27:43Z",
+      "mergedAt": "2023-05-04T15:27:42Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "73859696afcf7a1ddfdcb83de3632e7d1152c327"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Sorry about all the typos!",
+          "createdAt": "2023-05-04T00:03:10Z",
+          "updatedAt": "2023-05-04T00:03:10Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585UKi6S",
+          "commit": {
+            "abbreviatedOid": "137bb92"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-05-03T23:45:34Z",
+          "updatedAt": "2023-05-03T23:49:13Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "```suggestion\r\nthe Helper as described in {{definition}}.\r\n```",
+              "createdAt": "2023-05-03T23:45:34Z",
+              "updatedAt": "2023-05-03T23:49:13Z"
+            },
+            {
+              "originalPosition": 39,
+              "body": "```suggestion\r\nand process the aggregate request as usual. In particular, if the Helper does\r\n```",
+              "createdAt": "2023-05-03T23:46:23Z",
+              "updatedAt": "2023-05-03T23:49:13Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "```suggestion\r\nindividual task configurations long-term. Because the task configuration is\r\n```",
+              "createdAt": "2023-05-03T23:47:17Z",
+              "updatedAt": "2023-05-03T23:49:13Z"
+            },
+            {
+              "originalPosition": 69,
+              "body": "```suggestion\r\nOnce an Aggregator has opted-in to a task, the expectation is that the task is\r\n```",
+              "createdAt": "2023-05-03T23:48:02Z",
+              "updatedAt": "2023-05-03T23:49:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585UN7Lu",
+          "commit": {
+            "abbreviatedOid": "1163197"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-05-04T12:00:17Z",
+          "updatedAt": "2023-05-04T15:02:09Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "id": "PR_kwDOH4FR585ZncTN",
+      "title": "Align with draft-ietf-ppm-dap-06",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/38",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #37.\r\nCloses #33.",
+      "createdAt": "2023-09-05T21:43:49Z",
+      "updatedAt": "2024-10-03T22:31:02Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "73859696afcf7a1ddfdcb83de3632e7d1152c327",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/dap-06",
+      "headRefOid": "5249e3728e1543a6f91b309a6f156811aae1927f",
+      "closedAt": "2023-09-07T15:29:52Z",
+      "mergedAt": "2023-09-07T15:29:52Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "79469b20654785cdcb66cd2e76fdc07b1d7b4953"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585gQMZq",
+          "commit": {
+            "abbreviatedOid": "5249e37"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Looks good to me!",
+          "createdAt": "2023-09-07T08:24:08Z",
+          "updatedAt": "2023-09-07T08:24:08Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "id": "PR_kwDOH4FR585bkwM4",
+      "title": "Align with draft-ietf-ppm-dap-07",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/40",
+      "state": "MERGED",
+      "author": "wangshan",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "* Update dap version to 07\r\n* Reverted a change in https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/38, because non-unique name in select branch make the syntax parsing in a union based implementation very awkward, see https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/17.\r\n* mention DP on DAP draft https://github.com/wangshan/draft-wang-ppm-differential-privacy",
+      "createdAt": "2023-09-29T22:18:25Z",
+      "updatedAt": "2023-10-10T18:30:06Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "79469b20654785cdcb66cd2e76fdc07b1d7b4953",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "wangshan/dap-07",
+      "headRefOid": "ef4aa7366dd4c52311c2859f072b6e3e49380155",
+      "closedAt": "2023-10-10T18:30:06Z",
+      "mergedAt": "2023-10-10T18:30:06Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "0ce7101d7543a11b5f6a0a660e1e7481f4aa55c5"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585izGJ2",
+          "commit": {
+            "abbreviatedOid": "ef4aa73"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-04T13:38:04Z",
+          "updatedAt": "2023-10-04T13:38:04Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR585jdBtO",
+          "commit": {
+            "abbreviatedOid": "ef4aa73"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-10T18:24:57Z",
+          "updatedAt": "2023-10-10T18:24:57Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "id": "PR_kwDOH4FR585cjrWB",
+      "title": "Remove retry-after from leader",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/42",
+      "state": "MERGED",
+      "author": "wangshan",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Address [issue 35](https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/35) by removing retry-after.",
+      "createdAt": "2023-10-11T19:19:07Z",
+      "updatedAt": "2023-10-13T23:11:55Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "0ce7101d7543a11b5f6a0a660e1e7481f4aa55c5",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "remove-retry-after",
+      "headRefOid": "f9e1a1ffd3b24cb3e46ee4a9bfeac856497407f5",
+      "closedAt": "2023-10-13T23:11:54Z",
+      "mergedAt": "2023-10-13T23:11:54Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "2b25f8532adef01cea33413fc571b64e77e0fd80"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585j-P2p",
+          "commit": {
+            "abbreviatedOid": "f9e1a1f"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-13T19:54:24Z",
+          "updatedAt": "2023-10-13T19:54:24Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "id": "PR_kwDOH4FR585ckbiM",
+      "title": "Add 0len ext to report",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/43",
+      "state": "MERGED",
+      "author": "wangshan",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Address issue https://github.com/wangshan/draft-wang-ppm-dap-taskprov/issues/39.",
+      "createdAt": "2023-10-11T21:29:39Z",
+      "updatedAt": "2023-10-16T15:22:49Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "0ce7101d7543a11b5f6a0a660e1e7481f4aa55c5",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "add-0len-ext-to-report",
+      "headRefOid": "ce523f19e367e88dcf18bad81cff714d0c628851",
+      "closedAt": "2023-10-16T15:22:49Z",
+      "mergedAt": "2023-10-16T15:22:49Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "82460a99ca90b005a9187cb16d89d23ed66bc034"
+      },
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "Also changed unrecognizedMessage to invalidMessage to match core protocol",
+          "createdAt": "2023-10-11T21:30:28Z",
+          "updatedAt": "2023-10-11T21:30:28Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585j-NET",
+          "commit": {
+            "abbreviatedOid": "3a3d197"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-13T19:43:59Z",
+          "updatedAt": "2023-10-13T19:53:57Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Move this new text to the \"Client Behavior\" section.",
+              "createdAt": "2023-10-13T19:43:59Z",
+              "updatedAt": "2023-10-13T19:53:57Z"
+            },
+            {
+              "originalPosition": 4,
+              "body": "To align a bit better with the header.\r\n```suggestion\r\nIn addition, a new `taskprov` extension is offered in both Leader and Helper's\r\n```",
+              "createdAt": "2023-10-13T19:47:20Z",
+              "updatedAt": "2023-10-13T19:53:57Z"
+            },
+            {
+              "originalPosition": 72,
+              "body": "This should be a separate paragraph.",
+              "createdAt": "2023-10-13T19:48:41Z",
+              "updatedAt": "2023-10-13T19:53:57Z"
+            },
+            {
+              "originalPosition": 74,
+              "body": "What's the intent here? To ensure that all Clients indicate support for `task_prov`? I think this should be a MUST.",
+              "createdAt": "2023-10-13T19:52:08Z",
+              "updatedAt": "2023-10-13T19:53:58Z"
+            },
+            {
+              "originalPosition": 83,
+              "body": "```suggestion\r\nencryption. Furthermore, the presence of `task_prov` extension type in the report\r\n```",
+              "createdAt": "2023-10-13T19:52:28Z",
+              "updatedAt": "2023-10-13T19:53:58Z"
+            },
+            {
+              "originalPosition": 86,
+              "body": "```suggestion\r\nmalicious Author from provisioning a modified task to each party by some other other means,\r\n```",
+              "createdAt": "2023-10-13T19:53:19Z",
+              "updatedAt": "2023-10-13T19:53:58Z"
+            },
+            {
+              "originalPosition": 87,
+              "body": "* \"aggregation results\" is not a term we're using. Perhaps you mean \"aggregate result\"?\r\n* Is privacy the only risk?",
+              "createdAt": "2023-10-13T19:53:55Z",
+              "updatedAt": "2023-10-13T19:53:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585j_TKb",
+          "commit": {
+            "abbreviatedOid": "3a3d197"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-13T23:51:52Z",
+          "updatedAt": "2023-10-13T23:51:53Z",
+          "comments": [
+            {
+              "originalPosition": 74,
+              "body": "The intent is to keep consistency, if the client opt in to taskprov, it should set both the ext type and dap-taskprov header. agree with the must",
+              "createdAt": "2023-10-13T23:51:52Z",
+              "updatedAt": "2023-10-13T23:51:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585j_Y31",
+          "commit": {
+            "abbreviatedOid": "3a3d197"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-13T23:58:33Z",
+          "updatedAt": "2023-10-13T23:58:33Z",
+          "comments": [
+            {
+              "originalPosition": 87,
+              "body": "I can't think of what else a malicious author can achieve with this particular risk ",
+              "createdAt": "2023-10-13T23:58:33Z",
+              "updatedAt": "2023-10-13T23:58:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585j_baB",
+          "commit": {
+            "abbreviatedOid": "4eb32f1"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "One minor nit!",
+          "createdAt": "2023-10-14T00:14:35Z",
+          "updatedAt": "2023-10-14T00:15:02Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "```suggestion\r\nDuring Helper aggregate initialization, if any Helper's report share does not\r\ninclude the `taskprov` extension with an empty payload, then the Helper MUST\r\nabort the aggregate request with \"invalidMessage\".\r\n```",
+              "createdAt": "2023-10-14T00:14:36Z",
+              "updatedAt": "2023-10-14T00:15:02Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 44,
+      "id": "PR_kwDOH4FR585cxTFp",
+      "title": "Align aggregator endpoints with DAP-07",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/44",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #6.\r\n\r\nNote that this is a wire-breaking change.",
+      "createdAt": "2023-10-13T19:59:12Z",
+      "updatedAt": "2024-10-03T22:31:00Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "0ce7101d7543a11b5f6a0a660e1e7481f4aa55c5",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/6",
+      "headRefOid": "788dfe95b41450c61147077e745f50bb4e9c1f67",
+      "closedAt": "2023-10-16T15:23:34Z",
+      "mergedAt": "2023-10-16T15:23:34Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "91b26e724a685d0e253a80d1b2080f0ef0c52e4b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585j_Pjl",
+          "commit": {
+            "abbreviatedOid": "8d68122"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-13T23:12:44Z",
+          "updatedAt": "2023-10-13T23:12:44Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "```suggestion\r\n    Url leader_aggregator_endpoint;\r\n```",
+              "createdAt": "2023-10-13T23:12:44Z",
+              "updatedAt": "2023-10-13T23:12:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585j_Pko",
+          "commit": {
+            "abbreviatedOid": "8d68122"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-13T23:12:55Z",
+          "updatedAt": "2023-10-13T23:12:55Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "```suggestion\r\n    Url helper_aggregator_endpoint;\r\n```",
+              "createdAt": "2023-10-13T23:12:55Z",
+              "updatedAt": "2023-10-13T23:12:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585kJz7T",
+          "commit": {
+            "abbreviatedOid": "788dfe9"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-16T15:19:40Z",
+          "updatedAt": "2023-10-16T15:19:40Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "id": "PR_kwDOH4FR585dMWWw",
+      "title": "Opt-out if a task parameter is not recognized",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/45",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #23.\r\n\r\nPreviously we would fail to parse the `TaskConfig` if one of its parameters was not recognized. Modify the wire format so that it is always decodable.",
+      "createdAt": "2023-10-18T21:36:55Z",
+      "updatedAt": "2023-10-18T22:45:10Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "91b26e724a685d0e253a80d1b2080f0ef0c52e4b",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/do/23",
+      "headRefOid": "1151f18b9b7bb951119e546e000b65d4d65349da",
+      "closedAt": "2023-10-18T22:45:10Z",
+      "mergedAt": "2023-10-18T22:45:10Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "999445e7ff6a64115f5657e9cdc29638704a88c9"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585kg0qu",
+          "commit": {
+            "abbreviatedOid": "1151f18"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2023-10-18T22:43:15Z",
+          "updatedAt": "2023-10-18T22:43:15Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "id": "PR_kwDOH4FR585dMgqW",
+      "title": "Clean up",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/46",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Stacked on #45.",
+      "createdAt": "2023-10-18T22:03:06Z",
+      "updatedAt": "2024-10-03T22:30:59Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/do/23",
+      "baseRefOid": "1151f18b9b7bb951119e546e000b65d4d65349da",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/last-pass",
+      "headRefOid": "1935c5fe7370338e8450552c8d1b79bbd5c21cbe",
+      "closedAt": "2023-10-18T22:45:20Z",
+      "mergedAt": "2023-10-18T22:45:20Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "a45d1b35776e6a59d688572f80f175c4c5940ccb"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585kg0_0",
+          "commit": {
+            "abbreviatedOid": "1935c5f"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2023-10-18T22:44:54Z",
+          "updatedAt": "2023-10-18T22:44:54Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 49,
+      "id": "PR_kwDOH4FR585frvGq",
+      "title": "QueryConfig: Move query type to just before the params",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/49",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This is intended to simplify encoding/decoding of this struct.",
+      "createdAt": "2023-11-16T21:46:27Z",
+      "updatedAt": "2024-10-03T22:30:53Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "e2f78248b527ea6fead1ac49ccf7ca481a685531",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/simpler-encoding",
+      "headRefOid": "8cddecc582f988bc27b14fba556e76f81208315c",
+      "closedAt": "2023-11-23T02:18:55Z",
+      "mergedAt": "2023-11-23T02:18:55Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "2aada1ef363019d79413981c1d7ed58dbfeb30cc"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Rebased.",
+          "createdAt": "2023-11-22T18:08:35Z",
+          "updatedAt": "2023-11-22T18:08:35Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585ndZFX",
+          "commit": {
+            "abbreviatedOid": "c5db2dc"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-16T23:59:27Z",
+          "updatedAt": "2023-11-16T23:59:27Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "id": "PR_kwDOH4FR585gEhnj",
+      "title": "Remove spurious \"_t\" suffix from int types",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/50",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-11-21T21:55:30Z",
+      "updatedAt": "2024-10-03T22:30:57Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "8f0ec03dcc1812ae2953e5e540d57d872a7a0f63",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/typo-c-style-ints",
+      "headRefOid": "cb326023350cbb19d2f851259965b4201b5cb06d",
+      "closedAt": "2023-11-22T15:18:56Z",
+      "mergedAt": "2023-11-22T15:18:56Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "e2f78248b527ea6fead1ac49ccf7ca481a685531"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585n_WLG",
+          "commit": {
+            "abbreviatedOid": "cb32602"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-22T15:15:06Z",
+          "updatedAt": "2023-11-22T15:15:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 51,
+      "id": "PR_kwDOH4FR585gJPl6",
+      "title": "Helper: Reject reports with missing extension",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/51",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently the Helper is supposed to abort an aggregation job that contains a report share that is missing the `taskprov` extension. However because the Helper report shares are encrypted, the Leader has no way of knowing whether the extension is present or not. This means there is no protocol-level mechanism for the Helper to convey which report needs to be removed from the candidate set before retrying.\r\n\r\nInstead of aborting, have the Helper simply reject the malformed report.\r\n\r\nClarify a few things while at it.",
+      "createdAt": "2023-11-22T15:30:20Z",
+      "updatedAt": "2024-10-03T22:30:55Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "e2f78248b527ea6fead1ac49ccf7ca481a685531",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/extension-handling",
+      "headRefOid": "14868e76af7a7b5568f8d64c275b305f27448335",
+      "closedAt": "2023-11-22T18:09:02Z",
+      "mergedAt": "2023-11-22T18:09:02Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "9cf9177c27e5eb335fffa48328b6e4a1fb995eca"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585n_vmT",
+          "commit": {
+            "abbreviatedOid": "a62d8d8"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-11-22T15:50:28Z",
+          "updatedAt": "2023-11-22T15:50:29Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "the rest of the document uses `invalidMessage`,  so does core dap draft.",
+              "createdAt": "2023-11-22T15:50:29Z",
+              "updatedAt": "2023-11-22T15:50:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585n_w3Z",
+          "commit": {
+            "abbreviatedOid": "a62d8d8"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-11-22T15:51:16Z",
+          "updatedAt": "2023-11-22T15:51:16Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "```suggestion\r\npayload, the Helper MUST mark the report as invalid with error\r\n```",
+              "createdAt": "2023-11-22T15:51:16Z",
+              "updatedAt": "2023-11-22T15:51:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585n_yt5",
+          "commit": {
+            "abbreviatedOid": "a62d8d8"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-11-22T15:52:39Z",
+          "updatedAt": "2023-11-22T15:52:39Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "\"invalid_message\" is a variant of PrepareError, not an abort.",
+              "createdAt": "2023-11-22T15:52:39Z",
+              "updatedAt": "2023-11-22T15:52:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585oApp-",
+          "commit": {
+            "abbreviatedOid": "14868e7"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-22T17:33:35Z",
+          "updatedAt": "2023-11-22T17:33:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "id": "PR_kwDOH4FR585gL-pt",
+      "title": "Add semi-colon after all select blocks",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/52",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-11-23T02:57:14Z",
+      "updatedAt": "2024-10-03T22:30:52Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "2aada1ef363019d79413981c1d7ed58dbfeb30cc",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/nits",
+      "headRefOid": "b19cca5e5340d8b89995094a7bd195bcb5e9d0c2",
+      "closedAt": "2023-11-27T22:47:31Z",
+      "mergedAt": "2023-11-27T22:47:30Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "c816271cbbdb7bb3c27c09d522859ad586eff5d6"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585oXIi3",
+          "commit": {
+            "abbreviatedOid": "b19cca5"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-27T16:41:49Z",
+          "updatedAt": "2023-11-27T16:41:49Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "id": "PR_kwDOH4FR585gdh8x",
+      "title": "Make max batch size optional",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/53",
+      "state": "MERGED",
+      "author": "wangshan",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Related to PR https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/530 in core DAP",
+      "createdAt": "2023-11-27T16:53:17Z",
+      "updatedAt": "2023-11-30T23:00:52Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "2aada1ef363019d79413981c1d7ed58dbfeb30cc",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "optional-max-batch-size",
+      "headRefOid": "50736d5c04c46842d99326187ca3f07a69627b59",
+      "closedAt": "2023-11-30T23:00:52Z",
+      "mergedAt": "2023-11-30T23:00:52Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "87e28b9a44e281f4dc082867fcdac9e5622d8f1b"
+      },
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "Made the text more clear, @cjpatton pls have another pass, the DAP PR is merged, we can merge this once it's approved ",
+          "createdAt": "2023-11-29T13:43:21Z",
+          "updatedAt": "2023-11-29T13:43:21Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585oZq4S",
+          "commit": {
+            "abbreviatedOid": "4e984f6"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Setting `max_batch_size` to `0` seems reasonable. Let's hold off on merging until the PR against the core DAP spec gets merged.",
+          "createdAt": "2023-11-27T22:49:41Z",
+          "updatedAt": "2023-11-27T22:50:46Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Grammar: \"In particular\" is used to refine a previous statement, whereas here it's beginning a statement. I think what you want to do instead is start the paragraph off with \"The max batch size for the `fixed_size` query is optional.\"",
+              "createdAt": "2023-11-27T22:49:41Z",
+              "updatedAt": "2023-11-27T22:50:46Z"
+            },
+            {
+              "originalPosition": 6,
+              "body": "What does this sentence mean?",
+              "createdAt": "2023-11-27T22:50:16Z",
+              "updatedAt": "2023-11-27T22:50:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585oziCq",
+          "commit": {
+            "abbreviatedOid": "50736d5"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-30T19:58:18Z",
+          "updatedAt": "2023-11-30T19:58:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "id": "PR_kwDOH4FR585hIGwn",
+      "title": "Remove `default` variant of `select` blocks",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/55",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This does not appear in the grammar of TLS-syntax. Handling of unrecognized variants is unspecified. Either:\r\n\r\n1. The message will be handled as an invalid message, leading to abort; or\r\n\r\n2. The message will be parsed, but the then the receiver will opt-out.\r\n\r\nThis second option is possible because in each case (`QueryConfig`, `VdafConfig`, and `DpConfig`) the length prefix allows the entire message to be parsed.",
+      "createdAt": "2023-12-05T04:07:49Z",
+      "updatedAt": "2024-10-03T22:30:50Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "87e28b9a44e281f4dc082867fcdac9e5622d8f1b",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/remove-select-default",
+      "headRefOid": "9e269653c35d5a54c4bfff5ab603e7a34fd16958",
+      "closedAt": "2023-12-06T23:54:46Z",
+      "mergedAt": "2023-12-06T23:54:46Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "a6f2ac65cf441a876e4472d68dde1b04c33c13db"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585pVz7K",
+          "commit": {
+            "abbreviatedOid": "9e26965"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-12-06T11:30:45Z",
+          "updatedAt": "2023-12-06T11:30:45Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "id": "PR_kwDOH4FR585iUgYN",
+      "title": "Update DAP and VDAF reference",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/57",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #56 ",
+      "createdAt": "2023-12-19T00:31:37Z",
+      "updatedAt": "2024-10-03T22:30:49Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "f8cedf129c0dfb6a3461b33f90717fcf88cc534b",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/56",
+      "headRefOid": "654f7a5e6b35bf43393828d5cc5b04f64dedf896",
+      "closedAt": "2024-01-16T16:44:19Z",
+      "mergedAt": "2024-01-16T16:44:19Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "e5634d2f1a47226cd7b9682222eab3768ab02258"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585rdWrH",
+          "commit": {
+            "abbreviatedOid": "cdb6f1f"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-03T18:17:03Z",
+          "updatedAt": "2024-01-03T18:17:03Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "id": "PR_kwDOH4FR585j-iPc",
+      "title": "Change dp_config to opaque",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/58",
+      "state": "MERGED",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Also remove length hints in TLS variants that are mandatory to configure a task.",
+      "createdAt": "2024-01-12T22:22:28Z",
+      "updatedAt": "2024-01-16T19:27:29Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "a6f2ac65cf441a876e4472d68dde1b04c33c13db",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "junyec/opaque-dp-config",
+      "headRefOid": "6108051567781ad978527d904a1cabf7f364ef79",
+      "closedAt": "2024-01-15T13:45:20Z",
+      "mergedAt": "2024-01-15T13:45:20Z",
+      "mergedBy": "wangshan",
+      "mergeCommit": {
+        "oid": "f8cedf129c0dfb6a3461b33f90717fcf88cc534b"
+      },
+      "comments": [
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'm mainly trying to align with our implementations, but I'd welcome feedback on the texts here.",
+          "createdAt": "2024-01-12T22:23:21Z",
+          "updatedAt": "2024-01-12T22:23:21Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think this is a regression. The goal of encoding the length of query type, vdaf type, and dp type is so that we can decode a variant we don't recognize. The goal was to separate parsing from protocol logic that is implementation specific.\r\n\r\nI think this is a regression.\r\n\r\nThanks @junyechen1996 for pointing this out.",
+          "createdAt": "2024-01-16T16:08:28Z",
+          "updatedAt": "2024-01-16T16:08:28Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@wangshan you might remember we discussed this a few months ago.",
+          "createdAt": "2024-01-16T16:09:22Z",
+          "updatedAt": "2024-01-16T16:09:22Z"
+        },
+        {
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "body": "@cjpatton this isn't a regression, what we had before was a DpConfig with no length so decoder may not know how to skip it. What we write here uses `opaque dp_config<1..2^16-1>` which encodes the length in the variant length array already. When decoding, you either know how to decode dp_config or know how long it is by reading the first 2 bytes.",
+          "createdAt": "2024-01-16T17:44:34Z",
+          "updatedAt": "2024-01-16T17:44:34Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> @cjpatton this isn't a regression, what we had before was a DpConfig with no length so decoder may not know how to skip it. What we write here uses `opaque dp_config<1..2^16-1>` which encodes the length in the variant length array already. When decoding, you either know how to decode dp_config or know how long it is by reading the first 2 bytes.\r\n\r\nThe regression is: There is no length prefix for VdafConfig or QueryConfig. DpConfig is fine.",
+          "createdAt": "2024-01-16T19:27:28Z",
+          "updatedAt": "2024-01-16T19:27:28Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585slSoZ",
+          "commit": {
+            "abbreviatedOid": "6108051"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-15T13:44:01Z",
+          "updatedAt": "2024-01-15T13:44:01Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 59,
+      "id": "PR_kwDOH4FR585j-jR9",
+      "title": "Align parameter orders of standard VDAFs",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/59",
+      "state": "MERGED",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-01-12T22:28:15Z",
+      "updatedAt": "2024-01-17T09:27:48Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "a6f2ac65cf441a876e4472d68dde1b04c33c13db",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "junyec/vdaf-param-order",
+      "headRefOid": "42af65c5c66edc56bd85bd871114b58fb24929a9",
+      "closedAt": "2024-01-17T09:27:45Z",
+      "mergedAt": "2024-01-17T09:27:45Z",
+      "mergedBy": "junyechen1996",
+      "mergeCommit": {
+        "oid": "2d800b2adff9154a587885050773057a9045b563"
+      },
+      "comments": [
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Since this is wire breaking, let me know if this is not worth the effort, and I can decline this PR.",
+          "createdAt": "2024-01-12T22:29:07Z",
+          "updatedAt": "2024-01-12T22:29:07Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585slV4L",
+          "commit": {
+            "abbreviatedOid": "42af65c"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-15T13:51:53Z",
+          "updatedAt": "2024-01-15T13:51:53Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "I remember @cjpatton was particular about \"number of summands\", which sounds more appropriate?",
+              "createdAt": "2024-01-15T13:51:53Z",
+              "updatedAt": "2024-01-15T13:51:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585slZyx",
+          "commit": {
+            "abbreviatedOid": "42af65c"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-15T14:00:31Z",
+          "updatedAt": "2024-01-15T14:00:31Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR585st3Ze",
+          "commit": {
+            "abbreviatedOid": "42af65c"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-16T16:09:54Z",
+          "updatedAt": "2024-01-16T16:09:58Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Whatever is clearer!",
+              "createdAt": "2024-01-16T16:09:54Z",
+              "updatedAt": "2024-01-16T16:09:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s0Ukf",
+          "commit": {
+            "abbreviatedOid": "42af65c"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-16T23:16:44Z",
+          "updatedAt": "2024-01-16T23:16:45Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "@junyechen1996 your call, as long as /* length of the vector */ has no ambiguity, let's use it and merge this PR",
+              "createdAt": "2024-01-16T23:16:44Z",
+              "updatedAt": "2024-01-16T23:16:45Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 60,
+      "id": "PR_kwDOH4FR585kWRhY",
+      "title": "Add back `DpConfig` and the length prefixes in `VdafConfig` and `QueryConfig`",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/60",
+      "state": "CLOSED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "**Option 1.**\r\n\r\nA previous commit f8cedf129c0dfb6a3461b33f90717fcf88cc534b, the `DpConfig` structure was replaced with an opaque byte string that the parties are meant to ignore. We don't want the parties to ignore unrecognized parameters: they should opt out instead. This change specifies that the content should be a `DpConfig`. We also remove the length prefix from that structure, since it's no longer needed.\r\n\r\nThe same commit removed the length prefixes from `VdafConfig` and `QueryConfig`. This is a regression because it means the encoding of the `TaskConfig` is no longer self-describing. In particular, it forces to conflate opt-out due to unrecognized variants (an unimplemented VDAF, say) with serialization errors. Solve this by adding back the length prefixes.",
+      "createdAt": "2024-01-17T19:34:46Z",
+      "updatedAt": "2024-10-03T22:30:47Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "2d800b2adff9154a587885050773057a9045b563",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/self-describing-1",
+      "headRefOid": "e88fdd68622c9616fe533907e061416a6cc0b6ba",
+      "closedAt": "2024-01-17T20:16:56Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed in favor of #61.",
+          "createdAt": "2024-01-17T20:16:56Z",
+          "updatedAt": "2024-01-17T20:16:56Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585s9bhQ",
+          "commit": {
+            "abbreviatedOid": "e88fdd6"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T19:36:13Z",
+          "updatedAt": "2024-01-17T19:36:14Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "Reviewer note: it would be slightly more consistent to replace this with `DpConfig` and add the internal length prefix back (it was there before https://github.com/wangshan/draft-wang-ppm-dap-taskprov/commit/f8cedf129c0dfb6a3461b33f90717fcf88cc534b), but I wanted to the minimal change here.",
+              "createdAt": "2024-01-17T19:36:14Z",
+              "updatedAt": "2024-01-17T19:36:14Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 61,
+      "id": "PR_kwDOH4FR585kWSDm",
+      "title": "Add back `DpConfig` and make `vdaf_config` and `query_config` opaque",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/61",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "**Option 2.**\r\n\r\nA previous commit f8cedf129c0dfb6a3461b33f90717fcf88cc534b, the `DpConfig` structure was replaced with an opaque byte string that the parties are meant to ignore. We don't want the parties to ignore unrecognized parameters: they should opt out instead. This change specifies that the content should be a `DpConfig`. We also remove the length prefix from that structure, since it's no longer needed.\r\n\r\nThe same commit removed the length prefixes from `VdafConfig` and `QueryConfig`. This is a regression because it means the encoding of the `TaskConfig` is no longer self-describing. In particular, it forces to conflate opt-out due to unrecognized variants (an unimplemented VDAF, say) with serialization errors. Solve this making the `vdaf_config` and `query_config` fields of the `TaskConfig` struct opaque, in the same way that `dp_config` is opaque.",
+      "createdAt": "2024-01-17T19:36:38Z",
+      "updatedAt": "2024-10-03T22:30:46Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "2d800b2adff9154a587885050773057a9045b563",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpastton/self-describing-2",
+      "headRefOid": "aa1815c17bb63386fc511dd631e85b630e8034b1",
+      "closedAt": "2024-01-18T00:47:48Z",
+      "mergedAt": "2024-01-18T00:47:48Z",
+      "mergedBy": "junyechen1996",
+      "mergeCommit": {
+        "oid": "1ddcb35830923d2a770bb737b95e19033fa44a83"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Squashed.",
+          "createdAt": "2024-01-17T21:58:29Z",
+          "updatedAt": "2024-01-17T21:58:29Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585s9fsR",
+          "commit": {
+            "abbreviatedOid": "4292eae"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-17T19:46:35Z",
+          "updatedAt": "2024-01-17T19:46:35Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR585s9hXQ",
+          "commit": {
+            "abbreviatedOid": "4292eae"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T19:50:39Z",
+          "updatedAt": "2024-01-17T19:53:09Z",
+          "comments": [
+            {
+              "originalPosition": 32,
+              "body": "```suggestion\r\nThe length prefix of the `query_config` ensures that the `QueryConfig` structure\r\n```\r\n\r\nsame as below.",
+              "createdAt": "2024-01-17T19:50:39Z",
+              "updatedAt": "2024-01-17T19:53:09Z"
+            },
+            {
+              "originalPosition": 86,
+              "body": "So now we will have an opaque `vdaf_config`, and another opaque `dp_config` in the decoded `vdaf_config`. I'm not objected to it, but I just want to make sure this is intentional.",
+              "createdAt": "2024-01-17T19:52:56Z",
+              "updatedAt": "2024-01-17T19:53:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s9pew",
+          "commit": {
+            "abbreviatedOid": "4292eae"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T20:11:38Z",
+          "updatedAt": "2024-01-17T20:11:38Z",
+          "comments": [
+            {
+              "originalPosition": 86,
+              "body": "That's right.\r\n\r\nIt's a little awkward I think. It might make sense to move `dp_config` out of `VdafConfig` into `TaskConfig`. However we discussed this before and I think @wangshan wants the DP config to stay where it is.",
+              "createdAt": "2024-01-17T20:11:38Z",
+              "updatedAt": "2024-01-17T20:11:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s9qFS",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-17T20:13:19Z",
+          "updatedAt": "2024-01-17T20:13:19Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR585s98DV",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "kristineguo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T20:57:58Z",
+          "updatedAt": "2024-01-17T20:57:59Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Should minimum length be `1` to enforce it is present? DpConfig is currently expressed as `opaque dp_config<1..2^16-1>;`.",
+              "createdAt": "2024-01-17T20:57:58Z",
+              "updatedAt": "2024-01-17T20:58:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s98RF",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "kristineguo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T20:58:37Z",
+          "updatedAt": "2024-01-17T20:58:37Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Same comment here.",
+              "createdAt": "2024-01-17T20:58:37Z",
+              "updatedAt": "2024-01-17T20:58:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s98aS",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "kristineguo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T20:59:03Z",
+          "updatedAt": "2024-01-17T20:59:03Z",
+          "comments": [
+            {
+              "originalPosition": 46,
+              "body": "nit- is as",
+              "createdAt": "2024-01-17T20:59:03Z",
+              "updatedAt": "2024-01-17T20:59:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s98n5",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "kristineguo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T20:59:38Z",
+          "updatedAt": "2024-01-17T20:59:38Z",
+          "comments": [
+            {
+              "originalPosition": 65,
+              "body": "nit- typo `opaque`",
+              "createdAt": "2024-01-17T20:59:38Z",
+              "updatedAt": "2024-01-17T20:59:39Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s-BKR",
+          "commit": {
+            "abbreviatedOid": "d7e5a0d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-01-17T21:10:45Z",
+          "updatedAt": "2024-01-17T21:10:45Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Done.\r\n\r\nNote that eventually we'll set these to be the actual minimum length, which is 15 in this case (the smallest possible QueryConfig).",
+              "createdAt": "2024-01-17T21:10:45Z",
+              "updatedAt": "2024-01-17T21:10:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585s-Jlg",
+          "commit": {
+            "abbreviatedOid": "aa1815c"
+          },
+          "author": "kristineguo",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-01-17T21:35:47Z",
+          "updatedAt": "2024-01-17T21:58:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "PR_kwDOH4FR585yS1Fk",
+      "title": "Split the draft into task binding and task provisioning",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/65",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #54.\r\n\r\nThis commit splits the draft into the task binding extension and a separate section for the optional provisioning mechanism. While at it:\r\n\r\n- Fix some editorial issues.\r\n- Rename the extension to \"Taskbind\".\r\n- Recommend having the author digitally sign the advertised task config. This helps mitigate the risk of malicious Clients DoS'ing an Aggregator.",
+      "createdAt": "2024-06-12T23:20:28Z",
+      "updatedAt": "2024-10-03T22:30:45Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "1ddcb35830923d2a770bb737b95e19033fa44a83",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/54/1",
+      "headRefOid": "9a2ec7aaa0596ad1f5ed833ea82737f4940c3595",
+      "closedAt": "2024-06-26T14:32:26Z",
+      "mergedAt": "2024-06-26T14:32:26Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "8f8069550e12f71646b83e558c9f4f74919e9ea9"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Rebased and squashed.",
+          "createdAt": "2024-06-26T14:31:16Z",
+          "updatedAt": "2024-06-26T14:31:16Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR585_KYbX",
+          "commit": {
+            "abbreviatedOid": "ea29b5a"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "Looks good, only a few minor comments!",
+          "createdAt": "2024-06-21T21:12:48Z",
+          "updatedAt": "2024-06-21T21:24:57Z",
+          "comments": [
+            {
+              "originalPosition": 177,
+              "body": "```suggestion\r\nID of the request.\r\n```",
+              "createdAt": "2024-06-21T21:12:48Z",
+              "updatedAt": "2024-06-21T21:24:57Z"
+            },
+            {
+              "originalPosition": 246,
+              "body": "extra space",
+              "createdAt": "2024-06-21T21:14:39Z",
+              "updatedAt": "2024-06-21T21:24:57Z"
+            },
+            {
+              "originalPosition": 303,
+              "body": "This should be Taskprov participant?",
+              "createdAt": "2024-06-21T21:20:03Z",
+              "updatedAt": "2024-06-21T21:24:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585_gYXA",
+          "commit": {
+            "abbreviatedOid": "8a13fea"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-25T16:22:34Z",
+          "updatedAt": "2024-06-25T16:22:44Z",
+          "comments": [
+            {
+              "originalPosition": 303,
+              "body": "Good catch. This appears to be leftovers from `%s/Taskprov/Taskbind/`. I meant \"protocol\" here.",
+              "createdAt": "2024-06-25T16:22:34Z",
+              "updatedAt": "2024-06-25T16:22:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR585_ocC4",
+          "commit": {
+            "abbreviatedOid": "9a2ec7a"
+          },
+          "author": "wangshan",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-26T09:52:33Z",
+          "updatedAt": "2024-06-26T14:30:59Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 66,
+      "id": "PR_kwDOH4FR585z6wLS",
+      "title": "Issue 48: Acknowledge security consideration of having task Author",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/66",
+      "state": "MERGED",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #48.",
+      "createdAt": "2024-06-28T17:56:48Z",
+      "updatedAt": "2024-07-08T16:17:35Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "06f1efcc8989818a54daabefe8806e629827e768",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "junyec/issue48",
+      "headRefOid": "e7fb2c548f8db35328149594ccbcd2e8b1570ba1",
+      "closedAt": "2024-07-08T16:17:35Z",
+      "mergedAt": "2024-07-08T16:17:35Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "7225727fba628dd521ae91a92ed6a7f5c553bc7e"
+      },
+      "comments": [
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Squashed.",
+          "createdAt": "2024-07-05T17:33:02Z",
+          "updatedAt": "2024-07-05T17:33:02Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586AEi-U",
+          "commit": {
+            "abbreviatedOid": "890fc86"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T18:11:42Z",
+          "updatedAt": "2024-06-28T18:11:43Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "We can point to some mitigation, e.g., OHTTP, not sure if it's worth mentioning here.",
+              "createdAt": "2024-06-28T18:11:42Z",
+              "updatedAt": "2024-06-28T18:11:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AEkzf",
+          "commit": {
+            "abbreviatedOid": "890fc86"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T18:15:51Z",
+          "updatedAt": "2024-06-28T18:16:23Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Let's make this a new paragraph.",
+              "createdAt": "2024-06-28T18:15:52Z",
+              "updatedAt": "2024-06-28T18:16:23Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "How does OHTTP mitigate this risk?",
+              "createdAt": "2024-06-28T18:16:20Z",
+              "updatedAt": "2024-06-28T18:16:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AElsI",
+          "commit": {
+            "abbreviatedOid": "890fc86"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T18:18:04Z",
+          "updatedAt": "2024-06-28T18:18:04Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "OHTTP only hides the \"location\" part. I assume there will be a lot more information leaked by multiple uploads, so maybe not worth mentioning.",
+              "createdAt": "2024-06-28T18:18:04Z",
+              "updatedAt": "2024-06-28T18:18:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AE0uL",
+          "commit": {
+            "abbreviatedOid": "890fc86"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T18:55:58Z",
+          "updatedAt": "2024-06-28T18:55:58Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "Actually, by checking the task parameters, it will be mitigated slightly, e.g., by making sure min batch size is not too small, but the Author can still target the same group of clients for this attack.",
+              "createdAt": "2024-06-28T18:55:58Z",
+              "updatedAt": "2024-06-28T18:55:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFNz0",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T19:49:46Z",
+          "updatedAt": "2024-06-28T19:59:55Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "```suggestion\r\nAnother risk introduced by the addition of the Author is the Author could configure\r\n```",
+              "createdAt": "2024-06-28T19:49:46Z",
+              "updatedAt": "2024-06-28T19:59:55Z"
+            },
+            {
+              "originalPosition": 14,
+              "body": "```suggestion\r\ntrack the uploading activities of that Client, which could leak information about\r\nthat Client, e.g., location.\r\n```",
+              "createdAt": "2024-06-28T19:50:21Z",
+              "updatedAt": "2024-06-28T19:59:55Z"
+            },
+            {
+              "originalPosition": 14,
+              "body": "```suggestion\r\ntrack the uploading activities of that Client, which leaks information about\r\nthat Client, e.g., its location.\r\n```",
+              "createdAt": "2024-06-28T19:50:33Z",
+              "updatedAt": "2024-06-28T19:59:55Z"
+            },
+            {
+              "originalPosition": 3,
+              "body": "It's not clear to me why tracking a client across uploads leaks the client's location. Do you have an idea in mind? \r\n\r\nI realize this is mentioned in #48, but now I'm not sure it's the best example. Stepping back, what does an attacker that controls the Author (and possible the Collector and an Aggregator) by learn by fingerprinting a Client's upload task? Perhaps this would violate other properties adjcent to DAP, like anonymity or differential privacy?",
+              "createdAt": "2024-06-28T19:59:51Z",
+              "updatedAt": "2024-06-28T19:59:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFR1w",
+          "commit": {
+            "abbreviatedOid": "890fc86"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:00:34Z",
+          "updatedAt": "2024-06-28T20:00:34Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "(moved to another thread)",
+              "createdAt": "2024-06-28T20:00:34Z",
+              "updatedAt": "2024-06-28T20:00:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFYKo",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:14:30Z",
+          "updatedAt": "2024-06-28T20:14:30Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "I think if a client sends report to leader directly, then the upload will contain things like IP, or user agent, etc. That can leak the client location, device. And by not checking task parameters carefully, as a task author, I can set min_batch_size to be 1, and see the client measurement directly, along with user agent and IP.",
+              "createdAt": "2024-06-28T20:14:30Z",
+              "updatedAt": "2024-06-28T20:14:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFgC7",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:32:43Z",
+          "updatedAt": "2024-06-28T20:32:44Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "> I think if a client sends report to leader directly, then the upload will contain things like IP, or user agent, etc.\r\n\r\nRight: DAP on its own doesn't provide for anonymity. Suppose though you rand DAP on top of OHTTP.\r\n\r\n> That can leak the client location, device. And by not checking task parameters carefully, as a task author, I can set min_batch_size to be 1, and see the client measurement directly, along with user agent and IP.\r\n\r\nThis is supposed to be prevented by the \"opt-in\" procedure.\r\n\r\n",
+              "createdAt": "2024-06-28T20:32:43Z",
+              "updatedAt": "2024-06-28T20:32:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFkco",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:41:45Z",
+          "updatedAt": "2024-06-28T20:41:45Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "I guess maybe looking at this issue again, do we just care about the capability of author colluding with leader, where author is not a collector? So it cannot see the measurement in the clear. So you can only get the metadata information of a particular client, e.g. IP and user agent. Is that the only security risk we care about then?",
+              "createdAt": "2024-06-28T20:41:45Z",
+              "updatedAt": "2024-06-28T20:41:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFlmz",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:45:02Z",
+          "updatedAt": "2024-06-28T20:45:03Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Yeah I think that's a good example of the kind of risk we're thinking of. More to the point: The metadata may convey to the Leader who the client is; and if you're expecting that to be impossible, say because you use OHTTP, then you have to be very careful about how taskprov is deployed.",
+              "createdAt": "2024-06-28T20:45:02Z",
+              "updatedAt": "2024-06-28T20:45:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFmLs",
+          "commit": {
+            "abbreviatedOid": "dcf1a7d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:46:26Z",
+          "updatedAt": "2024-06-28T20:46:26Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "But I think we could also make the point that, even if the attacker can deanonymize a client, it's hard for it do learn anything more than the client uploaded a report. If the task is unique to that client, and the batch size is larger than 1, then it's really not going to get any more information.",
+              "createdAt": "2024-06-28T20:46:26Z",
+              "updatedAt": "2024-06-28T20:46:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AGHMj",
+          "commit": {
+            "abbreviatedOid": "1768b6a"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T22:57:40Z",
+          "updatedAt": "2024-06-28T23:04:59Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "```suggestion\r\nClient, e.g., the Client IP or user agent string. This can be mitigated by\r\n```",
+              "createdAt": "2024-06-28T22:57:40Z",
+              "updatedAt": "2024-06-28T23:04:59Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "It's not clear to me that OHTTP mitigates this issue. In fact, I think the converse is true: fingerprinting the client effectively removes any protection that the client gets from OHTTP. Concretely, the Author configures the client with `TaskConfig<task_info = \"this client has IP address 192.168.0.1\">`; when the Leader gets the Client's report (via the OHTTP proxy), the Leader immediately knows the IP address of the client that produced the report.",
+              "createdAt": "2024-06-28T23:02:26Z",
+              "updatedAt": "2024-06-28T23:04:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AGMYo",
+          "commit": {
+            "abbreviatedOid": "1768b6a"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T23:34:18Z",
+          "updatedAt": "2024-06-28T23:34:18Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "You mean only targeting that client in a particular IP address? Let's avoid talking about OHTTP mitigation in this scenario then. Instead we will just say, if the author can deanonymize the client, the author can learn the metadata information at best, if the client carefully checks for privacy parameter.",
+              "createdAt": "2024-06-28T23:34:18Z",
+              "updatedAt": "2024-06-28T23:34:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AZNme",
+          "commit": {
+            "abbreviatedOid": "cb535a7"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "This is looking good. One question we need to answer: under what circumstances is this attack a problem? Anonymity of the clients is not one of DAP's core design goals. On the other hand, when we compose DAP with something like OHTTP, this attack threatens the anonymity properties OHTTP is supposed to provvide.",
+          "createdAt": "2024-07-02T14:51:14Z",
+          "updatedAt": "2024-07-02T14:53:28Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Is this what you mean?\r\n```suggestion\r\nClient. If the Author colludes with the Leader, the Leader can learn some metadata\r\ninformation about the Client, e.g., the Client IP, user agent string, or the\r\n```",
+              "createdAt": "2024-07-02T14:51:14Z",
+              "updatedAt": "2024-07-02T14:53:28Z"
+            },
+            {
+              "originalPosition": 14,
+              "body": "The leader already learns the upload timestamp. (It's in the report metadata.)\r\n\r\nAlso, let's be more precise about how it learns things it's not supposed to.",
+              "createdAt": "2024-07-02T14:51:57Z",
+              "updatedAt": "2024-07-02T14:53:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AlbE_",
+          "commit": {
+            "abbreviatedOid": "cb535a7"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-07-03T20:04:42Z",
+          "updatedAt": "2024-07-03T20:04:42Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "You mean \"the Author\"?",
+              "createdAt": "2024-07-03T20:04:42Z",
+              "updatedAt": "2024-07-03T20:04:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AmxUw",
+          "commit": {
+            "abbreviatedOid": "cb535a7"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-07-03T23:27:53Z",
+          "updatedAt": "2024-07-03T23:27:53Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Actually I meant the Leader, but Author makes sense too I suppose. Perhaps we should just say \"attacker\" here.",
+              "createdAt": "2024-07-03T23:27:53Z",
+              "updatedAt": "2024-07-03T23:27:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AmxgA",
+          "commit": {
+            "abbreviatedOid": "5547446"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks for being patient with me!",
+          "createdAt": "2024-07-03T23:29:01Z",
+          "updatedAt": "2024-07-03T23:30:19Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": ":)\r\n\r\n```suggestion\r\nwith Oblivious HTTP {{!RFC9458}} to forward Client reports\r\n```",
+              "createdAt": "2024-07-03T23:29:02Z",
+              "updatedAt": "2024-07-03T23:30:19Z"
+            },
+            {
+              "originalPosition": 15,
+              "body": "```suggestion\r\nto the Leader. If the Author colludes with the Leader, the attacker can learn some\r\n```",
+              "createdAt": "2024-07-03T23:29:54Z",
+              "updatedAt": "2024-07-03T23:30:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AyRP3",
+          "commit": {
+            "abbreviatedOid": "5547446"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-07-05T12:49:36Z",
+          "updatedAt": "2024-07-05T12:49:36Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "I copied it from DAP draft, perhaps this needs to be updated in DAP as well.",
+              "createdAt": "2024-07-05T12:49:36Z",
+              "updatedAt": "2024-07-05T12:49:36Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDOH4FR585z7BXD",
+      "title": "Issue 47: client may skip advertising task",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/67",
+      "state": "MERGED",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #47.",
+      "createdAt": "2024-06-28T18:51:26Z",
+      "updatedAt": "2024-06-28T23:13:28Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "8f8069550e12f71646b83e558c9f4f74919e9ea9",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "junyec/issue47",
+      "headRefOid": "2367603caccd4e6f9c803ca1b98ed49c1a8c5447",
+      "closedAt": "2024-06-28T23:13:25Z",
+      "mergedAt": "2024-06-28T23:13:25Z",
+      "mergedBy": "junyechen1996",
+      "mergeCommit": {
+        "oid": "06f1efcc8989818a54daabefe8806e629827e768"
+      },
+      "comments": [
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Squashed.",
+          "createdAt": "2024-06-28T22:21:04Z",
+          "updatedAt": "2024-06-28T22:21:04Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586AFUdc",
+          "commit": {
+            "abbreviatedOid": "c93fca8"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:07:07Z",
+          "updatedAt": "2024-06-28T20:07:11Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Hmmm, this is interesting. Why does client need to send the header at all? What do you expect the leader if it has opted in to the task, but the client doesn't send the header?",
+              "createdAt": "2024-06-28T20:07:07Z",
+              "updatedAt": "2024-06-28T20:07:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFZPq",
+          "commit": {
+            "abbreviatedOid": "c93fca8"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:16:25Z",
+          "updatedAt": "2024-06-28T20:16:25Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "The goal is to distinguish between taskprov and non-taskprov tasks. If we don't do this, I guess we can decrypt leader share and try to find the extension codepoint. Both should work. Do you prefer the latter?",
+              "createdAt": "2024-06-28T20:16:25Z",
+              "updatedAt": "2024-06-28T20:16:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AFgu0",
+          "commit": {
+            "abbreviatedOid": "c93fca8"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T20:34:17Z",
+          "updatedAt": "2024-06-28T20:34:17Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "If the leader has opted in, then it knows that the task is taskprov. I don't think signaling in the header as well as necessary. Dropping it here would make the protocol simpler, so I'd be in favor of dropping it.",
+              "createdAt": "2024-06-28T20:34:17Z",
+              "updatedAt": "2024-06-28T20:34:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AF-1x",
+          "commit": {
+            "abbreviatedOid": "c93fca8"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-06-28T22:01:23Z",
+          "updatedAt": "2024-06-28T22:01:24Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "Sounds good. Updated the PR.",
+              "createdAt": "2024-06-28T22:01:24Z",
+              "updatedAt": "2024-06-28T22:01:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AF_Kt",
+          "commit": {
+            "abbreviatedOid": "597c2ef"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Looks good, just some minor grammatical stuff",
+          "createdAt": "2024-06-28T22:03:09Z",
+          "updatedAt": "2024-06-28T22:06:18Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "More perscriptive\r\n```suggestion\r\nThe Client SHOULD advertise the task configuration by specifying the encoded\r\n`TaskConfig` described in {{definition}} in the \"dap-taskprov\" HTTP header, but\r\nMAY choose to omit this header in order to save network bandwidth. However, the\r\n```",
+              "createdAt": "2024-06-28T22:03:09Z",
+              "updatedAt": "2024-06-28T22:06:18Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "```suggestion\r\nthis task. In this case, the Client MUST retry the upload request with\r\nthe \"dap-taskprov\" HTTP header.\r\n```",
+              "createdAt": "2024-06-28T22:04:02Z",
+              "updatedAt": "2024-06-28T22:06:18Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\r\ntask ID is not recognized, then it MUST abort the upload request with\r\n```",
+              "createdAt": "2024-06-28T22:04:21Z",
+              "updatedAt": "2024-06-28T22:06:18Z"
+            },
+            {
+              "originalPosition": 46,
+              "body": "It does not have to \"ask\" explicitly.\r\n```suggestion\r\nMUST abort with \"unrecognizedTask\". The Client will then retry with the task advertisement.\r\n```",
+              "createdAt": "2024-06-28T22:05:20Z",
+              "updatedAt": "2024-06-28T22:06:18Z"
+            },
+            {
+              "originalPosition": 48,
+              "body": "A simpler, and more complete way to say this is\r\n```suggestion\r\nIf the Client advertises the task, the Leader checks that\r\n```",
+              "createdAt": "2024-06-28T22:05:47Z",
+              "updatedAt": "2024-06-28T22:06:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586AGDeS",
+          "commit": {
+            "abbreviatedOid": "2367603"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-06-28T22:29:49Z",
+          "updatedAt": "2024-06-28T22:29:49Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 68,
+      "id": "PR_kwDOH4FR5853-cQg",
+      "title": "Editorial changes",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/68",
+      "state": "MERGED",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This makes a few editorial fixes throughout the document.\r\n\r\n- There's one reference to the payload of the extension left over from past drafts (the payload should now be empty).\r\n- There are contradicting statements that the collector receives task parameters via HTTP headers and directly from the task author. I removed mention of HTTP headers, since the collector only initiates HTTP requests.\r\n- I changed places where mention was made of the collector making an upload request or the helper receiving an upload request.",
+      "createdAt": "2024-08-09T18:15:50Z",
+      "updatedAt": "2024-08-09T21:08:55Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "7225727fba628dd521ae91a92ed6a7f5c553bc7e",
+      "headRepository": "divergentdave/draft-wang-ppm-dap-taskprov",
+      "headRefName": "editorial",
+      "headRefOid": "2909c5be7604782d3e33dcc555f0a0bc517e0fba",
+      "closedAt": "2024-08-09T21:08:55Z",
+      "mergedAt": "2024-08-09T21:08:55Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "631f20ba594f496743b99c700f7abd1b010dd1fc"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586E946J",
+          "commit": {
+            "abbreviatedOid": "2909c5b"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks, David!",
+          "createdAt": "2024-08-09T18:23:04Z",
+          "updatedAt": "2024-08-09T18:23:04Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 69,
+      "id": "PR_kwDOH4FR5853_YgL",
+      "title": "Add @divergentdave to contributors",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/69",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "David has sent a few PRs, some of which have helped clarify things a bunch.\r\n\r\ncc/ @divergentdave: please double check your address in affiliation.",
+      "createdAt": "2024-08-09T22:04:15Z",
+      "updatedAt": "2024-10-03T22:30:43Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "631f20ba594f496743b99c700f7abd1b010dd1fc",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/ack-david",
+      "headRefOid": "7fc4e7e32bfc3681730eb13400c8b85671b12ec3",
+      "closedAt": "2024-09-06T19:28:52Z",
+      "mergedAt": "2024-09-06T19:28:52Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "739fea8d0a9a1c25659f0767b1e739f2011c7189"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586E-_-3",
+          "commit": {
+            "abbreviatedOid": "7fc4e7e"
+          },
+          "author": "divergentdave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-08-09T22:07:25Z",
+          "updatedAt": "2024-08-09T22:07:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 73,
+      "id": "PR_kwDOH4FR5859joLo",
+      "title": "Add salt to task ID computation (*)",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/73",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #64.\r\n\r\nCurrent the task ID is computed by hashing the raw `TaskConfig`. Prepend the `TaskConfig` with a salt string so that it's less likely we'll confuse the task ID with the hash of the task config in a different context.",
+      "createdAt": "2024-10-03T22:27:09Z",
+      "updatedAt": "2024-10-03T22:31:38Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/artifact-v4",
+      "baseRefOid": "ae1bb181741bd1334736d443e9ff0d7fdaf6bd91",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/64",
+      "headRefOid": "cc5603113b37f735ba77cf485576c253f0e29bcd",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 74,
+      "id": "PR_kwDOH4FR5859jomm",
+      "title": "Bump artifcat to v4",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/74",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-10-03T22:29:17Z",
+      "updatedAt": "2024-10-04T19:35:34Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "739fea8d0a9a1c25659f0767b1e739f2011c7189",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "cjpatton/artifact-v4",
+      "headRefOid": "ae1bb181741bd1334736d443e9ff0d7fdaf6bd91",
+      "closedAt": "2024-10-04T19:35:34Z",
+      "mergedAt": "2024-10-04T19:35:34Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "d34ab6f1aa01b66b93f07ff38bc781a478158327"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586MAtAx",
+          "commit": {
+            "abbreviatedOid": "ae1bb18"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-04T19:30:12Z",
+          "updatedAt": "2024-10-04T19:30:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 75,
+      "id": "PR_kwDOH4FR5859qRDa",
+      "title": "Address issue 70 - update codepoints",
+      "url": "https://github.com/wangshan/draft-wang-ppm-dap-taskprov/pull/75",
+      "state": "OPEN",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-10-04T19:29:40Z",
+      "updatedAt": "2024-10-04T19:48:21Z",
+      "baseRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "739fea8d0a9a1c25659f0767b1e739f2011c7189",
+      "headRepository": "wangshan/draft-wang-ppm-dap-taskprov",
+      "headRefName": "junyec/issue-70",
+      "headRefOid": "06be8d12ce7a18186d5765fc467596f84f2943af",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586MAtMa",
+          "commit": {
+            "abbreviatedOid": "06be8d1"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-04T19:30:42Z",
+          "updatedAt": "2024-10-04T19:30:51Z",
+          "comments": [
+            {
+              "originalPosition": 43,
+              "body": "Don't think this is standardized yet? @cjpatton ",
+              "createdAt": "2024-10-04T19:30:42Z",
+              "updatedAt": "2024-10-04T19:30:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586MAylm",
+          "commit": {
+            "abbreviatedOid": "06be8d1"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-04T19:46:25Z",
+          "updatedAt": "2024-10-04T19:46:25Z",
+          "comments": [
+            {
+              "originalPosition": 43,
+              "body": "You're right, I'm not sure how this got added. It looks like I did somehow 8f806955",
+              "createdAt": "2024-10-04T19:46:25Z",
+              "updatedAt": "2024-10-04T19:46:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586MAzO8",
+          "commit": {
+            "abbreviatedOid": "06be8d1"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Rebasing should make CI pass.",
+          "createdAt": "2024-10-04T19:48:21Z",
+          "updatedAt": "2024-10-04T19:48:21Z",
           "comments": []
         }
       ]

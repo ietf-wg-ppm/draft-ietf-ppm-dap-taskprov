@@ -197,6 +197,9 @@ struct {
     /* The batch mode and its parameters. */
     opaque batch_config<1..2^16-1>;
 
+    /* Unix epoch time that describes the start time of this task. */
+    Time task_start;
+
     /* Time up to which Clients are allowed to upload to this
     task. */
     Time task_expiration;

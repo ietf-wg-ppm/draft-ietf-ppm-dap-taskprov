@@ -197,9 +197,12 @@ struct {
     /* The batch mode and its parameters. */
     opaque batch_config<1..2^16-1>;
 
-    /* Time up to which Clients are allowed to upload to this
+    /* Time from which Clients will start uploading reports to this
     task. */
-    Time task_expiration;
+    Time task_start;
+
+    /* The duration of the task. */
+    Duration task_duration;
 
     /* Differential privacy (DP) configuration. */
     opaque dp_config<1..2^16-1>;
@@ -412,7 +415,7 @@ A protocol participant MAY "opt out" of a task if:
 
 1. The task lifetime is too long.
 
-A protocol participant MUST opt out if the task has expired or if it does not
+A protocol participant MUST opt out if the task has ended or if it does not
 support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
 mode).
 
@@ -598,7 +601,7 @@ aggregation, and collection protocols, the process of opting-in and deriving the
 task ID and VDAF verify key can be re-run on the fly for each request. This is
 useful if a large number of concurrent tasks are expected. Once an Aggregator
 has opted-in to a task, the expectation is that the task is supported until it
-expires. In particular, Aggregators that operate in this manner MUST NOT opt
+ends. In particular, Aggregators that operate in this manner MUST NOT opt
 out once they have opted in.
 
 # IANA Considerations

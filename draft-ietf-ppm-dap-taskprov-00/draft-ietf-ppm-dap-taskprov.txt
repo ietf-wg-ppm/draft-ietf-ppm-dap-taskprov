@@ -5,12 +5,12 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 11 April 2025                                        Cloudflare
-                                                          8 October 2024
+Expires: 12 April 2025                                        Cloudflare
+                                                          9 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
-                   draft-wang-ppm-dap-taskprov-latest
+                   draft-ietf-ppm-dap-taskprov-latest
 
 Abstract
 
@@ -26,11 +26,10 @@ About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   The latest revision of this draft can be found at
-   https://wangshan.github.io/draft-wang-ppm-dap-taskprov/draft-wang-
-   ppm-dap-taskprov.html.  Status information for this document may be
-   found at https://datatracker.ietf.org/doc/draft-wang-ppm-dap-
-   taskprov/.
+   The latest revision of this draft can be found at https://ietf-wg-
+   ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-
+   taskprov.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-ietf-ppm-dap-taskprov/.
 
    Discussion of this document takes place on the Privacy Preserving
    Measurement Working Group mailing list (mailto:ppm@ietf.org), which
@@ -38,7 +37,7 @@ About This Document
    Subscribe at https://www.ietf.org/mailman/listinfo/ppm/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/wangshan/draft-wang-ppm-dap-taskprov.
+   https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
 Status of This Memo
 
@@ -55,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2025.
+   This Internet-Draft will expire on 12 April 2025.
 
 Copyright Notice
 
@@ -342,8 +341,8 @@ struct {
 
       OPEN ISSUE: Should spell out definition of DpConfig for various
       differential privacy mechanisms and parameters.  See draft draft
-      (https://github.com/wangshan/draft-wang-ppm-differential-privacy)
-      for discussion.
+      (https://github.com/ietf-wg-ppm/draft-ietf-ppm-differential-
+      privacy) for discussion.
 
    The length prefix of the dp_config ensures that the DpConfig
    structure can be decoded even if an unrecognized variant is

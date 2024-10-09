@@ -1315,7 +1315,7 @@ used:<a href="#section-2-4" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-3-1">To use the Taskbind extension, the Client includes the following extension in
 the report extensions for each Aggregator as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-09#section-4.4.3" class="relref">Section 4.4.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">[RFC EDITOR: Change this to the IANA-assigned codepoint.]<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-2">(RFC EDITOR: Change this to the IANA-assigned codepoint.)<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-3">
 <pre>
 enum {
@@ -1363,19 +1363,19 @@ struct {
     /* Info specific for a task. */
     opaque task_info&lt;1..2^8-1&gt;;
 
-    /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
+    /* Leader API endpoint. */
     Url leader_aggregator_endpoint;
 
-    /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
+    /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
     /* This determines the query type for batch selection and the
     properties that all batches for this task must have. */
     opaque query_config&lt;1..2^16-1&gt;;
 
-    /* Time up to which Clients are allowed to upload to this task.
+    /* Time up to which Clients are allowed to upload to this
+    task. */
     Defined in I-D.draft-ietf-ppm-dap-09. */
-    Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config&lt;1..2^16-1&gt;;
@@ -1427,7 +1427,7 @@ enum {
 } VdafType;
 
 struct {
-    opaque dp_config&lt;1..2^16-1&gt;;  /* Encoded differential privacy parameters */
+    opaque dp_config&lt;1..2^16-1&gt;;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3_count:
@@ -1472,18 +1472,11 @@ struct {
 } DpConfig;
 </pre><a href="#section-3.1-12" class="pilcrow">¶</a>
 </div>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-3.1-13.1">
-            <p id="section-3.1-13.1.1">OPEN ISSUE: Should spell out definition of <code>DpConfig</code> for various differential
-privacy mechanisms and parameters. See draft
-<a href="https://github.com/ietf-wg-ppm/draft-ietf-ppm-differential-privacy">draft</a> for discussion.<a href="#section-3.1-13.1.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-3.1-14">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
+<p id="section-3.1-13">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
 be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).<a href="#section-3.1-14" class="pilcrow">¶</a></p>
-<p id="section-3.1-15">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>QueryType</code> follow those in
-<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-15" class="pilcrow">¶</a></p>
+unimplemented DP mechanism).<a href="#section-3.1-13" class="pilcrow">¶</a></p>
+<p id="section-3.1-14">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>QueryType</code> follow those in
+<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-14" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

@@ -179,7 +179,7 @@ Table of Contents
    extension in the report extensions for each Aggregator as described
    in Section 4.4.3 of [DAP]:
 
-   [RFC EDITOR: Change this to the IANA-assigned codepoint.]
+   (RFC EDITOR: Change this to the IANA-assigned codepoint.)
 
    enum {
        taskbind(0xff00),
@@ -224,27 +224,27 @@ Table of Contents
 
    The task configuration is encoded as follows:
 
-  struct {
-      /* Info specific for a task. */
-      opaque task_info<1..2^8-1>;
+   struct {
+       /* Info specific for a task. */
+       opaque task_info<1..2^8-1>;
 
-      /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
-      Url leader_aggregator_endpoint;
+       /* Leader API endpoint. */
+       Url leader_aggregator_endpoint;
 
-      /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
-      Url helper_aggregator_endpoint;
+       /* Helper API endpointl. */
+       Url helper_aggregator_endpoint;
 
-      /* This determines the query type for batch selection and the
-      properties that all batches for this task must have. */
-      opaque query_config<1..2^16-1>;
+       /* This determines the query type for batch selection and the
+       properties that all batches for this task must have. */
+       opaque query_config<1..2^16-1>;
 
-      /* Time up to which Clients are allowed to upload to this task.
-      Defined in I-D.draft-ietf-ppm-dap-09. */
-      Time task_expiration;
+       /* Time up to which Clients are allowed to upload to this
+       task. */
+       Defined in I-D.draft-ietf-ppm-dap-09. */
 
-      /* Determines the VDAF type and its config parameters. */
-      opaque vdaf_config<1..2^16-1>;
-  } TaskConfig;
+       /* Determines the VDAF type and its config parameters. */
+       opaque vdaf_config<1..2^16-1>;
+   } TaskConfig;
 
    The purpose of TaskConfig is to define all parameters that are
    necessary for configuring each party.  It includes all the fields to
@@ -285,34 +285,34 @@ Table of Contents
    task.  Its content is as follows (codepoints are as defined in
    [VDAF]):
 
-enum {
-    prio3_count(0x00000000),
-    prio3_sum(0x00000001),
-    prio3_sum_vec(0x00000002),
-    prio3_histogram(0x00000003),
-    poplar1(0x00001000),
-    (2^32-1)
-} VdafType;
+   enum {
+       prio3_count(0x00000000),
+       prio3_sum(0x00000001),
+       prio3_sum_vec(0x00000002),
+       prio3_histogram(0x00000003),
+       poplar1(0x00001000),
+       (2^32-1)
+   } VdafType;
 
-struct {
-    opaque dp_config<1..2^16-1>;  /* Encoded differential privacy parameters */
-    VdafType vdaf_type;
-    select (VdafConfig.vdaf_type) {
-        case prio3_count:
-            Empty;
-        case prio3_sum:
-            uint8;  /* bit length of the summand */
-        case prio3_sum_vec:
-            uint32; /* length of the vector */
-            uint8;  /* bit length of each summand */
-            uint32; /* size of each proof chunk */
-        case prio3_histogram:
-            uint32; /* number of buckets */
-            uint32; /* size of each proof chunk */
-        case poplar1:
-            uint16; /* bit length of input string */
-    };
-} VdafConfig;
+   struct {
+       opaque dp_config<1..2^16-1>;
+       VdafType vdaf_type;
+       select (VdafConfig.vdaf_type) {
+           case prio3_count:
+               Empty;
+           case prio3_sum:
+               uint8;  /* bit length of the summand */
+           case prio3_sum_vec:
+               uint32; /* length of the vector */
+               uint8;  /* bit length of each summand */
+               uint32; /* size of each proof chunk */
+           case prio3_histogram:
+               uint32; /* number of buckets */
+               uint32; /* size of each proof chunk */
+           case poplar1:
+               uint16; /* bit length of input string */
+       };
+   } VdafConfig;
 
    The length prefix of the vdaf_config ensures that the VdafConfig
    structure can be decoded even if an unrecognized variant is
@@ -338,11 +338,6 @@ struct {
              RealNumber sensititivity;
        };
    } DpConfig;
-
-      OPEN ISSUE: Should spell out definition of DpConfig for various
-      differential privacy mechanisms and parameters.  See draft draft
-      (https://github.com/ietf-wg-ppm/draft-ietf-ppm-differential-
-      privacy) for discussion.
 
    The length prefix of the dp_config ensures that the DpConfig
    structure can be decoded even if an unrecognized variant is

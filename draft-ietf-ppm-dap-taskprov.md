@@ -127,7 +127,7 @@ To use the Taskbind extension, the Client includes the following extension in
 the report extensions for each Aggregator as described in {{Section 4.4.3 of
 !DAP}}:
 
-[RFC EDITOR: Change this to the IANA-assigned codepoint.]
+(RFC EDITOR: Change this to the IANA-assigned codepoint.)
 
 ~~~
 enum {
@@ -180,19 +180,19 @@ struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
 
-    /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
+    /* Leader API endpoint. */
     Url leader_aggregator_endpoint;
 
-    /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
+    /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
     /* This determines the query type for batch selection and the
     properties that all batches for this task must have. */
     opaque query_config<1..2^16-1>;
 
-    /* Time up to which Clients are allowed to upload to this task.
+    /* Time up to which Clients are allowed to upload to this
+    task. */
     Defined in I-D.draft-ietf-ppm-dap-09. */
-    Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config<1..2^16-1>;
@@ -248,7 +248,7 @@ enum {
 } VdafType;
 
 struct {
-    opaque dp_config<1..2^16-1>;  /* Encoded differential privacy parameters */
+    opaque dp_config<1..2^16-1>;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3_count:
@@ -293,10 +293,6 @@ struct {
     };
 } DpConfig;
 ~~~
-
-> OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
-> privacy mechanisms and parameters. See draft
-> [draft](https://github.com/ietf-wg-ppm/draft-ietf-ppm-differential-privacy) for discussion.
 
 The length prefix of the `dp_config` ensures that the `DpConfig` structure can
 be decoded even if an unrecognized variant is encountered (i.e., an

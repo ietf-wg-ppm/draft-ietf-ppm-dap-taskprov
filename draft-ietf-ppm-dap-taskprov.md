@@ -1,5 +1,6 @@
 ---
 title: "Task Binding and In-Band Provisioning for DAP"
+abbrev: DAP-Taskprov
 category: info
 
 docname: draft-ietf-ppm-dap-taskprov-latest

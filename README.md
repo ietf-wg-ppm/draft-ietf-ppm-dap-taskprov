@@ -1,4 +1,4 @@
-# In-band Task Provisioning for DAP
+# Task Binding and In-Band Provisioning for DAP
 
 This is the working area for the individual Internet-Draft, "In-band Task Provisioning for DAP".
 

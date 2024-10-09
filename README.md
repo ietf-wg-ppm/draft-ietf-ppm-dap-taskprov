@@ -2,16 +2,16 @@
 
 This is the working area for the individual Internet-Draft, "In-band Task Provisioning for DAP".
 
-* [Editor's Copy](https://wangshan.github.io/draft-wang-ppm-dap-taskprov/#go.draft-wang-ppm-dap-taskprov.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-wang-ppm-dap-taskprov)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-wang-ppm-dap-taskprov)
-* [Compare Editor's Copy to Individual Draft](https://wangshan.github.io/draft-wang-ppm-dap-taskprov/#go.draft-wang-ppm-dap-taskprov.diff)
+* [Editor's Copy](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-ppm-dap-taskprov)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov)
+* [Compare Editor's Copy to Individual Draft](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/wangshan/draft-wang-ppm-dap-taskprov/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.

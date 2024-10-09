@@ -1,11 +1,11 @@
 # In-band Task Provisioning for DAP
 
-This is the working area for the individual Internet-Draft, "In-band Task Provisioning for DAP".
+This is the working area for the IETF [PPM Working Group](https://datatracker.ietf.org/wg/ppm/documents/) Internet-Draft, "Task Binding and In-Band Provisioning for DAP".
 
 * [Editor's Copy](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-ppm-dap-taskprov)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov)
-* [Compare Editor's Copy to Individual Draft](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.diff)
+* [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov)
+* [Compare Editor's Copy to Working Group Draft](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.diff)
 
 
 ## Contributing

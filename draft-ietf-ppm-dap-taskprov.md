@@ -2,7 +2,7 @@
 title: "Task Binding and In-Band Provisioning for DAP"
 category: info
 
-docname: draft-wang-ppm-dap-taskprov-latest
+docname: draft-ietf-ppm-dap-taskprov-latest
 submissiontype: IETF  # also: "independent", "IAB", or "IRTF"
 number:
 date:
@@ -19,8 +19,8 @@ venue:
   type: "Working Group"
   mail: "ppm@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/ppm/"
-  github: "wangshan/draft-wang-ppm-dap-taskprov"
-  latest: "https://wangshan.github.io/draft-wang-ppm-dap-taskprov/draft-wang-ppm-dap-taskprov.html"
+  github: "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov"
+  latest: "https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-taskprov.html"
 
 author:
  -
@@ -295,7 +295,7 @@ struct {
 
 > OPEN ISSUE: Should spell out definition of `DpConfig` for various differential
 > privacy mechanisms and parameters. See draft
-> [draft](https://github.com/wangshan/draft-wang-ppm-differential-privacy) for discussion.
+> [draft](https://github.com/ietf-wg-ppm/draft-ietf-ppm-differential-privacy) for discussion.
 
 The length prefix of the `dp_config` ensures that the `DpConfig` structure can
 be decoded even if an unrecognized variant is encountered (i.e., an

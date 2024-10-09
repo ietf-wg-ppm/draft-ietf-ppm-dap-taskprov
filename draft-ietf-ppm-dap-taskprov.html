@@ -1329,7 +1329,7 @@ the Aggregator <span class="bcp14">MUST</span> reject the report.<a href="#secti
 <p id="section-3-5">When the client uses the Taskbind extension, it computes the task ID (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-09#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>) as follows:<a href="#section-3-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-6">
 <pre>
-task_id = SHA-256(task_config)
+task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
 </pre><a href="#section-3-6" class="pilcrow">¶</a>
 </div>
 <p id="section-3-7">where <code>task_config</code> is a <code>TaskConfig</code> structure defined in <a href="#task-encoding" class="auto internal xref">Section 3.1</a>.
@@ -1575,18 +1575,17 @@ indicated by the task configuration. (See <span>[<a href="#VDAF" class="cite xre
 <pre>
 verify_key = HKDF-Expand(
     HKDF-Extract(
-        taskprov_salt,   # salt
-        verify_key_init, # IKM
+        SHA-256("dap-taskprov"), # salt
+        verify_key_init,         # IKM
     ),
-    task_id,             # info
-    VERIFY_KEY_SIZE,     # L
+    task_id,                     # info
+    VERIFY_KEY_SIZE,             # L
 )
 </pre><a href="#section-4.3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-6">where <code>taskprov_salt</code> is defined to be the SHA-256 hash of the octet string
-"dap-taskprov" and <code>task_id</code> is as defined in <a href="#definition" class="auto internal xref">Section 3</a>. Functions
-HKDF-Extract() and HKDF-Expand() are as defined in <span>[<a href="#RFC5869" class="cite xref">RFC5869</a>]</span>. Both functions
-are instantiated with SHA-256.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">where <code>task_id</code> is as defined in <a href="#definition" class="auto internal xref">Section 3</a>. Functions HKDF-Extract() and
+HKDF-Expand() are as defined in <span>[<a href="#RFC5869" class="cite xref">RFC5869</a>]</span>. Both functions are instantiated
+with SHA-256.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="provisioning-a-task">

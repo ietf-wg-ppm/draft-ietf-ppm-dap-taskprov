@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 6 April 2025                                         Cloudflare
-                                                          3 October 2024
+Expires: 12 April 2025                                        Cloudflare
+                                                          9 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 April 2025.
+   This Internet-Draft will expire on 12 April 2025.
 
 Copyright Notice
 
@@ -193,7 +193,7 @@ Table of Contents
    When the client uses the Taskbind extension, it computes the task ID
    (Section 4.2 of [DAP]) as follows:
 
-   task_id = SHA-256(task_config)
+   task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
 
    where task_config is a TaskConfig structure defined in Section 3.1.
    Function SHA-256() is as defined in [SHS].
@@ -440,17 +440,16 @@ struct {
 
    verify_key = HKDF-Expand(
        HKDF-Extract(
-           taskprov_salt,   # salt
-           verify_key_init, # IKM
+           SHA-256("dap-taskprov"), # salt
+           verify_key_init,         # IKM
        ),
-       task_id,             # info
-       VERIFY_KEY_SIZE,     # L
+       task_id,                     # info
+       VERIFY_KEY_SIZE,             # L
    )
 
-   where taskprov_salt is defined to be the SHA-256 hash of the octet
-   string "dap-taskprov" and task_id is as defined in Section 3.
-   Functions HKDF-Extract() and HKDF-Expand() are as defined in
-   [RFC5869].  Both functions are instantiated with SHA-256.
+   where task_id is as defined in Section 3.  Functions HKDF-Extract()
+   and HKDF-Expand() are as defined in [RFC5869].  Both functions are
+   instantiated with SHA-256.
 
 4.4.  Opting into a Task
 

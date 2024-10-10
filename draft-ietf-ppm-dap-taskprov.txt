@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 12 April 2025                                        Cloudflare
-                                                          9 October 2024
+Expires: 13 April 2025                                        Cloudflare
+                                                         10 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 April 2025.
+   This Internet-Draft will expire on 13 April 2025.
 
 Copyright Notice
 
@@ -283,14 +283,16 @@ Table of Contents
 
    The vdaf_config defines the configuration of the VDAF in use for this
    task.  Its content is as follows (codepoints are as defined in
-   [VDAF]):
+   Section 10 of [VDAF]):
 
    enum {
-       prio3_count(0x00000000),
-       prio3_sum(0x00000001),
-       prio3_sum_vec(0x00000002),
-       prio3_histogram(0x00000003),
-       poplar1(0x00001000),
+       reserved(0x00000000),
+       prio3_count(0x00000001),
+       prio3_sum(0x00000002),
+       prio3_sum_vec(0x00000003),
+       prio3_histogram(0x00000004),
+       prio3_multihot_count_vec(0x00000005),
+       poplar1(0x00000006),
        (2^32-1)
    } VdafType;
 
@@ -325,7 +327,6 @@ Table of Contents
    enum {
        reserved(0), /* Reserved for testing purposes */
        none(1),
-       aggregator_discrete_gaussian(5),
        (255)
    } DpMechanism;
 
@@ -333,9 +334,6 @@ Table of Contents
        DpMechanism dp_mechanism;
        select (DpConfig.dp_mechanism) {
            case none: Empty;
-           case aggregator_discrete_gaussian:
-             RealNumber sigma;
-             RealNumber sensititivity;
        };
    } DpConfig;
 
@@ -691,9 +689,9 @@ Table of Contents
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-09, 18 December 2023,
+              draft-ietf-ppm-dap-12, 10 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              09>.
+              12>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -725,9 +723,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-08, 20
-              November 2023, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-vdaf-08>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-12, 4
+              October 2024, <https://datatracker.ietf.org/doc/html/
+              draft-irtf-cfrg-vdaf-12>.
 
 Contributors
 

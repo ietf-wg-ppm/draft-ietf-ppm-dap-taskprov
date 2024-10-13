@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-10T01:01:00.978786+00:00",
+  "timestamp": "2024-10-13T01:05:51.912881+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -898,7 +898,7 @@
       "id": "I_kwDOH4FR586Vq9gn",
       "title": "Update codepoints for draft-irtf-cfrg-vdaf-12",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/70",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -910,8 +910,8 @@
       ],
       "body": "We will likely re-assign codepoints in the next VDAF draft: https://github.com/cfrg/draft-irtf-cfrg-vdaf/pull/417",
       "createdAt": "2024-09-06T19:25:04Z",
-      "updatedAt": "2024-10-08T19:43:50Z",
-      "closedAt": null,
+      "updatedAt": "2024-10-10T21:52:12Z",
+      "closedAt": "2024-10-10T21:52:12Z",
       "comments": []
     },
     {
@@ -946,11 +946,13 @@
       "state": "OPEN",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [],
       "body": "We will definitely need to ask IANA to register the codepoint in the upload extensions registry. One open quesiton is how to maintain taskprov as new query types or VDAFs are defined. We also don't yet have a registry (or request for a registry) for DP mecanisms.",
       "createdAt": "2024-10-01T01:19:20Z",
-      "updatedAt": "2024-10-01T01:19:20Z",
+      "updatedAt": "2024-10-10T21:52:39Z",
       "closedAt": null,
       "comments": []
     }
@@ -6300,7 +6302,7 @@
       "id": "PR_kwDOH4FR5859qRDa",
       "title": "Address issue 70 - update codepoints",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/75",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "junyechen1996",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -6309,17 +6311,19 @@
       ],
       "body": "Closes #70 .",
       "createdAt": "2024-10-04T19:29:40Z",
-      "updatedAt": "2024-10-09T17:08:25Z",
+      "updatedAt": "2024-10-10T21:52:11Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "c9be0ed4372b41805ebfbbd4086eafb2b2160baf",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "junyec/issue-70",
       "headRefOid": "2fc4a8e5afaf03c043f5d43606dc6a8b3af60721",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-10-10T21:52:11Z",
+      "mergedAt": "2024-10-10T21:52:11Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "bde12c6d217fc3d9107a2b2dda1efbc8bee16e47"
+      },
       "comments": [
         {
           "author": "junyechen1996",

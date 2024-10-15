@@ -192,7 +192,7 @@ struct {
 
     /* Time up to which Clients are allowed to upload to this
     task. */
-    Defined in I-D.draft-ietf-ppm-dap-09. */
+    Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config<1..2^16-1>;

@@ -443,9 +443,6 @@ Upon receiving a `TaskConfig` from the Author, the Client decides whether to
 opt into the task as described in {{provisioning-a-task}}. If the Client opts
 out, it MUST not attempt to upload reports for the task.
 
-> OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-> this to the Author?
-
 Once the client opts into a task, it may begin uploading reports for the task
 to the Leader. The extension codepoint `taskbind` MUST be offered in the
 `extensions` field of both Leader and Helper's `PlaintextInputShare`. In
@@ -482,9 +479,6 @@ Leader MUST abort with "unrecognizedTask".
 The Leader then decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the upload request with
 "invalidTask".
-
-> OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-> this to the Author?
 
 Finally, once the Leader has opted in to the task, it completes the upload
 request as usual.
@@ -532,9 +526,6 @@ If not, the Helper MUST abort with "unrecognizedTask".
 Next, the Helper decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the aggregation job
 request with "invalidTask".
-
-> OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-> this to the Author?
 
 Finally, the Helper completes the request as usual, deriving the VDAF
 verification key for the task as described in {{vdaf-verify-key}}. For any

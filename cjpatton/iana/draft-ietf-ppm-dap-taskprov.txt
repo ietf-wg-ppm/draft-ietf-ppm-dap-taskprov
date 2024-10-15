@@ -92,6 +92,8 @@ Table of Contents
    5.  Security Considerations
    6.  Operational Considerations
    7.  IANA Considerations
+     7.1.  Upload Extension
+     7.2.  Registry for DP Mechanisms
    8.  Extending this Document
    9.  Normative References
    Contributors
@@ -671,10 +673,13 @@ Table of Contents
 
 7.  IANA Considerations
 
+   This document request a codepoint for the taskbind extension for DAP
+   and creation of a new registry for DP mechanisms.
+
    (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
    document.)
 
-   XXX registry for DP mechanisms
+7.1.  Upload Extension
 
    The following entry will be (RFC EDITOR: change "will be" to "has
    been") added to the "Upload Extension Identifiers" registry of the
@@ -689,20 +694,49 @@ Table of Contents
       TODO Rename "Upload Extensions Identifiers" if we takke
       https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610
 
+7.2.  Registry for DP Mechanisms
+
+   A new registry will be (RFC EDITOR: change "will be" to "has been")
+   created for the "Distributed Aggregation Protocol (DAP)" page called
+   "Differential Privacy (DP) Mechanisms".  This registry contains the
+   following columns:
+
+   Value:  The one-byte identifier for the DP mechanism
+
+   Name:  The name of the DP mechanism
+
+   Reference:  Where the DP mechanism is defined
+
+   The initial contents of this registry listed in Table 2.
+
+              +=======+==========+=========================+
+              | Value | Name     | Reference               |
+              +=======+==========+=========================+
+              | 0x00  | reserved | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+              | 0x01  | none     | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+
+                     Table 2: Initial contents of the
+                   Differential Privacy (DP) Mechanisms
+                                registry.
+
 8.  Extending this Document
 
    The behavior of this extension may be extended by future documents
    that define:
 
-   1.  A new batch mode for DAP
+   1.  A new DAP batch mode
 
    2.  A new VDAF
 
    3.  A new DP mechanisms
 
    Such documents SHOULD include a section titled "Taskbind
-   Considerations" that specifies an encoding of the batch mode, VDAF,
-   or DP mechanism.
+   Considerations" that specifies an encoding of any configuration
+   parameters associated with the DAP batch mode, VDAF, or DP mechanism.
+   These correspond to the TaskConfig.batch_config,
+   TaskConfig.vdaf_config, and VdafConfig.dp_config respectively.  XXX
 
 9.  Normative References
 

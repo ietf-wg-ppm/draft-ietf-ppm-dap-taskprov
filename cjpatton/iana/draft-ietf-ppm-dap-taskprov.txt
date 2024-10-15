@@ -705,7 +705,8 @@ Table of Contents
 
    Reference:  Where the DP mechanism is defined
 
-   The initial contents of this registry listed in Table 2.
+   The initial contents of this registry are listed in the following
+   table.
 
               +=======+==========+=========================+
               | Value | Name     | Reference               |
@@ -727,8 +728,8 @@ Table of Contents
 
 8.  Extending this Document
 
-   The behavior of this extension may be extended by future documents
-   that define:
+   The behavior of the taskbind extension may be extended by future
+   documents that define:
 
    1.  A new DAP batch mode
 
@@ -740,7 +741,7 @@ Table of Contents
    Considerations" that specifies an encoding of any configuration
    parameters associated with the DAP batch mode, VDAF, or DP mechanism.
    This encoding extends the BatchConfig structure, the VdafConfig
-   structure, and the DpConfig structure respectively.
+   structure, or the DpConfig structure respectively.
 
 9.  Normative References
 

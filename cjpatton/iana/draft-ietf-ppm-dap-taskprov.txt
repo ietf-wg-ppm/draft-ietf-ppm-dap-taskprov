@@ -254,6 +254,9 @@ Table of Contents
        task. */
        Time task_expiration;
 
+       /* Differential privacy (DP) configuration. */
+       opaque dp_config<1..2^16-1>;
+
        /* Determines the VDAF type and its config parameters. */
        opaque vdaf_config<1..2^16-1>;
    } TaskConfig;
@@ -282,6 +285,26 @@ Table of Contents
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented query type).
 
+   The dp_config field defines a mechanism for differential privacy
+   (DP).  The opaque dp_config contains the following structure:
+
+   enum {
+       reserved(0), /* Reserved for testing purposes */
+       none(1),
+       (255)
+   } DpMechanism;
+
+   struct {
+       DpMechanism dp_mechanism;
+       select (DpConfig.dp_mechanism) {
+           case none: Empty;
+       };
+   } DpConfig;
+
+   The length prefix of the dp_config ensures that the DpConfig
+   structure can be decoded even if an unrecognized variant is
+   encountered (i.e., an unimplemented DP mechanism).
+
    The vdaf_config defines the configuration of the VDAF in use for this
    task.  Its content is as follows (codepoints are as defined in
    Section 10 of [VDAF]):
@@ -298,7 +321,6 @@ Table of Contents
    } VdafType;
 
    struct {
-       opaque dp_config<1..2^16-1>;
        VdafType vdaf_type;
        select (VdafConfig.vdaf_type) {
            case prio3_count:
@@ -320,27 +342,6 @@ Table of Contents
    The length prefix of the vdaf_config ensures that the VdafConfig
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented VDAF).
-
-   Apart from the VDAF-specific parameters, this structure includes a
-   mechanism for differential privacy (DP).  The opaque dp_config
-   contains the following structure:
-
-   enum {
-       reserved(0), /* Reserved for testing purposes */
-       none(1),
-       (255)
-   } DpMechanism;
-
-   struct {
-       DpMechanism dp_mechanism;
-       select (DpConfig.dp_mechanism) {
-           case none: Empty;
-       };
-   } DpConfig;
-
-   The length prefix of the dp_config ensures that the DpConfig
-   structure can be decoded even if an unrecognized variant is
-   encountered (i.e., an unimplemented DP mechanism).
 
    The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
@@ -740,6 +741,8 @@ Table of Contents
    Such documents SHOULD include a section titled "Taskbind
    Considerations" that specifies an encoding of any configuration
    parameters associated with the DAP batch mode, VDAF, or DP mechanism.
+   This encoding extends the BatchConfig structure, the VdafConfig
+   structure, and the DpConfig structure respectively.
 
 9.  Normative References
 

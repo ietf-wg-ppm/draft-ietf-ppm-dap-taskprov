@@ -1400,6 +1400,9 @@ struct {
     task. */
     Time task_expiration;
 
+    /* Differential privacy (DP) configuration. */
+    opaque dp_config&lt;1..2^16-1&gt;;
+
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config&lt;1..2^16-1&gt;;
 } TaskConfig;
@@ -1427,10 +1430,31 @@ struct {
 <p id="section-3.1-6">The length prefix of the <code>query_config</code> ensures that the <code>QueryConfig</code> structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented query type).<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1-7">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
-Its content is as follows (codepoints are as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">The <code>dp_config</code> field defines a mechanism for differential privacy (DP). The
+opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-8">
+<pre>
+enum {
+    reserved(0), /* Reserved for testing purposes */
+    none(1),
+    (255)
+} DpMechanism;
+
+struct {
+    DpMechanism dp_mechanism;
+    select (DpConfig.dp_mechanism) {
+        case none: Empty;
+    };
+} DpConfig;
+</pre><a href="#section-3.1-8" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-9">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
+be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented DP mechanism).<a href="#section-3.1-9" class="pilcrow">¶</a></p>
+<p id="section-3.1-10">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
+Its content is as follows (codepoints are as defined in
+<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-11">
 <pre>
 enum {
     reserved(0x00000000),
@@ -1444,7 +1468,6 @@ enum {
 } VdafType;
 
 struct {
-    opaque dp_config&lt;1..2^16-1&gt;;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3_count:
@@ -1462,32 +1485,11 @@ struct {
             uint16; /* bit length of input string */
     };
 } VdafConfig;
-</pre><a href="#section-3.1-8" class="pilcrow">¶</a>
-</div>
-<p id="section-3.1-9">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
-can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).<a href="#section-3.1-9" class="pilcrow">¶</a></p>
-<p id="section-3.1-10">Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-11">
-<pre>
-enum {
-    reserved(0), /* Reserved for testing purposes */
-    none(1),
-    (255)
-} DpMechanism;
-
-struct {
-    DpMechanism dp_mechanism;
-    select (DpConfig.dp_mechanism) {
-        case none: Empty;
-    };
-} DpConfig;
 </pre><a href="#section-3.1-11" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-12">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
-be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<p id="section-3.1-12">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
+can be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented VDAF).<a href="#section-3.1-12" class="pilcrow">¶</a></p>
 <p id="section-3.1-13">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
 <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-13" class="pilcrow">¶</a></p>
 </section>
@@ -1979,7 +1981,9 @@ https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/34<a href="#se
       </ol>
 <p id="section-8-3">Such documents <span class="bcp14">SHOULD</span> include a section titled "Taskbind Considerations" that
 specifies an encoding of any configuration parameters associated with the DAP
-batch mode, VDAF, or DP mechanism.<a href="#section-8-3" class="pilcrow">¶</a></p>
+batch mode, VDAF, or DP mechanism. This encoding extends the <code>BatchConfig</code>
+structure, the <code>VdafConfig</code> structure, and the <code>DpConfig</code> structure
+respectively.<a href="#section-8-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-normative-references">

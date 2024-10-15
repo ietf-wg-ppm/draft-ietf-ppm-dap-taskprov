@@ -1209,16 +1209,16 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-extending-this-document" class="internal xref">Extending this Document</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-extending-this-document" class="internal xref">Extending this Document</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-contributors" class="internal xref">Contributors</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-contributors" class="internal xref">Contributors</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1376,9 +1376,15 @@ struct {
     /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
-    /* This determines the batch mode for batch selection and the
-    properties that all batches for this task must have. */
-    opaque batch_mode&lt;1..2^16-1&gt;;
+    /* The time precision. */
+    Duration time_precision;
+
+    /* The minimum batch size. */
+    uint32 min_batch_size;
+
+    /* The batch mode and its parameters. */
+    BatchMode batch_mode;
+    opaque batch_config&lt;1..2^16-1&gt;;
 
     /* Time up to which Clients are allowed to upload to this
     task. */
@@ -1391,39 +1397,20 @@ struct {
 </div>
 <p id="section-3.1-3">The purpose of <code>TaskConfig</code> is to define all parameters that are necessary for
 configuring each party. It includes all the fields to be associated with a
-task. In addition to the Aggregator endpoints, maximum batch query count, and
-task expiration, the structure includes an opaque <code>task_info</code> field that is
-specific to a deployment. For example, this can be a string describing the
-purpose of this task. It does not include cryptographic assets shared by only a
-subset of the parties, including the secret VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> or
-public HPKE configurations <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">The opaque <code>query_config</code> field defines the DAP query configuration used to
-guide batch selection. Its content is structured as follows:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-5">
-<pre>
-struct {
-    Duration time_precision;
-    uint16 max_batch_query_count;
-    uint32 min_batch_size;
-    QueryType query_type;
-    select (QueryConfig.query_type) {
-        case time_interval: Empty;
-        case fixed_size:    uint32 max_batch_size;
-    };
-} QueryConfig;
-</pre><a href="#section-3.1-5" class="pilcrow">¶</a>
-</div>
-<p id="section-3.1-6">The length prefix of the <code>query_config</code> ensures that the <code>QueryConfig</code> structure
-can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented query type).<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1-7">The maximum batch size for <code>fixed_size</code> query is optional. If <code>query_type</code> is
-<code>fixed_size</code> and <code>max_batch_size</code> is 0, then the task does not have maximum
-batch size limit. In particular, during batch validation (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.6.5.2.2" class="relref">Section 4.6.5.2.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), the Aggregator does not check <code>len(X) &lt;= max_batch_size</code>, where <code>X</code>
-is the set of reports successfully aggregated into the batch.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.1-8">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
+task. It also includes an opaque <code>task_info</code> field that is specific to a
+deployment. For example, this can be a string describing the purpose of this
+task. It does not include cryptographic assets shared by only a subset of the
+parties, including the secret VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> or public HPKE
+configurations <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">The <code>batch_mode</code> field defines the DAP batch mode. The opaque <code>batch_config</code>
+field encodes parameters associated with the batch mode. Its value is <code>Empty</code>
+for the <code>time_interval</code> and <code>leader_selected</code> batch modes defined in <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.
+This field is length prefixed in order to ensure its contents can be
+decoded even when an unrecognized batch mode is encountered.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.1-5">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-9">
+<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-6">
 <pre>
 enum {
     reserved(0x00000000),
@@ -1455,14 +1442,14 @@ struct {
             uint16; /* bit length of input string */
     };
 } VdafConfig;
-</pre><a href="#section-3.1-9" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-6" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-10">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
+<p id="section-3.1-7">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).<a href="#section-3.1-10" class="pilcrow">¶</a></p>
-<p id="section-3.1-11">Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-11" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-12">
+unimplemented VDAF).<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-8">Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-9">
 <pre>
 enum {
     reserved(0), /* Reserved for testing purposes */
@@ -1476,13 +1463,13 @@ struct {
         case none: Empty;
     };
 } DpConfig;
-</pre><a href="#section-3.1-12" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-9" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-13">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
+<p id="section-3.1-10">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
 be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).<a href="#section-3.1-13" class="pilcrow">¶</a></p>
-<p id="section-3.1-14">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>QueryType</code> follow those in
-<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-14" class="pilcrow">¶</a></p>
+unimplemented DP mechanism).<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+<p id="section-3.1-11">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
+<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1605,7 +1592,8 @@ configuration disseminated by the Author does not match the existing
 configuration.<a href="#section-4.4-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-3.2">
-            <p id="section-4.4-3.2.1">The VDAF, DP, or batch mode is deemed insufficient for privacy.<a href="#section-4.4-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.4-3.2.1">The VDAF config, DP mechanism, or other parameters are deemed insufficient
+for privacy.<a href="#section-4.4-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-3.3">
             <p id="section-4.4-3.3.1">A secure connection to one or both of the Aggregator endpoints could not be
@@ -1616,7 +1604,8 @@ established.<a href="#section-4.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-4.4-4">A protocol participant <span class="bcp14">MUST</span> opt out if the task has expired or if it does not
-support an indicated task parameter (e.g., VDAF, DP mechanism, or batch mode).<a href="#section-4.4-4" class="pilcrow">¶</a></p>
+support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
+mode).<a href="#section-4.4-4" class="pilcrow">¶</a></p>
 <p id="section-4.4-5">The behavior of each protocol participant is determined by whether or not they
 opt in to a task.<a href="#section-4.4-5" class="pilcrow">¶</a></p>
 </section>
@@ -1882,10 +1871,31 @@ https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610<a href="#section-7-
       </ul>
 </section>
 </div>
-<div id="sec-normative-references">
+<div id="extending-this-document">
 <section id="section-8">
+      <h2 id="name-extending-this-document">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-extending-this-document" class="section-name selfRef">Extending this Document</a>
+      </h2>
+<p id="section-8-1">The behavior of this extension may be extended by future documents that define:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-2">
+<li id="section-8-2.1">
+          <p id="section-8-2.1.1">A new batch mode for DAP<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.2">
+          <p id="section-8-2.2.1">A new VDAF<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.3">
+          <p id="section-8-2.3.1">A new DP mechanisms<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="section-8-3">Such documents <span class="bcp14">SHOULD</span> include a section titled "Taskbind Considerations" that
+specifies an encoding of the batch mode, VDAF, or DP mechanism.<a href="#section-8-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-normative-references">
+<section id="section-9">
       <h2 id="name-normative-references">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="DAP">[DAP]</dt>
@@ -1927,57 +1937,36 @@ https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610<a href="#section-7-
 </dl>
 </section>
 </div>
-<div id="extending-this-document">
-<section id="appendix-A">
-      <h2 id="name-extending-this-document">
-<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-extending-this-document" class="section-name selfRef">Extending this Document</a>
-      </h2>
-<p id="appendix-A-1">The behavior of this extension may be extended by future documents that define:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-A-2">
-<li id="appendix-A-2.1">
-          <p id="appendix-A-2.1.1">A new batch mode for DAP<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-A-2.2">
-          <p id="appendix-A-2.2.1">A new VDAF<a href="#appendix-A-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li id="appendix-A-2.3">
-          <p id="appendix-A-2.3.1">A new DP mechanisms<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
-</li>
-      </ol>
-<p id="appendix-A-3">Such documents <span class="bcp14">SHOULD</span> include a section titled "Taskbind Considerations" that
-specifies an encoding of the batch mode, VDAF, or DP mechanism.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="contributors">
-<section id="appendix-B">
+<section id="appendix-A">
       <h2 id="name-contributors">
 <a href="#name-contributors" class="section-name selfRef">Contributors</a>
       </h2>
-<p id="appendix-B-1">Junye Chen
+<p id="appendix-A-1">Junye Chen
 Apple Inc.
-junyec@apple.com<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">David Cook
+junyec@apple.com<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">David Cook
 ISRG
-divergentdave@gmail.com<a href="#appendix-B-2" class="pilcrow">¶</a></p>
-<p id="appendix-B-3">Suman Ganta
+divergentdave@gmail.com<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">Suman Ganta
 Apple Inc.
-sganta2@apple.com<a href="#appendix-B-3" class="pilcrow">¶</a></p>
-<p id="appendix-B-4">Gianni Parsa
+sganta2@apple.com<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">Gianni Parsa
 Apple Inc.
-gianni_parsa@apple.com<a href="#appendix-B-4" class="pilcrow">¶</a></p>
-<p id="appendix-B-5">Michael Scaria
+gianni_parsa@apple.com<a href="#appendix-A-4" class="pilcrow">¶</a></p>
+<p id="appendix-A-5">Michael Scaria
 Apple Inc.
-mscaria@apple.com<a href="#appendix-B-5" class="pilcrow">¶</a></p>
-<p id="appendix-B-6">Kunal Talwar
+mscaria@apple.com<a href="#appendix-A-5" class="pilcrow">¶</a></p>
+<p id="appendix-A-6">Kunal Talwar
 Apple Inc.
-ktalwar@apple.com<a href="#appendix-B-6" class="pilcrow">¶</a></p>
-<p id="appendix-B-7">Christopher A. Wood
+ktalwar@apple.com<a href="#appendix-A-6" class="pilcrow">¶</a></p>
+<p id="appendix-A-7">Christopher A. Wood
 Cloudflare
-caw@heapingbits.net<a href="#appendix-B-7" class="pilcrow">¶</a></p>
+caw@heapingbits.net<a href="#appendix-A-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-C">
+<section id="appendix-B">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>

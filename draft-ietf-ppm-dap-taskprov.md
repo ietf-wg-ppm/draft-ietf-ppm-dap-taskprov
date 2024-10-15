@@ -58,6 +58,9 @@ provisioning that builds on the report extension.
 
 # Introduction
 
+(RFC EDITOR: Remove this paragraph.) This draft is maintained in
+https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
+
 The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-12}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
@@ -111,6 +114,7 @@ error types:
 | Type        | Description                                                                               |
 |:------------|:------------------------------------------------------------------------------------------|
 | invalidTask | An Aggregator has opted out of the indicated task as described in {{provisioning-a-task}} |
+{: #urn-space-errors = "DAP errors for the sub-namespace of the DAP URN, e.g., urn:ietf:params:ppm:dap:error:invalidTask."}
 
 The terms used follow those described in {{!DAP}}. The following new terms are
 used:
@@ -126,8 +130,6 @@ Task author:
 To use the Taskbind extension, the Client includes the following extension in
 the report extensions for each Aggregator as described in {{Section 4.4.3 of
 !DAP}}:
-
-(RFC EDITOR: Change this to the IANA-assigned codepoint.)
 
 ~~~
 enum {
@@ -171,7 +173,7 @@ During the upload flow ({{Section 4.4 of !DAP}}), the Leader SHOULD abort the
 request with "unrecognizedTask" if the derived task ID does not match the task
 ID of the request.
 
-## Task Encoding
+## Task Encoding {#task-encoding}
 
 The task configuration is encoded as follows:
 
@@ -183,8 +185,14 @@ struct {
     /* Leader API endpoint. */
     Url leader_aggregator_endpoint;
 
-    /* Helper API endpointl. */
+    /* Helper API endpoint. */
     Url helper_aggregator_endpoint;
+
+    /* Time precision. */
+    Duration time_precision;
+
+    /* Minimum batch size. */
+    uint32 min_batch_size;
 
     /* The batch mode and its parameters. */
     opaque batch_config<1..2^16-1>;
@@ -192,6 +200,9 @@ struct {
     /* Time up to which Clients are allowed to upload to this
     task. */
     Time task_expiration;
+
+    /* Differential privacy (DP) configuration. */
+    opaque dp_config<1..2^16-1>;
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config<1..2^16-1>;
@@ -210,8 +221,6 @@ The `batch_config` field defines the DAP batch mode. Its contents are as follows
 
 ~~~
 struct {
-    Duration time_precision;
-    uint32 min_batch_size;
     BatchMode batch_mode;
     select (BatchMode.batch_mode) {
         case time_interval:   Empty;
@@ -223,6 +232,28 @@ struct {
 The length prefix of the `query_config` ensures that the `QueryConfig` structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented query type).
+
+The `dp_config` field defines a mechanism for differential privacy (DP). The
+opaque `dp_config` contains the following structure:
+
+~~~
+enum {
+    reserved(0), /* Reserved for testing purposes */
+    none(1),
+    (255)
+} DpMechanism;
+
+struct {
+    DpMechanism dp_mechanism;
+    select (DpConfig.dp_mechanism) {
+        case none: Empty;
+    };
+} DpConfig;
+~~~
+
+The length prefix of the `dp_config` ensures that the `DpConfig` structure can
+be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented DP mechanism).
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
@@ -241,7 +272,6 @@ enum {
 } VdafType;
 
 struct {
-    opaque dp_config<1..2^16-1>;
     VdafType vdaf_type;
     select (VdafConfig.vdaf_type) {
         case prio3_count:
@@ -264,28 +294,6 @@ struct {
 The length prefix of the `vdaf_config` ensures that the `VdafConfig` structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented VDAF).
-
-Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). The opaque `dp_config` contains the following structure:
-
-~~~
-enum {
-    reserved(0), /* Reserved for testing purposes */
-    none(1),
-    (255)
-} DpMechanism;
-
-struct {
-    DpMechanism dp_mechanism;
-    select (DpConfig.dp_mechanism) {
-        case none: Empty;
-    };
-} DpConfig;
-~~~
-
-The length prefix of the `dp_config` ensures that the `DpConfig` structure can
-be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).
 
 The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 {{!DAP}}.
@@ -595,8 +603,73 @@ out once they have opted in.
 
 # IANA Considerations
 
-> NOTE(cjpatton) Eventually we'll have IANA considerations (at the very least
-> we'll need to allocate a codepoint) but we can leave this blank for now.
+This document requests a codepoint for the `taskbind` extension and for
+creation of a new registry for DP mechanisms.
+
+(RFC EDITOR: Replace "XXXX" with the RFC number assigned to this document.)
+
+## Report Extension
+
+The following entry will be (RFC EDITOR: change "will be" to "has been") added
+to the "Report Extension Identifiers" registry of the "Distributed Aggregation
+Protocol (DAP)" page created by {{!VDAF}}:
+
+Value:
+: `0xff00`
+
+Name:
+: `taskbind`
+
+Reference:
+: RFC XXXX
+
+## Registry for DP Mechanisms {#dp-mechanism-registry}
+
+A new registry will be (RFC EDITOR: change "will be" to "has been") created for
+the "Distributed Aggregation Protocol (DAP)" page called "Differential Privacy
+(DP) Mechanisms". This registry contains the following columns:
+
+Value:
+: The one-byte identifier for the DP mechanism
+
+Name:
+: The name of the DP mechanism
+
+Reference:
+: Where the DP mechanism is defined
+
+The initial contents of this registry are listed in the following table.
+
+| Value  | Name       | Reference                     |
+|:-------|:-----------|:------------------------------|
+| `0x00` | `reserved` | {{task-encoding}} of RFC XXXX |
+| `0x01` | `none`     | {{task-encoding}} of RFC XXXX |
+{: #dp-mechanism-id title="Initial contents of the Differential Privacy (DP) Mechanisms registry."}
+
+## DAP Sub-namespace for DAP
+
+> TODO Figure out how to ask IANA to register the errors in
+> {{urn-space-errors}}. See
+> https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/34
+
+# Extending this Document
+
+The behavior of the `taskbind` extension may be extended by future documents
+that define:
+
+1. A new DAP batch mode
+1. A new VDAF
+1. A new DP mechanisms
+
+Such documents SHOULD include a section titled "Taskbind Considerations" that
+specifies an encoding of any configuration parameters associated with the DAP
+batch mode, VDAF, or DP mechanism. This encoding extends the `BatchConfig`
+structure, the `VdafConfig` structure, or the `DpConfig` structure
+respectively.
+
+Note that the registry for batch modes is defined by {{!DAP}}; the registry for
+VDAFs is defined by {{!VDAF}}; and the registry for DP mechanisms is defined in
+{{dp-mechanism-registry}} of this document.
 
 --- back
 

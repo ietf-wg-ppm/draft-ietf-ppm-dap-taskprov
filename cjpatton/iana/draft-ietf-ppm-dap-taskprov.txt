@@ -94,6 +94,7 @@ Table of Contents
    7.  IANA Considerations
      7.1.  Upload Extension
      7.2.  Registry for DP Mechanisms
+     7.3.  DAP Sub-namespace for DAP
    8.  Extending this Document
    9.  Normative References
    Contributors
@@ -237,22 +238,21 @@ Table of Contents
        /* Leader API endpoint. */
        Url leader_aggregator_endpoint;
 
-       /* Helper API endpointl. */
+       /* Helper API endpoint. */
        Url helper_aggregator_endpoint;
 
-       /* The time precision. */
+       /* Time precision. */
        Duration time_precision;
 
-       /* The minimum batch size. */
+       /* Minimum batch size. */
        uint32 min_batch_size;
 
        /* The batch mode and its parameters. */
-       BatchMode batch_mode;
        opaque batch_config<1..2^16-1>;
 
        /* Time up to which Clients are allowed to upload to this
        task. */
-       Defined in I-D.draft-ietf-ppm-dap-09. */
+       Time task_expiration;
 
        /* Determines the VDAF type and its config parameters. */
        opaque vdaf_config<1..2^16-1>;
@@ -267,12 +267,20 @@ Table of Contents
    including the secret VDAF verification key [VDAF] or public HPKE
    configurations [RFC9180].
 
-   The batch_mode field defines the DAP batch mode.  The opaque
-   batch_config field encodes parameters associated with the batch mode.
-   Its value is Empty for the time_interval and leader_selected batch
-   modes defined in [DAP].  This field is length prefixed in order to
-   ensure its contents can be decoded even when an unrecognized batch
-   mode is encountered.
+   The batch_config field defines the DAP batch mode.  Its contents are
+   as follows:
+
+   struct {
+       BatchMode batch_mode;
+       select (BatchMode.batch_mode) {
+           case time_interval:   Empty;
+           case leader_selected: Empty;
+       };
+   } BatchConfig;
+
+   The length prefix of the query_config ensures that the QueryConfig
+   structure can be decoded even if an unrecognized variant is
+   encountered (i.e., an unimplemented query type).
 
    The vdaf_config defines the configuration of the VDAF in use for this
    task.  Its content is as follows (codepoints are as defined in
@@ -492,9 +500,6 @@ Table of Contents
    whether to opt into the task as described in Section 4.4.  If the
    Client opts out, it MUST not attempt to upload reports for the task.
 
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
-
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
    offered in the extensions field of both Leader and Helper's
@@ -533,9 +538,6 @@ Table of Contents
    The Leader then decides whether to opt in to the task as described in
    Section 4.4.  If it opts out, it MUST abort the upload request with
    "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, once the Leader has opted in to the task, it completes the
    upload request as usual.
@@ -587,9 +589,6 @@ Table of Contents
    Next, the Helper decides whether to opt in to the task as described
    in Section 4.4.  If it opts out, it MUST abort the aggregation job
    request with "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, the Helper completes the request as usual, deriving the VDAF
    verification key for the task as described in Section 4.3.  For any
@@ -673,7 +672,7 @@ Table of Contents
 
 7.  IANA Considerations
 
-   This document request a codepoint for the taskbind extension for DAP
+   This document requests a codepoint for the taskbind extension for DAP
    and creation of a new registry for DP mechanisms.
 
    (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
@@ -691,7 +690,7 @@ Table of Contents
 
    Reference:  RFC XXXX
 
-      TODO Rename "Upload Extensions Identifiers" if we takke
+      TODO Rename "Upload Extensions Identifiers" if we decide to take
       https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610
 
 7.2.  Registry for DP Mechanisms
@@ -721,6 +720,12 @@ Table of Contents
                    Differential Privacy (DP) Mechanisms
                                 registry.
 
+7.3.  DAP Sub-namespace for DAP
+
+      TODO Figure out how to ask IANA to register the errors in Table 1.
+      See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/
+      issues/34
+
 8.  Extending this Document
 
    The behavior of this extension may be extended by future documents
@@ -735,8 +740,6 @@ Table of Contents
    Such documents SHOULD include a section titled "Taskbind
    Considerations" that specifies an encoding of any configuration
    parameters associated with the DAP batch mode, VDAF, or DP mechanism.
-   These correspond to the TaskConfig.batch_config,
-   TaskConfig.vdaf_config, and VdafConfig.dp_config respectively.  XXX
 
 9.  Normative References
 

@@ -186,8 +186,6 @@ Table of Contents
    extension in the report extensions for each Aggregator as described
    in Section 4.4.3 of [DAP]:
 
-   (RFC EDITOR: Change this to the IANA-assigned codepoint.)
-
    enum {
        taskbind(0xff00),
        (65535)
@@ -673,8 +671,8 @@ Table of Contents
 
 7.  IANA Considerations
 
-   This document requests a codepoint for the taskbind extension for DAP
-   and creation of a new registry for DP mechanisms.
+   This document requests a codepoint for the taskbind extension and for
+   creation of a new registry for DP mechanisms.
 
    (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
    document.)

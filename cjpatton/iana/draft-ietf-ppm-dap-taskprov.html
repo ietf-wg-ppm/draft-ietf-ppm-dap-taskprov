@@ -1333,42 +1333,41 @@ used:<a href="#section-2-4" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-3-1">To use the Taskbind extension, the Client includes the following extension in
 the report extensions for each Aggregator as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.4.3" class="relref">Section 4.4.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">(RFC EDITOR: Change this to the IANA-assigned codepoint.)<a href="#section-3-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3-3">
+<div class="alignLeft art-text artwork" id="section-3-2">
 <pre>
 enum {
     taskbind(0xff00),
     (65535)
 } ExtensionType;
-</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3-4">The payload of the extension <span class="bcp14">MUST</span> be empty. If the payload is non-empty, then
-the Aggregator <span class="bcp14">MUST</span> reject the report.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">When the client uses the Taskbind extension, it computes the task ID (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>) as follows:<a href="#section-3-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3-6">
+<p id="section-3-3">The payload of the extension <span class="bcp14">MUST</span> be empty. If the payload is non-empty, then
+the Aggregator <span class="bcp14">MUST</span> reject the report.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">When the client uses the Taskbind extension, it computes the task ID (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>) as follows:<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-5">
 <pre>
 task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
-</pre><a href="#section-3-6" class="pilcrow">¶</a>
+</pre><a href="#section-3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-3-7">where <code>task_config</code> is a <code>TaskConfig</code> structure defined in <a href="#task-encoding" class="auto internal xref">Section 3.1</a>.
-Function SHA-256() is as defined in <span>[<a href="#SHS" class="cite xref">SHS</a>]</span>.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">The task ID is bound to each report share (via HPKE authenticated and
+<p id="section-3-6">where <code>task_config</code> is a <code>TaskConfig</code> structure defined in <a href="#task-encoding" class="auto internal xref">Section 3.1</a>.
+Function SHA-256() is as defined in <span>[<a href="#SHS" class="cite xref">SHS</a>]</span>.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">The task ID is bound to each report share (via HPKE authenticated and
 associated data, see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.4.2" class="relref">Section 4.4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). Binding the parameters to the
 ID this way ensures, in turn, that the report is only aggregated if the Client
 and Aggregator agree on the parameters. This is accomplished by the Aggregator
-behavior below.<a href="#section-3-8" class="pilcrow">¶</a></p>
-<p id="section-3-9">During aggregation (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), each Aggregator processes a
-report with the Taskbind extension as follows.<a href="#section-3-9" class="pilcrow">¶</a></p>
-<p id="section-3-10">First, it looks up the ID and parameters associated with the task. Note the
+behavior below.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">During aggregation (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), each Aggregator processes a
+report with the Taskbind extension as follows.<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-9">First, it looks up the ID and parameters associated with the task. Note the
 task has already been configured; otherwise the Aggregator would have already
-aborted the request due to not recognizing the task.<a href="#section-3-10" class="pilcrow">¶</a></p>
-<p id="section-3-11">Next, the Aggregator encodes the parameters as a <code>TaskConfig</code> defined in
+aborted the request due to not recognizing the task.<a href="#section-3-9" class="pilcrow">¶</a></p>
+<p id="section-3-10">Next, the Aggregator encodes the parameters as a <code>TaskConfig</code> defined in
 <a href="#task-encoding" class="auto internal xref">Section 3.1</a> and computes the task ID as above. If the derived task ID
 does not match the task ID of the request, then it <span class="bcp14">MUST</span> reject the report with
-error "invalid_message".<a href="#section-3-11" class="pilcrow">¶</a></p>
-<p id="section-3-12">During the upload flow (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.4" class="relref">Section 4.4</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), the Leader <span class="bcp14">SHOULD</span> abort the
+error "invalid_message".<a href="#section-3-10" class="pilcrow">¶</a></p>
+<p id="section-3-11">During the upload flow (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.4" class="relref">Section 4.4</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), the Leader <span class="bcp14">SHOULD</span> abort the
 request with "unrecognizedTask" if the derived task ID does not match the task
-ID of the request.<a href="#section-3-12" class="pilcrow">¶</a></p>
+ID of the request.<a href="#section-3-11" class="pilcrow">¶</a></p>
 <div id="task-encoding">
 <section id="section-3.1">
         <h3 id="name-task-encoding">
@@ -1845,7 +1844,7 @@ out once they have opted in.<a href="#section-6-2" class="pilcrow">¶</a></p>
       <h2 id="name-iana-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-7-1">This document requests a codepoint for the <code>taskbind</code> extension for DAP and
+<p id="section-7-1">This document requests a codepoint for the <code>taskbind</code> extension and for
 creation of a new registry for DP mechanisms.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">(RFC EDITOR: Replace "XXXX" with the RFC number assigned to this document.)<a href="#section-7-2" class="pilcrow">¶</a></p>
 <div id="upload-extension">

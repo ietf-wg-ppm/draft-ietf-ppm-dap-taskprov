@@ -186,9 +186,8 @@ struct {
     /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
-    /* This determines the query type for batch selection and the
-    properties that all batches for this task must have. */
-    opaque query_config<1..2^16-1>;
+    /* The batch mode and its parameters. */
+    opaque batch_config<1..2^16-1>;
 
     /* Time up to which Clients are allowed to upload to this
     task. */
@@ -201,38 +200,29 @@ struct {
 
 The purpose of `TaskConfig` is to define all parameters that are necessary for
 configuring each party. It includes all the fields to be associated with a
-task. In addition to the Aggregator endpoints, maximum batch query count, and
-task expiration, the structure includes an opaque `task_info` field that is
-specific to a deployment. For example, this can be a string describing the
-purpose of this task. It does not include cryptographic assets shared by only a
-subset of the parties, including the secret VDAF verification key {{!VDAF}} or
-public HPKE configurations {{!RFC9180}}.
+task. It also includes an opaque `task_info` field that is specific to a
+deployment. For example, this can be a string describing the purpose of this
+task. It does not include cryptographic assets shared by only a subset of the
+parties, including the secret VDAF verification key {{!VDAF}} or public HPKE
+configurations {{!RFC9180}}.
 
-The opaque `query_config` field defines the DAP query configuration used to
-guide batch selection. Its content is structured as follows:
+The `batch_config` field defines the DAP batch mode. Its contents are as follows:
 
 ~~~
 struct {
     Duration time_precision;
-    uint16 max_batch_query_count;
     uint32 min_batch_size;
-    QueryType query_type;
-    select (QueryConfig.query_type) {
-        case time_interval: Empty;
-        case fixed_size:    uint32 max_batch_size;
+    BatchMode batch_mode;
+    select (BatchMode.batch_mode) {
+        case time_interval:   Empty;
+        case leader_selected: Empty;
     };
-} QueryConfig;
+} BatchConfig;
 ~~~
 
 The length prefix of the `query_config` ensures that the `QueryConfig` structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented query type).
-
-The maximum batch size for `fixed_size` query is optional. If `query_type` is
-`fixed_size` and `max_batch_size` is 0, then the task does not have maximum
-batch size limit. In particular, during batch validation ({{Section 4.6.5.2.2
-of !DAP}}), the Aggregator does not check `len(X) <= max_batch_size`, where `X`
-is the set of reports successfully aggregated into the batch.
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
@@ -297,7 +287,7 @@ The length prefix of the `dp_config` ensures that the `DpConfig` structure can
 be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented DP mechanism).
 
-The definition of `Time`, `Duration`, `Url`, and `QueryType` follow those in
+The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 {{!DAP}}.
 
 # In-band Task Provisioning with the Taskbind Extension {#taskprov}
@@ -406,7 +396,8 @@ A protocol participant MAY "opt out" of a task if:
    configuration disseminated by the Author does not match the existing
    configuration.
 
-1. The VDAF, DP, or query configuration is deemed insufficient for privacy.
+1. The VDAF config, DP mechanism, or other parameters are deemed insufficient
+   for privacy.
 
 1. A secure connection to one or both of the Aggregator endpoints could not be
    established.
@@ -414,7 +405,8 @@ A protocol participant MAY "opt out" of a task if:
 1. The task lifetime is too long.
 
 A protocol participant MUST opt out if the task has expired or if it does not
-support an indicated task parameter (e.g., VDAF, DP mechanism, or query type).
+support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
+mode).
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.

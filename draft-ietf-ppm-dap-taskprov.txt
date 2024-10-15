@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 13 April 2025                                        Cloudflare
-                                                         10 October 2024
+Expires: 18 April 2025                                        Cloudflare
+                                                         15 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 13 April 2025.
+   This Internet-Draft will expire on 18 April 2025.
 
 Copyright Notice
 
@@ -499,9 +499,6 @@ Table of Contents
    whether to opt into the task as described in Section 4.4.  If the
    Client opts out, it MUST not attempt to upload reports for the task.
 
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
-
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
    offered in the extensions field of both Leader and Helper's
@@ -540,9 +537,6 @@ Table of Contents
    The Leader then decides whether to opt in to the task as described in
    Section 4.4.  If it opts out, it MUST abort the upload request with
    "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, once the Leader has opted in to the task, it completes the
    upload request as usual.
@@ -594,9 +588,6 @@ Table of Contents
    Next, the Helper decides whether to opt in to the task as described
    in Section 4.4.  If it opts out, it MUST abort the aggregation job
    request with "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, the Helper completes the request as usual, deriving the VDAF
    verification key for the task as described in Section 4.3.  For any

@@ -234,19 +234,12 @@ Table of Contents
        /* Helper API endpointl. */
        Url helper_aggregator_endpoint;
 
-       /* The time precision. */
-       Duration time_precision;
-
-       /* The minimum batch size. */
-       uint32 min_batch_size;
-
        /* The batch mode and its parameters. */
-       BatchMode batch_mode;
        opaque batch_config<1..2^16-1>;
 
        /* Time up to which Clients are allowed to upload to this
        task. */
-       Defined in I-D.draft-ietf-ppm-dap-09. */
+       Time task_expiration;
 
        /* Determines the VDAF type and its config parameters. */
        opaque vdaf_config<1..2^16-1>;
@@ -261,12 +254,22 @@ Table of Contents
    including the secret VDAF verification key [VDAF] or public HPKE
    configurations [RFC9180].
 
-   The batch_mode field defines the DAP batch mode.  The opaque
-   batch_config field encodes parameters associated with the batch mode.
-   Its value is Empty for the time_interval and leader_selected batch
-   modes defined in [DAP].  This field is length prefixed in order to
-   ensure its contents can be decoded even when an unrecognized batch
-   mode is encountered.
+   The batch_config field defines the DAP batch mode.  Its contents are
+   as follows:
+
+   struct {
+       Duration time_precision;
+       uint32 min_batch_size;
+       BatchMode batch_mode;
+       select (BatchMode.batch_mode) {
+           case time_interval:   Empty;
+           case leader_selected: Empty;
+       };
+   } BatchConfig;
+
+   The length prefix of the query_config ensures that the QueryConfig
+   structure can be decoded even if an unrecognized variant is
+   encountered (i.e., an unimplemented query type).
 
    The vdaf_config defines the configuration of the VDAF in use for this
    task.  Its content is as follows (codepoints are as defined in
@@ -486,9 +489,6 @@ Table of Contents
    whether to opt into the task as described in Section 4.4.  If the
    Client opts out, it MUST not attempt to upload reports for the task.
 
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
-
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
    offered in the extensions field of both Leader and Helper's
@@ -527,9 +527,6 @@ Table of Contents
    The Leader then decides whether to opt in to the task as described in
    Section 4.4.  If it opts out, it MUST abort the upload request with
    "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, once the Leader has opted in to the task, it completes the
    upload request as usual.
@@ -581,9 +578,6 @@ Table of Contents
    Next, the Helper decides whether to opt in to the task as described
    in Section 4.4.  If it opts out, it MUST abort the aggregation job
    request with "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, the Helper completes the request as usual, deriving the VDAF
    verification key for the task as described in Section 4.3.  For any

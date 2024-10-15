@@ -1369,19 +1369,12 @@ struct {
     /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
-    /* The time precision. */
-    Duration time_precision;
-
-    /* The minimum batch size. */
-    uint32 min_batch_size;
-
     /* The batch mode and its parameters. */
-    BatchMode batch_mode;
     opaque batch_config&lt;1..2^16-1&gt;;
 
     /* Time up to which Clients are allowed to upload to this
     task. */
-    Defined in I-D.draft-ietf-ppm-dap-09. */
+    Time task_expiration;
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config&lt;1..2^16-1&gt;;
@@ -1395,15 +1388,27 @@ deployment. For example, this can be a string describing the purpose of this
 task. It does not include cryptographic assets shared by only a subset of the
 parties, including the secret VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> or public HPKE
 configurations <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">The <code>batch_mode</code> field defines the DAP batch mode. The opaque <code>batch_config</code>
-field encodes parameters associated with the batch mode. Its value is <code>Empty</code>
-for the <code>time_interval</code> and <code>leader_selected</code> batch modes defined in <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.
-This field is length prefixed in order to ensure its contents can be
-decoded even when an unrecognized batch mode is encountered.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
+<p id="section-3.1-4">The <code>batch_config</code> field defines the DAP batch mode. Its contents are as follows:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-5">
+<pre>
+struct {
+    Duration time_precision;
+    uint32 min_batch_size;
+    BatchMode batch_mode;
+    select (BatchMode.batch_mode) {
+        case time_interval:   Empty;
+        case leader_selected: Empty;
+    };
+} BatchConfig;
+</pre><a href="#section-3.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-6">The length prefix of the <code>query_config</code> ensures that the <code>QueryConfig</code> structure
+can be decoded even if an unrecognized variant is encountered (i.e., an
+unimplemented query type).<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-6">
+<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-8">
 <pre>
 enum {
     reserved(0x00000000),
@@ -1435,14 +1440,14 @@ struct {
             uint16; /* bit length of input string */
     };
 } VdafConfig;
-</pre><a href="#section-3.1-6" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-8" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-7">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
+<p id="section-3.1-9">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).<a href="#section-3.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.1-8">Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-9">
+unimplemented VDAF).<a href="#section-3.1-9" class="pilcrow">¶</a></p>
+<p id="section-3.1-10">Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-11">
 <pre>
 enum {
     reserved(0), /* Reserved for testing purposes */
@@ -1456,13 +1461,13 @@ struct {
         case none: Empty;
     };
 } DpConfig;
-</pre><a href="#section-3.1-9" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-11" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-10">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
+<p id="section-3.1-12">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
 be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).<a href="#section-3.1-10" class="pilcrow">¶</a></p>
-<p id="section-3.1-11">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
-<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
+unimplemented DP mechanism).<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<p id="section-3.1-13">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
+<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-13" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1631,22 +1636,16 @@ configuration from an Aggregator.<a href="#section-4.5-3" class="pilcrow">¶</a>
 <p id="section-4.6-1">Upon receiving a <code>TaskConfig</code> from the Author, the Client decides whether to
 opt into the task as described in <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>. If the Client opts
 out, it <span class="bcp14">MUST</span> not attempt to upload reports for the task.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.6-2.1">
-            <p id="section-4.6-2.1.1">OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-this to the Author?<a href="#section-4.6-2.1.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-4.6-3">Once the client opts into a task, it may begin uploading reports for the task
+<p id="section-4.6-2">Once the client opts into a task, it may begin uploading reports for the task
 to the Leader. The extension codepoint <code>taskbind</code> <span class="bcp14">MUST</span> be offered in the
 <code>extensions</code> field of both Leader and Helper's <code>PlaintextInputShare</code>. In
-addition, each report's task ID <span class="bcp14">MUST</span> be computed as described in <a href="#definition" class="auto internal xref">Section 3</a>.<a href="#section-4.6-3" class="pilcrow">¶</a></p>
-<p id="section-4.6-4">The Client <span class="bcp14">SHOULD</span> advertise the task configuration by specifying the encoded
+addition, each report's task ID <span class="bcp14">MUST</span> be computed as described in <a href="#definition" class="auto internal xref">Section 3</a>.<a href="#section-4.6-2" class="pilcrow">¶</a></p>
+<p id="section-4.6-3">The Client <span class="bcp14">SHOULD</span> advertise the task configuration by specifying the encoded
 <code>TaskConfig</code> described in <a href="#definition" class="auto internal xref">Section 3</a> in the "dap-taskprov" HTTP header, but
 <span class="bcp14">MAY</span> choose to omit this header in order to save network bandwidth. However, the
 Leader may respond with "unrecognizedTask" if it has not been configured with
 this task. In this case, the Client <span class="bcp14">MUST</span> retry the upload request with the
-"dap-taskprov" HTTP header.<a href="#section-4.6-4" class="pilcrow">¶</a></p>
+"dap-taskprov" HTTP header.<a href="#section-4.6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="leader-behavior">
@@ -1676,17 +1675,11 @@ Leader <span class="bcp14">MUST</span> abort with "unrecognizedTask".<a href="#s
 <p id="section-4.7.1-4">The Leader then decides whether to opt in to the task as described in
 <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>. If it opts out, it <span class="bcp14">MUST</span> abort the upload request with
 "invalidTask".<a href="#section-4.7.1-4" class="pilcrow">¶</a></p>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.7.1-5.1">
-              <p id="section-4.7.1-5.1.1">OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-this to the Author?<a href="#section-4.7.1-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="section-4.7.1-6">Finally, once the Leader has opted in to the task, it completes the upload
-request as usual.<a href="#section-4.7.1-6" class="pilcrow">¶</a></p>
-<p id="section-4.7.1-7">During the upload flow, if the Leader's report share does not present a
+<p id="section-4.7.1-5">Finally, once the Leader has opted in to the task, it completes the upload
+request as usual.<a href="#section-4.7.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.7.1-6">During the upload flow, if the Leader's report share does not present a
 <code>taskbind</code> extension type, Leader <span class="bcp14">MUST</span> abort the upload request with
-"invalidMessage".<a href="#section-4.7.1-7" class="pilcrow">¶</a></p>
+"invalidMessage".<a href="#section-4.7.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="aggregate-protocol">
@@ -1740,17 +1733,11 @@ If not, the Helper <span class="bcp14">MUST</span> abort with "unrecognizedTask"
 <p id="section-4.8-4">Next, the Helper decides whether to opt in to the task as described in
 <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>. If it opts out, it <span class="bcp14">MUST</span> abort the aggregation job
 request with "invalidTask".<a href="#section-4.8-4" class="pilcrow">¶</a></p>
-<ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-4.8-5.1">
-            <p id="section-4.8-5.1.1">OPEN ISSUE: In case of opt-out, would it be useful to specify how to report
-this to the Author?<a href="#section-4.8-5.1.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-4.8-6">Finally, the Helper completes the request as usual, deriving the VDAF
+<p id="section-4.8-5">Finally, the Helper completes the request as usual, deriving the VDAF
 verification key for the task as described in <a href="#vdaf-verify-key" class="auto internal xref">Section 4.3</a>. For any
 report share that does not include the <code>taskbind</code> extension with an empty
 payload, the Helper <span class="bcp14">MUST</span> mark the report as invalid with error
-"invalid_message" and reject it.<a href="#section-4.8-6" class="pilcrow">¶</a></p>
+"invalid_message" and reject it.<a href="#section-4.8-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="collector-behavior">

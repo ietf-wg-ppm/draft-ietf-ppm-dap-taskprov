@@ -608,10 +608,10 @@ creation of a new registry for DP mechanisms.
 
 (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this document.)
 
-## Upload Extension
+## Report Extension
 
 The following entry will be (RFC EDITOR: change "will be" to "has been") added
-to the "Upload Extension Identifiers" registry of the "Distributed Aggregation
+to the "Report Extension Identifiers" registry of the "Distributed Aggregation
 Protocol (DAP)" page created by {{!VDAF}}:
 
 Value:
@@ -622,9 +622,6 @@ Name:
 
 Reference:
 : RFC XXXX
-
-> TODO Rename "Upload Extensions Identifiers" if we decide to take
-> https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610
 
 ## Registry for DP Mechanisms
 

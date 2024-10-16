@@ -102,7 +102,7 @@ Table of Contents
 
 1.  Introduction
 
-   (RFC EDITOR: Remvoe this paragraph.)  This draft is maintained in
+   (RFC EDITOR: Remove this paragraph.)  This draft is maintained in
    https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
    The DAP protocol [DAP] enables secure aggregation of a set of reports

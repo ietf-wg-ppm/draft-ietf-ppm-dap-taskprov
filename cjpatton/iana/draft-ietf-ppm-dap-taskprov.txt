@@ -92,7 +92,7 @@ Table of Contents
    5.  Security Considerations
    6.  Operational Considerations
    7.  IANA Considerations
-     7.1.  Upload Extension
+     7.1.  Report Extension
      7.2.  Registry for DP Mechanisms
      7.3.  DAP Sub-namespace for DAP
    8.  Extending this Document
@@ -677,10 +677,10 @@ Table of Contents
    (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
    document.)
 
-7.1.  Upload Extension
+7.1.  Report Extension
 
    The following entry will be (RFC EDITOR: change "will be" to "has
-   been") added to the "Upload Extension Identifiers" registry of the
+   been") added to the "Report Extension Identifiers" registry of the
    "Distributed Aggregation Protocol (DAP)" page created by [VDAF]:
 
    Value:  0xff00
@@ -688,9 +688,6 @@ Table of Contents
    Name:  taskbind
 
    Reference:  RFC XXXX
-
-      TODO Rename "Upload Extensions Identifiers" if we decide to take
-      https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/610
 
 7.2.  Registry for DP Mechanisms
 

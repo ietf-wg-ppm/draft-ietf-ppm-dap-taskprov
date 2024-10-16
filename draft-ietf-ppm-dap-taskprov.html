@@ -1036,7 +1036,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wang &amp; Patton</td>
-<td class="center">Expires 18 April 2025</td>
+<td class="center">Expires 19 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1049,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-ppm-dap-taskprov-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-10-15" class="published">15 October 2024</time>
+<time datetime="2024-10-16" class="published">16 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-04-18">18 April 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-19">19 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1113,7 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 19 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1369,9 +1369,8 @@ struct {
     /* Helper API endpointl. */
     Url helper_aggregator_endpoint;
 
-    /* This determines the query type for batch selection and the
-    properties that all batches for this task must have. */
-    opaque query_config&lt;1..2^16-1&gt;;
+    /* The batch mode and its parameters. */
+    opaque batch_config&lt;1..2^16-1&gt;;
 
     /* Time up to which Clients are allowed to upload to this
     task. */
@@ -1384,39 +1383,32 @@ struct {
 </div>
 <p id="section-3.1-3">The purpose of <code>TaskConfig</code> is to define all parameters that are necessary for
 configuring each party. It includes all the fields to be associated with a
-task. In addition to the Aggregator endpoints, maximum batch query count, and
-task expiration, the structure includes an opaque <code>task_info</code> field that is
-specific to a deployment. For example, this can be a string describing the
-purpose of this task. It does not include cryptographic assets shared by only a
-subset of the parties, including the secret VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> or
-public HPKE configurations <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">The opaque <code>query_config</code> field defines the DAP query configuration used to
-guide batch selection. Its content is structured as follows:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+task. It also includes an opaque <code>task_info</code> field that is specific to a
+deployment. For example, this can be a string describing the purpose of this
+task. It does not include cryptographic assets shared by only a subset of the
+parties, including the secret VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> or public HPKE
+configurations <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">The <code>batch_config</code> field defines the DAP batch mode. Its contents are as follows:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-5">
 <pre>
 struct {
     Duration time_precision;
-    uint16 max_batch_query_count;
     uint32 min_batch_size;
-    QueryType query_type;
-    select (QueryConfig.query_type) {
-        case time_interval: Empty;
-        case fixed_size:    uint32 max_batch_size;
+    BatchMode batch_mode;
+    select (BatchMode.batch_mode) {
+        case time_interval:   Empty;
+        case leader_selected: Empty;
     };
-} QueryConfig;
+} BatchConfig;
 </pre><a href="#section-3.1-5" class="pilcrow">¶</a>
 </div>
 <p id="section-3.1-6">The length prefix of the <code>query_config</code> ensures that the <code>QueryConfig</code> structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented query type).<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1-7">The maximum batch size for <code>fixed_size</code> query is optional. If <code>query_type</code> is
-<code>fixed_size</code> and <code>max_batch_size</code> is 0, then the task does not have maximum
-batch size limit. In particular, during batch validation (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-12#section-4.6.5.2.2" class="relref">Section 4.6.5.2.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), the Aggregator does not check <code>len(X) &lt;= max_batch_size</code>, where <code>X</code>
-is the set of reports successfully aggregated into the batch.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.1-8">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
+<p id="section-3.1-7">The <code>vdaf_config</code> defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-9">
+<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-8">
 <pre>
 enum {
     reserved(0x00000000),
@@ -1448,14 +1440,14 @@ struct {
             uint16; /* bit length of input string */
     };
 } VdafConfig;
-</pre><a href="#section-3.1-9" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-8" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-10">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
+<p id="section-3.1-9">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).<a href="#section-3.1-10" class="pilcrow">¶</a></p>
-<p id="section-3.1-11">Apart from the VDAF-specific parameters, this structure includes a mechanism for
-differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-11" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-12">
+unimplemented VDAF).<a href="#section-3.1-9" class="pilcrow">¶</a></p>
+<p id="section-3.1-10">Apart from the VDAF-specific parameters, this structure includes a mechanism for
+differential privacy (DP). The opaque <code>dp_config</code> contains the following structure:<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-11">
 <pre>
 enum {
     reserved(0), /* Reserved for testing purposes */
@@ -1469,13 +1461,13 @@ struct {
         case none: Empty;
     };
 } DpConfig;
-</pre><a href="#section-3.1-12" class="pilcrow">¶</a>
+</pre><a href="#section-3.1-11" class="pilcrow">¶</a>
 </div>
-<p id="section-3.1-13">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
+<p id="section-3.1-12">The length prefix of the <code>dp_config</code> ensures that the <code>DpConfig</code> structure can
 be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).<a href="#section-3.1-13" class="pilcrow">¶</a></p>
-<p id="section-3.1-14">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>QueryType</code> follow those in
-<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-14" class="pilcrow">¶</a></p>
+unimplemented DP mechanism).<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<p id="section-3.1-13">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
+<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-13" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1598,7 +1590,8 @@ configuration disseminated by the Author does not match the existing
 configuration.<a href="#section-4.4-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-3.2">
-            <p id="section-4.4-3.2.1">The VDAF, DP, or query configuration is deemed insufficient for privacy.<a href="#section-4.4-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.4-3.2.1">The VDAF config, DP mechanism, or other parameters are deemed insufficient
+for privacy.<a href="#section-4.4-3.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.4-3.3">
             <p id="section-4.4-3.3.1">A secure connection to one or both of the Aggregator endpoints could not be
@@ -1609,7 +1602,8 @@ established.<a href="#section-4.4-3.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-4.4-4">A protocol participant <span class="bcp14">MUST</span> opt out if the task has expired or if it does not
-support an indicated task parameter (e.g., VDAF, DP mechanism, or query type).<a href="#section-4.4-4" class="pilcrow">¶</a></p>
+support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
+mode).<a href="#section-4.4-4" class="pilcrow">¶</a></p>
 <p id="section-4.4-5">The behavior of each protocol participant is determined by whether or not they
 opt in to a task.<a href="#section-4.4-5" class="pilcrow">¶</a></p>
 </section>

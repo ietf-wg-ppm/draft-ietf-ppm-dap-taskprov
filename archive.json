@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-15T01:02:35.575823+00:00",
+  "timestamp": "2024-10-17T01:01:37.802848+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -949,12 +949,66 @@
       "assignees": [
         "cjpatton"
       ],
-      "labels": [],
+      "labels": [
+        "draft-01"
+      ],
       "body": "We will definitely need to ask IANA to register the codepoint in the upload extensions registry. One open quesiton is how to maintain taskprov as new query types or VDAFs are defined. We also don't yet have a registry (or request for a registry) for DP mecanisms.",
       "createdAt": "2024-10-01T01:19:20Z",
-      "updatedAt": "2024-10-10T21:52:39Z",
+      "updatedAt": "2024-10-15T23:38:36Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 83,
+      "id": "I_kwDOH4FR586aYsip",
+      "title": "More codepoints for DP mechansims?",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/83",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking",
+        "interim-2024-10-24"
+      ],
+      "body": "At the moment we've only allocated a byte for DP mechanism identifiers. For VDAFs we've allocated four bytes. It doesn't seem out of the question to me that we end up with more than 256 DP mechanisms.",
+      "createdAt": "2024-10-15T23:34:05Z",
+      "updatedAt": "2024-10-16T10:35:49Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I doubt we'll have that many varieties of differential privacy. However, I think it's fine to align with VDAF, extra 3 bytes should have no perf impact. ",
+          "createdAt": "2024-10-16T10:35:30Z",
+          "updatedAt": "2024-10-16T10:35:49Z"
+        }
+      ]
+    },
+    {
+      "number": 85,
+      "id": "I_kwDOH4FR586aarVs",
+      "title": "Extensibility",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/85",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I'm in the process of writing up a few DAP (upload) extensions and realized that if they are going to be generically useful, then it would make sense to have corresponding changes to be included in task configurations.  For this draft, that means having some means to include that configuration in the creation of the task, but there are no extensibility points in this document that would allow that to happen.  Can an extension mechanism be defined?\r\n\r\nMost likely, this would have to be like upload extensions, where ignorance of the extension would invalidate the entire request.\r\n\r\nI would also recommend that the DP configuration be moved to an extension.  Then you can move the definition of the specifics to the DP draft and remove one potentially-awkward interdependency.",
+      "createdAt": "2024-10-16T05:36:34Z",
+      "updatedAt": "2024-10-16T15:01:05Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> I'm in the process of writing up a few DAP (upload) extensions and realized that if they are going to be generically useful, then it would make sense to have corresponding changes to be included in task configurations. For this draft, that means having some means to include that configuration in the creation of the task, but there are no extensibility points in this document that would allow that to happen. Can an extension mechanism be defined?\r\n\r\nI had this exact thought recently. Could you take a look at https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/84, specifically the new \"Extending this Document\" section? I think this is a step in the right direction, although I think there may still be some open questions, e.g., how precisely does one \"extend\" the `DpConfig` structure.\r\n\r\n> Most likely, this would have to be like upload extensions, where ignorance of the extension would invalidate the entire request.\r\n\r\nI believe this is covered by the opt-in mechanism: https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-taskprov.html#section-4.4-4\r\n\r\n> I would also recommend that the DP configuration be moved to an extension. Then you can move the definition of the specifics to the DP draft and remove one potentially-awkward interdependency.\r\n\r\nAre you thinking of an extension to DAP or to this document? \r\n\r\n",
+          "createdAt": "2024-10-16T15:01:03Z",
+          "updatedAt": "2024-10-16T15:01:03Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -6399,11 +6453,13 @@
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [
-        "draft-01"
+        "draft-01",
+        "wire breaking",
+        "interim-2024-10-24"
       ],
       "body": "Closes #62.",
       "createdAt": "2024-10-08T19:40:49Z",
-      "updatedAt": "2024-10-08T19:46:58Z",
+      "updatedAt": "2024-10-16T15:37:10Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "d34ab6f1aa01b66b93f07ff38bc781a478158327",
@@ -6415,7 +6471,21 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586NT6xV",
+          "commit": {
+            "abbreviatedOid": "77fa9da"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-15T22:30:22Z",
+          "updatedAt": "2024-10-15T22:30:22Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 77,
@@ -6543,6 +6613,215 @@
           "body": "",
           "createdAt": "2024-10-09T16:00:20Z",
           "updatedAt": "2024-10-09T16:00:20Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 80,
+      "id": "PR_kwDOH4FR585-vUUU",
+      "title": "Forget about informing the Author of opt-out",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/80",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01"
+      ],
+      "body": "There is no protocol interaction between the Author any party.",
+      "createdAt": "2024-10-15T22:11:55Z",
+      "updatedAt": "2024-10-15T22:39:55Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "bde12c6d217fc3d9107a2b2dda1efbc8bee16e47",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/task-author",
+      "headRefOid": "b09516f99e09fec0b29a294348ccbc9464430ce3",
+      "closedAt": "2024-10-15T22:39:55Z",
+      "mergedAt": "2024-10-15T22:39:55Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "fb16fdd568374e4faf52bd2cde32754fbf00bd86"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586NT5ke",
+          "commit": {
+            "abbreviatedOid": "b09516f"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-15T22:26:02Z",
+          "updatedAt": "2024-10-15T22:26:02Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 81,
+      "id": "PR_kwDOH4FR585-vU-e",
+      "title": "Add back the expiration date to `TaskConfig`",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/81",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "bug",
+        "draft-01"
+      ],
+      "body": "This was erroneously deleted in a prior commit.",
+      "createdAt": "2024-10-15T22:14:04Z",
+      "updatedAt": "2024-10-15T22:40:09Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "bde12c6d217fc3d9107a2b2dda1efbc8bee16e47",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/task-expiration",
+      "headRefOid": "659cf91a7a6a73600444f77b5b0c4e73734aad60",
+      "closedAt": "2024-10-15T22:40:09Z",
+      "mergedAt": "2024-10-15T22:40:09Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "a4961c7e695f83101b1f894d262b9dc817724bc0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586NT5b8",
+          "commit": {
+            "abbreviatedOid": "659cf91"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-15T22:25:27Z",
+          "updatedAt": "2024-10-15T22:25:27Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 82,
+      "id": "PR_kwDOH4FR585-vd17",
+      "title": "Update query config (*)",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/82",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01"
+      ],
+      "body": "Account for the following changes in DAP-12:\r\n\r\n* \"query type\" is now called \"batch mode\"\r\n* `fixed_size` batch mode has been renamed to `leader_selected`\r\n* The `max_batch_query_count` parameter no longer exists\r\n* The `max_batch_size` field for `leader_selected` no longer exists",
+      "createdAt": "2024-10-15T22:45:17Z",
+      "updatedAt": "2024-10-16T14:47:11Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "a4961c7e695f83101b1f894d262b9dc817724bc0",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/query-type",
+      "headRefOid": "a67f00453cc38baab982a5798519d6bae0d411e9",
+      "closedAt": "2024-10-16T14:47:11Z",
+      "mergedAt": "2024-10-16T14:47:11Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "93298ed62fca5ffa79395ce30573d3cf220f9f3b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586NYdSZ",
+          "commit": {
+            "abbreviatedOid": "a67f004"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-16T10:37:35Z",
+          "updatedAt": "2024-10-16T10:37:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 84,
+      "id": "PR_kwDOH4FR585-vr5e",
+      "title": "Flesh out IANA considerations and extending taskbind (*)",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/84",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking"
+      ],
+      "body": "Stacked on #82.\r\nCloses #72.\r\nPartially addresses #34.\r\n\r\n* Ask IANA to register the extension codepoint\r\n* Ask IANA to create a registry for DP mechanisms\r\n* Add guidance for extending taskbind in the future\r\n* Ask IANA to add \"invalidTask\" to the URN sub-namespace for DAP\r\n\r\nWe haven't quite figured out the last of these, so leave it as a TODO.\r\n\r\nFuture documents might extend the batch config, DP config, or VDAF\r\nconfig, so it's helpful if these structures are self-contained. To\r\naccomplish this, move the time precision and min batch size parameters\r\nout of BatchConfig into TaskConfig and move the DP mechnaism and config\r\nout of VdafConfig.",
+      "createdAt": "2024-10-15T23:38:52Z",
+      "updatedAt": "2024-10-16T16:57:10Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "93298ed62fca5ffa79395ce30573d3cf220f9f3b",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/iana",
+      "headRefOid": "6cbae131f97854d9a747c958e1db97914808919c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586NYdq4",
+          "commit": {
+            "abbreviatedOid": "f181039"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-16T10:38:22Z",
+          "updatedAt": "2024-10-16T10:38:22Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "```suggestion\r\n(RFC EDITOR: Remove this paragraph.) This draft is maintained in\r\n```",
+              "createdAt": "2024-10-16T10:38:22Z",
+              "updatedAt": "2024-10-16T10:38:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586NYflV",
+          "commit": {
+            "abbreviatedOid": "f181039"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "LGTM, one small typo needs fixing",
+          "createdAt": "2024-10-16T10:40:59Z",
+          "updatedAt": "2024-10-16T10:40:59Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586NbykE",
+          "commit": {
+            "abbreviatedOid": "528150b"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-16T15:29:06Z",
+          "updatedAt": "2024-10-16T15:35:33Z",
           "comments": []
         }
       ]

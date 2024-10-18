@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 19 April 2025                                        Cloudflare
-                                                         16 October 2024
+Expires: 21 April 2025                                        Cloudflare
+                                                         18 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 April 2025.
+   This Internet-Draft will expire on 21 April 2025.
 
 Copyright Notice
 
@@ -92,11 +92,18 @@ Table of Contents
    5.  Security Considerations
    6.  Operational Considerations
    7.  IANA Considerations
-   8.  Normative References
+     7.1.  Report Extension
+     7.2.  Registry for DP Mechanisms
+     7.3.  DAP Sub-namespace for DAP
+   8.  Extending this Document
+   9.  Normative References
    Contributors
    Authors' Addresses
 
 1.  Introduction
+
+   (RFC EDITOR: Remove this paragraph.)  This draft is maintained in
+   https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
    The DAP protocol [DAP] enables secure aggregation of a set of reports
    submitted by Clients.  This process is centered around a "task" that
@@ -179,8 +186,6 @@ Table of Contents
    extension in the report extensions for each Aggregator as described
    in Section 4.4.3 of [DAP]:
 
-   (RFC EDITOR: Change this to the IANA-assigned codepoint.)
-
    enum {
        taskbind(0xff00),
        (65535)
@@ -231,8 +236,14 @@ Table of Contents
        /* Leader API endpoint. */
        Url leader_aggregator_endpoint;
 
-       /* Helper API endpointl. */
+       /* Helper API endpoint. */
        Url helper_aggregator_endpoint;
+
+       /* Time precision. */
+       Duration time_precision;
+
+       /* Minimum batch size. */
+       uint32 min_batch_size;
 
        /* The batch mode and its parameters. */
        opaque batch_config<1..2^16-1>;
@@ -240,6 +251,9 @@ Table of Contents
        /* Time up to which Clients are allowed to upload to this
        task. */
        Time task_expiration;
+
+       /* Differential privacy (DP) configuration. */
+       opaque dp_config<1..2^16-1>;
 
        /* Determines the VDAF type and its config parameters. */
        opaque vdaf_config<1..2^16-1>;
@@ -258,8 +272,6 @@ Table of Contents
    as follows:
 
    struct {
-       Duration time_precision;
-       uint32 min_batch_size;
        BatchMode batch_mode;
        select (BatchMode.batch_mode) {
            case time_interval:   Empty;
@@ -270,6 +282,26 @@ Table of Contents
    The length prefix of the query_config ensures that the QueryConfig
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented query type).
+
+   The dp_config field defines a mechanism for differential privacy
+   (DP).  The opaque dp_config contains the following structure:
+
+   enum {
+       reserved(0), /* Reserved for testing purposes */
+       none(1),
+       (255)
+   } DpMechanism;
+
+   struct {
+       DpMechanism dp_mechanism;
+       select (DpConfig.dp_mechanism) {
+           case none: Empty;
+       };
+   } DpConfig;
+
+   The length prefix of the dp_config ensures that the DpConfig
+   structure can be decoded even if an unrecognized variant is
+   encountered (i.e., an unimplemented DP mechanism).
 
    The vdaf_config defines the configuration of the VDAF in use for this
    task.  Its content is as follows (codepoints are as defined in
@@ -287,7 +319,6 @@ Table of Contents
    } VdafType;
 
    struct {
-       opaque dp_config<1..2^16-1>;
        VdafType vdaf_type;
        select (VdafConfig.vdaf_type) {
            case prio3_count:
@@ -309,27 +340,6 @@ Table of Contents
    The length prefix of the vdaf_config ensures that the VdafConfig
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented VDAF).
-
-   Apart from the VDAF-specific parameters, this structure includes a
-   mechanism for differential privacy (DP).  The opaque dp_config
-   contains the following structure:
-
-   enum {
-       reserved(0), /* Reserved for testing purposes */
-       none(1),
-       (255)
-   } DpMechanism;
-
-   struct {
-       DpMechanism dp_mechanism;
-       select (DpConfig.dp_mechanism) {
-           case none: Empty;
-       };
-   } DpConfig;
-
-   The length prefix of the dp_config ensures that the DpConfig
-   structure can be decoded even if an unrecognized variant is
-   encountered (i.e., an unimplemented DP mechanism).
 
    The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
@@ -661,11 +671,80 @@ Table of Contents
 
 7.  IANA Considerations
 
-      NOTE(cjpatton) Eventually we'll have IANA considerations (at the
-      very least we'll need to allocate a codepoint) but we can leave
-      this blank for now.
+   This document requests a codepoint for the taskbind extension and for
+   creation of a new registry for DP mechanisms.
 
-8.  Normative References
+   (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
+   document.)
+
+7.1.  Report Extension
+
+   The following entry will be (RFC EDITOR: change "will be" to "has
+   been") added to the "Report Extension Identifiers" registry of the
+   "Distributed Aggregation Protocol (DAP)" page created by [VDAF]:
+
+   Value:  0xff00
+
+   Name:  taskbind
+
+   Reference:  RFC XXXX
+
+7.2.  Registry for DP Mechanisms
+
+   A new registry will be (RFC EDITOR: change "will be" to "has been")
+   created for the "Distributed Aggregation Protocol (DAP)" page called
+   "Differential Privacy (DP) Mechanisms".  This registry contains the
+   following columns:
+
+   Value:  The one-byte identifier for the DP mechanism
+
+   Name:  The name of the DP mechanism
+
+   Reference:  Where the DP mechanism is defined
+
+   The initial contents of this registry are listed in the following
+   table.
+
+              +=======+==========+=========================+
+              | Value | Name     | Reference               |
+              +=======+==========+=========================+
+              | 0x00  | reserved | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+              | 0x01  | none     | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+
+                     Table 2: Initial contents of the
+                   Differential Privacy (DP) Mechanisms
+                                registry.
+
+7.3.  DAP Sub-namespace for DAP
+
+      TODO Figure out how to ask IANA to register the errors in Table 1.
+      See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/
+      issues/34
+
+8.  Extending this Document
+
+   The behavior of the taskbind extension may be extended by future
+   documents that define:
+
+   1.  A new DAP batch mode
+
+   2.  A new VDAF
+
+   3.  A new DP mechanisms
+
+   Such documents SHOULD include a section titled "Taskbind
+   Considerations" that specifies an encoding of any configuration
+   parameters associated with the DAP batch mode, VDAF, or DP mechanism.
+   This encoding extends the BatchConfig structure, the VdafConfig
+   structure, or the DpConfig structure respectively.
+
+   Note that the registry for batch modes is defined by [DAP]; the
+   registry for VDAFs is defined by [VDAF]; and the registry for DP
+   mechanisms is defined in Section 7.2 of this document.
+
+9.  Normative References
 
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy

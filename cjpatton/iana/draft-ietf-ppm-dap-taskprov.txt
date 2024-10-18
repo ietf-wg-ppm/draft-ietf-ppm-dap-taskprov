@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 19 April 2025                                        Cloudflare
-                                                         16 October 2024
+Expires: 21 April 2025                                        Cloudflare
+                                                         18 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 April 2025.
+   This Internet-Draft will expire on 21 April 2025.
 
 Copyright Notice
 
@@ -739,6 +739,10 @@ Table of Contents
    parameters associated with the DAP batch mode, VDAF, or DP mechanism.
    This encoding extends the BatchConfig structure, the VdafConfig
    structure, or the DpConfig structure respectively.
+
+   Note that the registry for batch modes is defined by [DAP]; the
+   registry for VDAFs is defined by [VDAF]; and the registry for DP
+   mechanisms is defined in Section 7.2 of this document.
 
 9.  Normative References
 

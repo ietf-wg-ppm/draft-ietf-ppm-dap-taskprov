@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-17T01:01:37.802848+00:00",
+  "timestamp": "2024-10-20T01:07:11.829401+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -506,13 +506,11 @@
       "state": "OPEN",
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
-      "assignees": [
-        "cjpatton"
-      ],
+      "assignees": [],
       "labels": [],
       "body": "The document currently suggests that the type `urn:ietf:params:ppm:dap:error:invalidTask` should be used in problem details responses. However, DAP says \"Servers MUST NOT use the DAP URN namespace for errors not listed in the appropriate IANA registry\". Thus, the taskprov document's 'IANA Considerations' section should either add an `invalidTask` entry to the contents of DAP's URN registry, or create a separate namespace of its own.",
       "createdAt": "2023-08-04T19:25:11Z",
-      "updatedAt": "2024-09-25T18:16:10Z",
+      "updatedAt": "2024-10-18T21:37:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -535,6 +533,13 @@
           "body": "Let's hold this issue open until we get to WG call-for-adoption. If we discuss this at IETF 118, then I suggest bringing up the issue then.",
           "createdAt": "2023-10-11T22:01:18Z",
           "updatedAt": "2023-10-11T22:01:18Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Blocked by https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/621",
+          "createdAt": "2024-10-18T21:37:08Z",
+          "updatedAt": "2024-10-18T21:37:08Z"
         }
       ]
     },
@@ -943,7 +948,7 @@
       "id": "I_kwDOH4FR586Yd2yN",
       "title": "IANA considerations",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/72",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -954,8 +959,8 @@
       ],
       "body": "We will definitely need to ask IANA to register the codepoint in the upload extensions registry. One open quesiton is how to maintain taskprov as new query types or VDAFs are defined. We also don't yet have a registry (or request for a registry) for DP mecanisms.",
       "createdAt": "2024-10-01T01:19:20Z",
-      "updatedAt": "2024-10-15T23:38:36Z",
-      "closedAt": null,
+      "updatedAt": "2024-10-18T21:24:00Z",
+      "closedAt": "2024-10-18T21:24:00Z",
       "comments": []
     },
     {
@@ -966,7 +971,9 @@
       "state": "OPEN",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "junyechen1996"
+      ],
       "labels": [
         "draft-01",
         "wire breaking",
@@ -974,7 +981,7 @@
       ],
       "body": "At the moment we've only allocated a byte for DP mechanism identifiers. For VDAFs we've allocated four bytes. It doesn't seem out of the question to me that we end up with more than 256 DP mechanisms.",
       "createdAt": "2024-10-15T23:34:05Z",
-      "updatedAt": "2024-10-16T10:35:49Z",
+      "updatedAt": "2024-10-18T21:24:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -995,10 +1002,12 @@
       "author": "martinthomson",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "interim-2024-10-24"
+      ],
       "body": "I'm in the process of writing up a few DAP (upload) extensions and realized that if they are going to be generically useful, then it would make sense to have corresponding changes to be included in task configurations.  For this draft, that means having some means to include that configuration in the creation of the task, but there are no extensibility points in this document that would allow that to happen.  Can an extension mechanism be defined?\r\n\r\nMost likely, this would have to be like upload extensions, where ignorance of the extension would invalidate the entire request.\r\n\r\nI would also recommend that the DP configuration be moved to an extension.  Then you can move the definition of the specifics to the DP draft and remove one potentially-awkward interdependency.",
       "createdAt": "2024-10-16T05:36:34Z",
-      "updatedAt": "2024-10-16T15:01:05Z",
+      "updatedAt": "2024-10-18T21:23:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -1007,6 +1016,27 @@
           "body": "> I'm in the process of writing up a few DAP (upload) extensions and realized that if they are going to be generically useful, then it would make sense to have corresponding changes to be included in task configurations. For this draft, that means having some means to include that configuration in the creation of the task, but there are no extensibility points in this document that would allow that to happen. Can an extension mechanism be defined?\r\n\r\nI had this exact thought recently. Could you take a look at https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/84, specifically the new \"Extending this Document\" section? I think this is a step in the right direction, although I think there may still be some open questions, e.g., how precisely does one \"extend\" the `DpConfig` structure.\r\n\r\n> Most likely, this would have to be like upload extensions, where ignorance of the extension would invalidate the entire request.\r\n\r\nI believe this is covered by the opt-in mechanism: https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-taskprov.html#section-4.4-4\r\n\r\n> I would also recommend that the DP configuration be moved to an extension. Then you can move the definition of the specifics to the DP draft and remove one potentially-awkward interdependency.\r\n\r\nAre you thinking of an extension to DAP or to this document? \r\n\r\n",
           "createdAt": "2024-10-16T15:01:03Z",
           "updatedAt": "2024-10-16T15:01:03Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I don't think that #84 really works for me.  As far as I can see, you aren't adding explicit extension points (in TLV, say), but saying \"add stuff to the various configs as needed\", which creates a coordination problem.  If you have multiple definitions for extension, how do they ensure that both can be used?  That is, which addition comes first?\r\n\r\nThat's why we end up with TLVs (though with a requirement to understand the extension, you might reasonably drop the \"L\" part).\r\n\r\n(I was thinking that it might be nice to have a taskprov extension in the DP draft.)",
+          "createdAt": "2024-10-17T01:40:24Z",
+          "updatedAt": "2024-10-17T01:40:24Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> I don't think that #84 really works for me. As far as I can see, you aren't adding explicit extension points (in TLV, say), but saying \"add stuff to the various configs as needed\", which creates a coordination problem. If you have multiple definitions for extension, how do they ensure that both can be used? That is, which addition comes first?\r\n\r\nDo you mean multiple definitions of \"_an_ extension\"? How might this happen? Isn't the IANA registry supposed to ensure that a codepoint points to one and only one document?\r\n\r\nOr do you mean multiple definitions of \"extension\"?\r\n\r\n> That's why we end up with TLVs (though with a requirement to understand the extension, you might reasonably drop the \"L\" part).\r\n\r\nI'm pretty sure TLV stands for Tag-Length-Value; let me know if you mean something else. \r\n\r\nIn fact, the DAP document does define TLV-style extension points: for DAP batch modes, VDAFs, and DP mechanisms. (The batch mode registry is in the DAP document; the VDAF registry is in the VDAF document; and the DP mechanism registry is here.) Note that the L (i.e., the length) actually comes before the T (i.e., the tag) in our case; see `TaskConfig` in #84. We could easily change this if we wanted.\r\n\r\nSo how do you add a DP mechanism? Here is the extension point for DP mechanisms (excerpted from the #84):\r\n\r\n```\r\nenum {\r\n    reserved(0), /* Reserved for testing purposes */\r\n    none(1),\r\n    (255)\r\n} DpMechanism;\r\n\r\nstruct {\r\n    DpMechanism dp_mechanism;\r\n    select (DpConfig.dp_mechanism) {\r\n        case none: Empty;\r\n    };\r\n} DpConfig;\r\n```\r\n\r\nLet's say RFC 1234 defines a new DP mechanism. The document is supposed to describe how it modifies `DpMechanism`. In particular, it would define its codepoint like so:\r\n\r\n> ```\r\n> enum {\r\n>     cool_guy(0x42), (255)\r\n> } DpMechanism;\r\n> ```\r\n\r\nIt also needs to describe how it modifies `DpConfig`. That is, it would specify the payload for the `case cool_guy` arm  in the `select` block. I'm not sure what the best way to spell this would be. Perhaps something like this:\r\n\r\n> The payload of the `cool_guy` variant of the `DpConfig` following is structured as follows:\r\n>\r\n> ```\r\n> struct {\r\n>     Cool stuff<0..2^16>;\r\n> } CoolGuyConfig;\r\n> ```\r\n\r\nWhat do you think?\r\n\r\n> (I was thinking that it might be nice to have a taskprov extension in the DP draft.)\r\n\r\nA bit of context as to why we define `DpMechanism` here rather than in the DP draft: There is no active work on the DP draft at the moment. The last time we talked about it, the WG was split between doing nothing at all and taking an entirely different approach. In the meantime, we already knew we need the extension point in the task config, so we went ahead and added it to this draft. It has existed well before adoption.\r\n\r\nNow, to your point: Now that we have consensus to work on taskprov, we could do something like this:\r\n\r\n* Add a section to DAP that defines `BatchModeConfig` (i.e., taskprov encoding)\r\n* Add a section to VDAF that defines `VdafConfig` (i.e., taskprov encoding)\r\n* Refresh the DP draft, moving the `DpMechanism` there as well as the `DpConfig` (i.e., taskprov encoding) (or https://github.com/martinthomson/dap-dp-ext could do this?)\r\n\r\nI think the problem we'd have is one of chickens and eggs. My understanding is that RFCs can't have _normative_ circular dependencies. For example, taskprov normatively uses DAP, so DAP can't normatively use taskprov. Perhaps that's not the case? It would definitely make things more complicated when we have to update drafts, although hopefully we're pretty close to done with DAP.\r\n\r\nPR  #84 solves this differently: documents that extend taskprov have a special section that describes how they extend it.\r\n\r\n\r\n\r\n\r\n\r\n",
+          "createdAt": "2024-10-17T15:12:30Z",
+          "updatedAt": "2024-10-17T15:45:00Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson FYI I'm merging #84, as I think there are some improvments that are helpful in any case. We can fix stuff as needed as part of this issue.",
+          "createdAt": "2024-10-18T21:23:49Z",
+          "updatedAt": "2024-10-18T21:23:49Z"
         }
       ]
     }
@@ -6755,7 +6785,7 @@
       "id": "PR_kwDOH4FR585-vr5e",
       "title": "Flesh out IANA considerations and extending taskbind (*)",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/84",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -6765,17 +6795,19 @@
       ],
       "body": "Stacked on #82.\r\nCloses #72.\r\nPartially addresses #34.\r\n\r\n* Ask IANA to register the extension codepoint\r\n* Ask IANA to create a registry for DP mechanisms\r\n* Add guidance for extending taskbind in the future\r\n* Ask IANA to add \"invalidTask\" to the URN sub-namespace for DAP\r\n\r\nWe haven't quite figured out the last of these, so leave it as a TODO.\r\n\r\nFuture documents might extend the batch config, DP config, or VDAF\r\nconfig, so it's helpful if these structures are self-contained. To\r\naccomplish this, move the time precision and min batch size parameters\r\nout of BatchConfig into TaskConfig and move the DP mechnaism and config\r\nout of VdafConfig.",
       "createdAt": "2024-10-15T23:38:52Z",
-      "updatedAt": "2024-10-16T16:57:10Z",
+      "updatedAt": "2024-10-18T21:24:00Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "93298ed62fca5ffa79395ce30573d3cf220f9f3b",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/iana",
-      "headRefOid": "6cbae131f97854d9a747c958e1db97914808919c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "618df7de419b336f8106ca4a325744bae4df4741",
+      "closedAt": "2024-10-18T21:23:59Z",
+      "mergedAt": "2024-10-18T21:23:59Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "ca4edce14124bee6b2333908f8eb321cf4251f83"
+      },
       "comments": [],
       "reviews": [
         {
@@ -6823,6 +6855,26 @@
           "createdAt": "2024-10-16T15:29:06Z",
           "updatedAt": "2024-10-16T15:35:33Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586Nlr84",
+          "commit": {
+            "abbreviatedOid": "6cbae13"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-17T14:41:34Z",
+          "updatedAt": "2024-10-17T14:41:34Z",
+          "comments": [
+            {
+              "originalPosition": 207,
+              "body": "Note that {{!DAP}} defines the registry for batch modes, {{!VDAF}} defines the registry for VDAFs, and this document defines the registry for DP mechanisms.",
+              "createdAt": "2024-10-17T14:41:34Z",
+              "updatedAt": "2024-10-17T14:41:34Z"
+            }
+          ]
         }
       ]
     }

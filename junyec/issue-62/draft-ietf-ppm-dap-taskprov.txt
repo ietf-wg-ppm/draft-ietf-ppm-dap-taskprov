@@ -5,12 +5,12 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 11 April 2025                                        Cloudflare
-                                                          8 October 2024
+Expires: 25 April 2025                                        Cloudflare
+                                                         22 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
-                   draft-wang-ppm-dap-taskprov-latest
+                   draft-ietf-ppm-dap-taskprov-latest
 
 Abstract
 
@@ -26,11 +26,10 @@ About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   The latest revision of this draft can be found at
-   https://wangshan.github.io/draft-wang-ppm-dap-taskprov/draft-wang-
-   ppm-dap-taskprov.html.  Status information for this document may be
-   found at https://datatracker.ietf.org/doc/draft-wang-ppm-dap-
-   taskprov/.
+   The latest revision of this draft can be found at https://ietf-wg-
+   ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-
+   taskprov.html.  Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-ietf-ppm-dap-taskprov/.
 
    Discussion of this document takes place on the Privacy Preserving
    Measurement Working Group mailing list (mailto:ppm@ietf.org), which
@@ -38,7 +37,7 @@ About This Document
    Subscribe at https://www.ietf.org/mailman/listinfo/ppm/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/wangshan/draft-wang-ppm-dap-taskprov.
+   https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
 Status of This Memo
 
@@ -55,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2025.
+   This Internet-Draft will expire on 25 April 2025.
 
 Copyright Notice
 
@@ -93,11 +92,18 @@ Table of Contents
    5.  Security Considerations
    6.  Operational Considerations
    7.  IANA Considerations
-   8.  Normative References
+     7.1.  Report Extension
+     7.2.  Registry for DP Mechanisms
+     7.3.  DAP Sub-namespace for DAP
+   8.  Extending this Document
+   9.  Normative References
    Contributors
    Authors' Addresses
 
 1.  Introduction
+
+   (RFC EDITOR: Remove this paragraph.)  This draft is maintained in
+   https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
    The DAP protocol [DAP] enables secure aggregation of a set of reports
    submitted by Clients.  This process is centered around a "task" that
@@ -180,8 +186,6 @@ Table of Contents
    extension in the report extensions for each Aggregator as described
    in Section 4.4.3 of [DAP]:
 
-   [RFC EDITOR: Change this to the IANA-assigned codepoint.]
-
    enum {
        taskbind(0xff00),
        (65535)
@@ -193,7 +197,7 @@ Table of Contents
    When the client uses the Taskbind extension, it computes the task ID
    (Section 4.2 of [DAP]) as follows:
 
-   task_id = SHA-256(task_config)
+   task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
 
    where task_config is a TaskConfig structure defined in Section 3.1.
    Function SHA-256() is as defined in [SHS].
@@ -225,116 +229,69 @@ Table of Contents
 
    The task configuration is encoded as follows:
 
-  struct {
-      /* Info specific for a task. */
-      opaque task_info<1..2^8-1>;
+   struct {
+       /* Info specific for a task. */
+       opaque task_info<1..2^8-1>;
 
-      /* Leader API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
-      Url leader_aggregator_endpoint;
+       /* Leader API endpoint. */
+       Url leader_aggregator_endpoint;
 
-      /* Helper API endpoint as defined in I-D.draft-ietf-ppm-dap-09. */
-      Url helper_aggregator_endpoint;
+       /* Helper API endpoint. */
+       Url helper_aggregator_endpoint;
 
-      /* This determines the query type for batch selection and the
-      properties that all batches for this task must have. */
-      opaque query_config<1..2^16-1>;
+       /* Time precision. */
+       Duration time_precision;
 
-      /* Unix epoch time that describes the start time of this task. */
-      Time task_start;
+       /* Minimum batch size. */
+       uint32 min_batch_size;
 
-      /* Time up to which Clients are allowed to upload to this task.
-      Defined in I-D.draft-ietf-ppm-dap-09. */
-      Time task_expiration;
+       /* The batch mode and its parameters. */
+       opaque batch_config<1..2^16-1>;
 
-      /* Determines the VDAF type and its config parameters. */
-      opaque vdaf_config<1..2^16-1>;
-  } TaskConfig;
+       /* Unix epoch time that describes the start time of this task. */
+       Time task_start;
+
+       /* Time up to which Clients are allowed to upload to this
+       task. */
+       Time task_expiration;
+
+       /* Differential privacy (DP) configuration. */
+       opaque dp_config<1..2^16-1>;
+
+       /* Determines the VDAF type and its config parameters. */
+       opaque vdaf_config<1..2^16-1>;
+   } TaskConfig;
 
    The purpose of TaskConfig is to define all parameters that are
    necessary for configuring each party.  It includes all the fields to
-   be associated with a task.  In addition to the Aggregator endpoints,
-   maximum batch query count, and task expiration, the structure
-   includes an opaque task_info field that is specific to a deployment.
-   For example, this can be a string describing the purpose of this
-   task.  It does not include cryptographic assets shared by only a
-   subset of the parties, including the secret VDAF verification key
-   [VDAF] or public HPKE configurations [RFC9180].  This structure also
-   includes a task_start field that describes the start time of the task
-   in unix epoch time.  This allows protocol participants to opt out of
-   the task if the task lifetime given by task_start and task_expiration
-   is too long.  In particular, it also allows Aggregators to reject a
-   report if its timestamp is before the task start time.
+   be associated with a task.  It also includes an opaque task_info
+   field that is specific to a deployment.  For example, this can be a
+   string describing the purpose of this task.  It does not include
+   cryptographic assets shared by only a subset of the parties,
+   including the secret VDAF verification key [VDAF] or public HPKE
+   configurations [RFC9180].
 
-   The opaque query_config field defines the DAP query configuration
-   used to guide batch selection.  Its content is structured as follows:
+   The batch_config field defines the DAP batch mode.  Its contents are
+   as follows:
 
    struct {
-       Duration time_precision;
-       uint16 max_batch_query_count;
-       uint32 min_batch_size;
-       QueryType query_type;
-       select (QueryConfig.query_type) {
-           case time_interval: Empty;
-           case fixed_size:    uint32 max_batch_size;
+       BatchMode batch_mode;
+       select (BatchMode.batch_mode) {
+           case time_interval:   Empty;
+           case leader_selected: Empty;
        };
-   } QueryConfig;
+   } BatchConfig;
 
    The length prefix of the query_config ensures that the QueryConfig
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented query type).
 
-   The maximum batch size for fixed_size query is optional.  If
-   query_type is fixed_size and max_batch_size is 0, then the task does
-   not have maximum batch size limit.  In particular, during batch
-   validation (Section 4.6.5.2.2 of [DAP]), the Aggregator does not
-   check len(X) <= max_batch_size, where X is the set of reports
-   successfully aggregated into the batch.
-
-   The vdaf_config defines the configuration of the VDAF in use for this
-   task.  Its content is as follows (codepoints are as defined in
-   [VDAF]):
-
-enum {
-    prio3_count(0x00000000),
-    prio3_sum(0x00000001),
-    prio3_sum_vec(0x00000002),
-    prio3_histogram(0x00000003),
-    poplar1(0x00001000),
-    (2^32-1)
-} VdafType;
-
-struct {
-    opaque dp_config<1..2^16-1>;  /* Encoded differential privacy parameters */
-    VdafType vdaf_type;
-    select (VdafConfig.vdaf_type) {
-        case prio3_count:
-            Empty;
-        case prio3_sum:
-            uint8;  /* bit length of the summand */
-        case prio3_sum_vec:
-            uint32; /* length of the vector */
-            uint8;  /* bit length of each summand */
-            uint32; /* size of each proof chunk */
-        case prio3_histogram:
-            uint32; /* number of buckets */
-            uint32; /* size of each proof chunk */
-        case poplar1:
-            uint16; /* bit length of input string */
-    };
-} VdafConfig;
-
-   The length prefix of the vdaf_config ensures that the VdafConfig
-   structure can be decoded even if an unrecognized variant is
-   encountered (i.e., an unimplemented VDAF).
-
-   Apart from the VDAF-specific parameters, this structure includes a
-   mechanism for differential privacy (DP).  The opaque dp_config
-   contains the following structure:
+   The dp_config field defines a mechanism for differential privacy
+   (DP).  The opaque dp_config contains the following structure:
 
    enum {
        reserved(0), /* Reserved for testing purposes */
        none(1),
-       aggregator_discrete_gaussian(5),
        (255)
    } DpMechanism;
 
@@ -342,22 +299,52 @@ struct {
        DpMechanism dp_mechanism;
        select (DpConfig.dp_mechanism) {
            case none: Empty;
-           case aggregator_discrete_gaussian:
-             RealNumber sigma;
-             RealNumber sensititivity;
        };
    } DpConfig;
-
-      OPEN ISSUE: Should spell out definition of DpConfig for various
-      differential privacy mechanisms and parameters.  See draft draft
-      (https://github.com/wangshan/draft-wang-ppm-differential-privacy)
-      for discussion.
 
    The length prefix of the dp_config ensures that the DpConfig
    structure can be decoded even if an unrecognized variant is
    encountered (i.e., an unimplemented DP mechanism).
 
-   The definition of Time, Duration, Url, and QueryType follow those in
+   The vdaf_config defines the configuration of the VDAF in use for this
+   task.  Its content is as follows (codepoints are as defined in
+   Section 10 of [VDAF]):
+
+   enum {
+       reserved(0x00000000),
+       prio3_count(0x00000001),
+       prio3_sum(0x00000002),
+       prio3_sum_vec(0x00000003),
+       prio3_histogram(0x00000004),
+       prio3_multihot_count_vec(0x00000005),
+       poplar1(0x00000006),
+       (2^32-1)
+   } VdafType;
+
+   struct {
+       VdafType vdaf_type;
+       select (VdafConfig.vdaf_type) {
+           case prio3_count:
+               Empty;
+           case prio3_sum:
+               uint8;  /* bit length of the summand */
+           case prio3_sum_vec:
+               uint32; /* length of the vector */
+               uint8;  /* bit length of each summand */
+               uint32; /* size of each proof chunk */
+           case prio3_histogram:
+               uint32; /* number of buckets */
+               uint32; /* size of each proof chunk */
+           case poplar1:
+               uint16; /* bit length of input string */
+       };
+   } VdafConfig;
+
+   The length prefix of the vdaf_config ensures that the VdafConfig
+   structure can be decoded even if an unrecognized variant is
+   encountered (i.e., an unimplemented VDAF).
+
+   The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
 
 4.  In-band Task Provisioning with the Taskbind Extension
@@ -448,17 +435,16 @@ struct {
 
    verify_key = HKDF-Expand(
        HKDF-Extract(
-           taskprov_salt,   # salt
-           verify_key_init, # IKM
+           SHA-256("dap-taskprov"), # salt
+           verify_key_init,         # IKM
        ),
-       task_id,             # info
-       VERIFY_KEY_SIZE,     # L
+       task_id,                     # info
+       VERIFY_KEY_SIZE,             # L
    )
 
-   where taskprov_salt is defined to be the SHA-256 hash of the octet
-   string "dap-taskprov" and task_id is as defined in Section 3.
-   Functions HKDF-Extract() and HKDF-Expand() are as defined in
-   [RFC5869].  Both functions are instantiated with SHA-256.
+   where task_id is as defined in Section 3.  Functions HKDF-Extract()
+   and HKDF-Expand() are as defined in [RFC5869].  Both functions are
+   instantiated with SHA-256.
 
 4.4.  Opting into a Task
 
@@ -475,8 +461,8 @@ struct {
        but the task configuration disseminated by the Author does not
        match the existing configuration.
 
-   2.  The VDAF, DP, or query configuration is deemed insufficient for
-       privacy.
+   2.  The VDAF config, DP mechanism, or other parameters are deemed
+       insufficient for privacy.
 
    3.  A secure connection to one or both of the Aggregator endpoints
        could not be established.
@@ -485,7 +471,7 @@ struct {
 
    A protocol participant MUST opt out if the task has expired or if it
    does not support an indicated task parameter (e.g., VDAF, DP
-   mechanism, or query type).
+   mechanism, or DAP batch mode).
 
    The behavior of each protocol participant is determined by whether or
    not they opt in to a task.
@@ -515,9 +501,6 @@ struct {
    Upon receiving a TaskConfig from the Author, the Client decides
    whether to opt into the task as described in Section 4.4.  If the
    Client opts out, it MUST not attempt to upload reports for the task.
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
@@ -557,9 +540,6 @@ struct {
    The Leader then decides whether to opt in to the task as described in
    Section 4.4.  If it opts out, it MUST abort the upload request with
    "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, once the Leader has opted in to the task, it completes the
    upload request as usual.
@@ -611,9 +591,6 @@ struct {
    Next, the Helper decides whether to opt in to the task as described
    in Section 4.4.  If it opts out, it MUST abort the aggregation job
    request with "invalidTask".
-
-      OPEN ISSUE: In case of opt-out, would it be useful to specify how
-      to report this to the Author?
 
    Finally, the Helper completes the request as usual, deriving the VDAF
    verification key for the task as described in Section 4.3.  For any
@@ -697,18 +674,87 @@ struct {
 
 7.  IANA Considerations
 
-      NOTE(cjpatton) Eventually we'll have IANA considerations (at the
-      very least we'll need to allocate a codepoint) but we can leave
-      this blank for now.
+   This document requests a codepoint for the taskbind extension and for
+   creation of a new registry for DP mechanisms.
 
-8.  Normative References
+   (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
+   document.)
+
+7.1.  Report Extension
+
+   The following entry will be (RFC EDITOR: change "will be" to "has
+   been") added to the "Report Extension Identifiers" registry of the
+   "Distributed Aggregation Protocol (DAP)" page created by [VDAF]:
+
+   Value:  0xff00
+
+   Name:  taskbind
+
+   Reference:  RFC XXXX
+
+7.2.  Registry for DP Mechanisms
+
+   A new registry will be (RFC EDITOR: change "will be" to "has been")
+   created for the "Distributed Aggregation Protocol (DAP)" page called
+   "Differential Privacy (DP) Mechanisms".  This registry contains the
+   following columns:
+
+   Value:  The one-byte identifier for the DP mechanism
+
+   Name:  The name of the DP mechanism
+
+   Reference:  Where the DP mechanism is defined
+
+   The initial contents of this registry are listed in the following
+   table.
+
+              +=======+==========+=========================+
+              | Value | Name     | Reference               |
+              +=======+==========+=========================+
+              | 0x00  | reserved | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+              | 0x01  | none     | Section 3.1 of RFC XXXX |
+              +-------+----------+-------------------------+
+
+                     Table 2: Initial contents of the
+                   Differential Privacy (DP) Mechanisms
+                                registry.
+
+7.3.  DAP Sub-namespace for DAP
+
+      TODO Figure out how to ask IANA to register the errors in Table 1.
+      See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/
+      issues/34
+
+8.  Extending this Document
+
+   The behavior of the taskbind extension may be extended by future
+   documents that define:
+
+   1.  A new DAP batch mode
+
+   2.  A new VDAF
+
+   3.  A new DP mechanisms
+
+   Such documents SHOULD include a section titled "Taskbind
+   Considerations" that specifies an encoding of any configuration
+   parameters associated with the DAP batch mode, VDAF, or DP mechanism.
+   This encoding extends the BatchConfig structure, the VdafConfig
+   structure, or the DpConfig structure respectively.
+
+   Note that the registry for batch modes is defined by [DAP]; the
+   registry for VDAFs is defined by [VDAF]; and the registry for DP
+   mechanisms is defined in Section 7.2 of this document.
+
+9.  Normative References
 
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-09, 18 December 2023,
+              draft-ietf-ppm-dap-12, 10 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              09>.
+              12>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -740,9 +786,9 @@ struct {
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-08, 20
-              November 2023, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-vdaf-08>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-12, 4
+              October 2024, <https://datatracker.ietf.org/doc/html/
+              draft-irtf-cfrg-vdaf-12>.
 
 Contributors
 

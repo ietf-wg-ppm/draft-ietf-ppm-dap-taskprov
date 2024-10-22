@@ -696,7 +696,7 @@ Table of Contents
    "Differential Privacy (DP) Mechanisms".  This registry contains the
    following columns:
 
-   Value:  The one-byte identifier for the DP mechanism
+   Value:  The four-byte identifier for the DP mechanism
 
    Name:  The name of the DP mechanism
 
@@ -705,17 +705,16 @@ Table of Contents
    The initial contents of this registry are listed in the following
    table.
 
-              +=======+==========+=========================+
-              | Value | Name     | Reference               |
-              +=======+==========+=========================+
-              | 0x00  | reserved | Section 3.1 of RFC XXXX |
-              +-------+----------+-------------------------+
-              | 0x01  | none     | Section 3.1 of RFC XXXX |
-              +-------+----------+-------------------------+
+            +============+==========+=========================+
+            | Value      | Name     | Reference               |
+            +============+==========+=========================+
+            | 0x00000000 | reserved | Section 3.1 of RFC XXXX |
+            +------------+----------+-------------------------+
+            | 0x00000001 | none     | Section 3.1 of RFC XXXX |
+            +------------+----------+-------------------------+
 
-                     Table 2: Initial contents of the
-                   Differential Privacy (DP) Mechanisms
-                                registry.
+               Table 2: Initial contents of the Differential
+                     Privacy (DP) Mechanisms registry.
 
 7.3.  DAP Sub-namespace for DAP
 

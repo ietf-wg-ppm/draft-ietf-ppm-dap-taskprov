@@ -1395,12 +1395,13 @@ struct {
     /* The batch mode and its parameters. */
     opaque batch_config&lt;1..2^16-1&gt;;
 
-    /* Unix epoch time that describes the start time of this task. */
+    /* Time from which Clients will start uploading reports to this
+    task. */
     Time task_start;
 
-    /* Time up to which Clients are allowed to upload to this
+    /* Time up to which Clients are allowed to upload reports to this
     task. */
-    Time task_expiration;
+    Time task_end;
 
     /* Differential privacy (DP) configuration. */
     opaque dp_config&lt;1..2^16-1&gt;;
@@ -1627,7 +1628,7 @@ established.<a href="#section-4.4-3.3.1" class="pilcrow">¶</a></p>
             <p id="section-4.4-3.4.1">The task lifetime is too long.<a href="#section-4.4-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-4.4-4">A protocol participant <span class="bcp14">MUST</span> opt out if the task has expired or if it does not
+<p id="section-4.4-4">A protocol participant <span class="bcp14">MUST</span> opt out if the task has ended or if it does not
 support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
 mode).<a href="#section-4.4-4" class="pilcrow">¶</a></p>
 <p id="section-4.4-5">The behavior of each protocol participant is determined by whether or not they
@@ -1838,7 +1839,7 @@ aggregation, and collection protocols, the process of opting-in and deriving the
 task ID and VDAF verify key can be re-run on the fly for each request. This is
 useful if a large number of concurrent tasks are expected. Once an Aggregator
 has opted-in to a task, the expectation is that the task is supported until it
-expires. In particular, Aggregators that operate in this manner <span class="bcp14">MUST NOT</span> opt
+ends. In particular, Aggregators that operate in this manner <span class="bcp14">MUST NOT</span> opt
 out once they have opted in.<a href="#section-6-2" class="pilcrow">¶</a></p>
 </section>
 </div>

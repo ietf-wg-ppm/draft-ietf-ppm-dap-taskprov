@@ -240,7 +240,7 @@ opaque `dp_config` contains the following structure:
 enum {
     reserved(0), /* Reserved for testing purposes */
     none(1),
-    (255)
+    (2^16-1)
 } DpMechanism;
 
 struct {
@@ -630,7 +630,7 @@ the "Distributed Aggregation Protocol (DAP)" page called "Differential Privacy
 (DP) Mechanisms". This registry contains the following columns:
 
 Value:
-: The one-byte identifier for the DP mechanism
+: The two-byte identifier for the DP mechanism
 
 Name:
 : The name of the DP mechanism
@@ -640,10 +640,10 @@ Reference:
 
 The initial contents of this registry are listed in the following table.
 
-| Value  | Name       | Reference                     |
-|:-------|:-----------|:------------------------------|
-| `0x00` | `reserved` | {{task-encoding}} of RFC XXXX |
-| `0x01` | `none`     | {{task-encoding}} of RFC XXXX |
+| Value    | Name       | Reference                     |
+|:---------|:-----------|:------------------------------|
+| `0x0000` | `reserved` | {{task-encoding}} of RFC XXXX |
+| `0x0001` | `none`     | {{task-encoding}} of RFC XXXX |
 {: #dp-mechanism-id title="Initial contents of the Differential Privacy (DP) Mechanisms registry."}
 
 ## DAP Sub-namespace for DAP

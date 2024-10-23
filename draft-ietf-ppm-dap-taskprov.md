@@ -659,7 +659,7 @@ that define:
 
 1. A new DAP batch mode
 1. A new VDAF
-1. A new DP mechanisms
+1. A new DP mechanism
 
 Such documents SHOULD include a section titled "Taskbind Considerations" that
 specifies an encoding of any configuration parameters associated with the DAP

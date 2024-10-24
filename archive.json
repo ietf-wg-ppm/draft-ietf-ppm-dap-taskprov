@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-22T01:02:41.749997+00:00",
+  "timestamp": "2024-10-24T01:01:39.523185+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -72,6 +72,16 @@
       "name": "interim-2024-10-24",
       "description": "",
       "color": "E0C934"
+    },
+    {
+      "name": "pre-WGLC",
+      "description": "",
+      "color": "761971"
+    },
+    {
+      "name": "editorial",
+      "description": "",
+      "color": "3D9B39"
     }
   ],
   "issues": [
@@ -507,10 +517,12 @@
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "pre-WGLC"
+      ],
       "body": "The document currently suggests that the type `urn:ietf:params:ppm:dap:error:invalidTask` should be used in problem details responses. However, DAP says \"Servers MUST NOT use the DAP URN namespace for errors not listed in the appropriate IANA registry\". Thus, the taskprov document's 'IANA Considerations' section should either add an `invalidTask` entry to the contents of DAP's URN registry, or create a separate namespace of its own.",
       "createdAt": "2023-08-04T19:25:11Z",
-      "updatedAt": "2024-10-18T21:37:15Z",
+      "updatedAt": "2024-10-22T22:55:25Z",
       "closedAt": null,
       "comments": [
         {
@@ -6489,18 +6501,26 @@
       ],
       "body": "Closes #62.",
       "createdAt": "2024-10-08T19:40:49Z",
-      "updatedAt": "2024-10-16T15:37:10Z",
+      "updatedAt": "2024-10-22T23:51:32Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
-      "baseRefOid": "d34ab6f1aa01b66b93f07ff38bc781a478158327",
+      "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "junyec/issue-62",
-      "headRefOid": "77fa9dac0691f0df458cce184dcf8eaf45607734",
+      "headRefOid": "f82e057e42dbb3a0d8581d4d94c75cbd23792055",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Rebased, assuming https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/624 is merged.",
+          "createdAt": "2024-10-22T17:41:41Z",
+          "updatedAt": "2024-10-22T17:41:41Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOH4FR586NT6xV",
@@ -6513,6 +6533,45 @@
           "body": "",
           "createdAt": "2024-10-15T22:30:22Z",
           "updatedAt": "2024-10-15T22:30:22Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586ONwgx",
+          "commit": {
+            "abbreviatedOid": "7924b51"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-22T18:24:02Z",
+          "updatedAt": "2024-10-22T18:24:47Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "nit: Consider harmonizing the comments for task_start and task_expiration.",
+              "createdAt": "2024-10-22T18:24:02Z",
+              "updatedAt": "2024-10-22T18:24:47Z"
+            },
+            {
+              "originalPosition": 4,
+              "body": "Make sure this wraps at 69 columns; otherwise the `make` will emit a warning that the \"art\" is too wide.",
+              "createdAt": "2024-10-22T18:24:43Z",
+              "updatedAt": "2024-10-22T18:24:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586OQKs9",
+          "commit": {
+            "abbreviatedOid": "f82e057"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks for taking initiative here.",
+          "createdAt": "2024-10-22T23:51:32Z",
+          "updatedAt": "2024-10-22T23:51:32Z",
           "comments": []
         }
       ]
@@ -6877,6 +6936,99 @@
           ]
         }
       ]
+    },
+    {
+      "number": 86,
+      "id": "PR_kwDOH4FR585_fpQd",
+      "title": "Address issue 83 - more bytes for DpMechanism",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/86",
+      "state": "OPEN",
+      "author": "junyechen1996",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking",
+        "interim-2024-10-24"
+      ],
+      "body": "Closes #83 .",
+      "createdAt": "2024-10-22T17:43:48Z",
+      "updatedAt": "2024-10-22T23:32:52Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "junyec/issue-83-dp-codepoint",
+      "headRefOid": "35199d4c507d679a43e75c8c009ab4bd8c240b2a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586ON-dc",
+          "commit": {
+            "abbreviatedOid": "d677933"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-22T18:53:21Z",
+          "updatedAt": "2024-10-22T18:53:27Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Can you also make the corresponding change in IANA Considerations? \"one-byte identifier\" -> \"four-byte identifier\"",
+              "createdAt": "2024-10-22T18:53:21Z",
+              "updatedAt": "2024-10-22T18:53:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586OQGtl",
+          "commit": {
+            "abbreviatedOid": "35199d4"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-22T23:32:52Z",
+          "updatedAt": "2024-10-22T23:32:52Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 87,
+      "id": "PR_kwDOH4FR585_q0J3",
+      "title": "Fix a typo in \"Extending this Document\"",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/87",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "editorial"
+      ],
+      "body": "",
+      "createdAt": "2024-10-23T19:15:45Z",
+      "updatedAt": "2024-10-23T19:16:09Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/typo",
+      "headRefOid": "6a219784634e9c880fcc887f729f3c2d6e2068cc",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }

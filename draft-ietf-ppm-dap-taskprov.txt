@@ -735,7 +735,7 @@ Table of Contents
 
    2.  A new VDAF
 
-   3.  A new DP mechanisms
+   3.  A new DP mechanism
 
    Such documents SHOULD include a section titled "Taskbind
    Considerations" that specifies an encoding of any configuration

@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 25 April 2025                                        Cloudflare
-                                                         22 October 2024
+Expires: 28 April 2025                                        Cloudflare
+                                                         25 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 April 2025.
+   This Internet-Draft will expire on 28 April 2025.
 
 Copyright Notice
 
@@ -252,9 +252,8 @@ Table of Contents
        task. */
        Time task_start;
 
-       /* Time up to which Clients are allowed to upload reports to this
-       task. */
-       Time task_end;
+       /* The duration of the task. */
+       Duration task_duration;
 
        /* Differential privacy (DP) configuration. */
        opaque dp_config<1..2^16-1>;

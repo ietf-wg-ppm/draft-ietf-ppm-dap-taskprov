@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 25 April 2025                                        Cloudflare
-                                                         22 October 2024
+Expires: 28 April 2025                                        Cloudflare
+                                                         25 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 April 2025.
+   This Internet-Draft will expire on 28 April 2025.
 
 Copyright Notice
 
@@ -289,7 +289,7 @@ Table of Contents
    enum {
        reserved(0), /* Reserved for testing purposes */
        none(1),
-       (2^32-1)
+       (2^16-1)
    } DpMechanism;
 
    struct {
@@ -696,7 +696,7 @@ Table of Contents
    "Differential Privacy (DP) Mechanisms".  This registry contains the
    following columns:
 
-   Value:  The four-byte identifier for the DP mechanism
+   Value:  The two-byte identifier for the DP mechanism
 
    Name:  The name of the DP mechanism
 
@@ -705,16 +705,17 @@ Table of Contents
    The initial contents of this registry are listed in the following
    table.
 
-            +============+==========+=========================+
-            | Value      | Name     | Reference               |
-            +============+==========+=========================+
-            | 0x00000000 | reserved | Section 3.1 of RFC XXXX |
-            +------------+----------+-------------------------+
-            | 0x00000001 | none     | Section 3.1 of RFC XXXX |
-            +------------+----------+-------------------------+
+              +========+==========+=========================+
+              | Value  | Name     | Reference               |
+              +========+==========+=========================+
+              | 0x0000 | reserved | Section 3.1 of RFC XXXX |
+              +--------+----------+-------------------------+
+              | 0x0001 | none     | Section 3.1 of RFC XXXX |
+              +--------+----------+-------------------------+
 
-               Table 2: Initial contents of the Differential
-                     Privacy (DP) Mechanisms registry.
+                      Table 2: Initial contents of the
+                    Differential Privacy (DP) Mechanisms
+                                 registry.
 
 7.3.  DAP Sub-namespace for DAP
 

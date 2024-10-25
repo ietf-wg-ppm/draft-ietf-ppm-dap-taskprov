@@ -134,7 +134,7 @@ the report extensions for each Aggregator as described in {{Section 4.4.3 of
 ~~~
 enum {
     taskbind(0xff00),
-    (65535)
+    (2^16-1)
 } ExtensionType;
 ~~~
 
@@ -197,8 +197,8 @@ struct {
     /* The batch mode and its parameters. */
     opaque batch_config<1..2^16-1>;
 
-    /* Time from which Clients will start uploading reports to this
-    task. */
+    /* The earliest timestamp that will be accepted for this task. */
+       task. */
     Time task_start;
 
     /* The duration of the task. */
@@ -209,16 +209,26 @@ struct {
 
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config<1..2^16-1>;
+
+    /* Taskbind Extensions. */
+    TaskbindExtension extensions<0..2^16-1>;
 } TaskConfig;
 ~~~
 
 The purpose of `TaskConfig` is to define all parameters that are necessary for
-configuring each party. It includes all the fields to be associated with a
-task. It also includes an opaque `task_info` field that is specific to a
-deployment. For example, this can be a string describing the purpose of this
-task. It does not include cryptographic assets shared by only a subset of the
-parties, including the secret VDAF verification key {{!VDAF}} or public HPKE
-configurations {{!RFC9180}}.
+configuring each party. It includes all parameters listed in {{Section 4.3 of
+!DAP}} as well as two additional fields:
+
+* `task_info` is an opaque field whose contents are specific to the deployment.
+  For example, this might be a human-readable string describing the purpose of
+  this task.
+
+* `extensions` is a list of extensions to this document. The format and
+  semantics of extensions are describe in {{taskbind-extensions}}.
+
+This structure does not include cryptographic assets shared by only a subset of
+the parties, including the secret VDAF verification key {{!VDAF}} or public
+HPKE configurations {{!RFC9180}}.
 
 The `batch_config` field defines the DAP batch mode. Its contents are as follows:
 
@@ -300,6 +310,40 @@ unimplemented VDAF).
 
 The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 {{!DAP}}.
+
+## Extensions {#taskbind-extensions}
+
+The `TaskConfig` structure includes a list of extensions. In general,
+extensions can be used to bind additional, application-specific information to
+the task. For example, an extension might be used to encode the identity of the
+Collector. (Only the Aggregators are identified in `TaskConfig`.)
+
+Each extension is structured as follows:
+
+~~~ tls-presentation
+struct {
+  TaskbindExtensionType extension_type;
+  opaque extension_data<0..2^16-1>;
+} TaskbindExtension;
+
+enum {
+  reserved(0),
+  (2^16-1)
+} TaskbindExtensionType;
+~~~
+
+The `extension_type` identifies the extension and `extension_data` is
+structured as specified by the extension.
+
+Extensions are treated as mandatory-to-implement in the protocol described in
+{{taskprov}}. In particular protocols participants MUST opt-out of tasks
+containing unrecognized extensions. See {{provisioning-a-task}}.
+
+Note that Taskind extensions are semantically distinct from DAP report
+extensions and do not share the same codepoint registry
+({{taskbind-extension-registry}}). Future documents may want to define both a
+Taskbind extension and a report extension, but there may also be situations
+where a document defines one but not the other.
 
 # In-band Task Provisioning with the Taskbind Extension {#taskprov}
 
@@ -415,9 +459,13 @@ A protocol participant MAY "opt out" of a task if:
 
 1. The task lifetime is too long.
 
-A protocol participant MUST opt out if the task has ended or if it does not
-support an indicated task parameter (e.g., VDAF, DP mechanism, or DAP batch
-mode).
+A protocol participant MUST opt out if:
+
+1. The task has ended.
+
+1. The DAP batch mode, VDAF, DP mechanism is not implemented.
+
+1. One of the extensions is not recognized.
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.
@@ -625,6 +673,28 @@ Name:
 
 Reference:
 : RFC XXXX
+
+## Registry for Taskbind Extensions {#taskbind-extension-registry}
+
+A new registry will be (RFC EDITOR: change "will be" to "has been") created for
+the "Distributed Aggregation Protocol (DAP)" page called "Taskbind Extensions".
+This registry contains the following columns:
+
+Value:
+: The two-byte identifier for the extension
+
+Name:
+: The name of the extension
+
+Reference:
+: Where the mechanism is defined
+
+The initial contents of this registry are listed in the following table.
+
+| Value    | Name       | Reference                     |
+|:---------|:-----------|:------------------------------|
+| `0x0000` | `reserved` | {{taskbind-extensions}} of RFC XXXX |
+{: #taskbind-extension-id title="Initial contents of the Taskbind Extensions registry."}
 
 ## Registry for DP Mechanisms {#dp-mechanism-registry}
 

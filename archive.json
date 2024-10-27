@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-24T01:01:39.523185+00:00",
+  "timestamp": "2024-10-27T01:06:32.111678+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -841,7 +841,7 @@
       "id": "I_kwDOH4FR586HFv7O",
       "title": "Consider adding task start time",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/62",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -854,8 +854,8 @@
       ],
       "body": "When deciding whether to opt in to a task, a party knows only when the task expires, not how long the task was in use. Imagine for example a client uploads a report to a task that expires in two years; then two years minus one month later, the Leader wants to aggregate it. Should the Helper oblige?\r\n\r\nIt sounds reasonable to include in the `TaskConfig` an indication of when the task began.",
       "createdAt": "2024-04-26T20:04:14Z",
-      "updatedAt": "2024-10-09T01:04:40Z",
-      "closedAt": null,
+      "updatedAt": "2024-10-25T14:54:06Z",
+      "closedAt": "2024-10-25T14:54:06Z",
       "comments": [
         {
           "author": "junyechen1996",
@@ -980,7 +980,7 @@
       "id": "I_kwDOH4FR586aYsip",
       "title": "More codepoints for DP mechansims?",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/83",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -993,8 +993,8 @@
       ],
       "body": "At the moment we've only allocated a byte for DP mechanism identifiers. For VDAFs we've allocated four bytes. It doesn't seem out of the question to me that we end up with more than 256 DP mechanisms.",
       "createdAt": "2024-10-15T23:34:05Z",
-      "updatedAt": "2024-10-18T21:24:15Z",
-      "closedAt": null,
+      "updatedAt": "2024-10-25T14:54:28Z",
+      "closedAt": "2024-10-25T14:54:28Z",
       "comments": [
         {
           "author": "wangshan",
@@ -1013,13 +1013,16 @@
       "state": "OPEN",
       "author": "martinthomson",
       "authorAssociation": "NONE",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [
+        "draft-01",
         "interim-2024-10-24"
       ],
       "body": "I'm in the process of writing up a few DAP (upload) extensions and realized that if they are going to be generically useful, then it would make sense to have corresponding changes to be included in task configurations.  For this draft, that means having some means to include that configuration in the creation of the task, but there are no extensibility points in this document that would allow that to happen.  Can an extension mechanism be defined?\r\n\r\nMost likely, this would have to be like upload extensions, where ignorance of the extension would invalidate the entire request.\r\n\r\nI would also recommend that the DP configuration be moved to an extension.  Then you can move the definition of the specifics to the DP draft and remove one potentially-awkward interdependency.",
       "createdAt": "2024-10-16T05:36:34Z",
-      "updatedAt": "2024-10-18T21:23:50Z",
+      "updatedAt": "2024-10-25T14:10:20Z",
       "closedAt": null,
       "comments": [
         {
@@ -1049,6 +1052,54 @@
           "body": "@martinthomson FYI I'm merging #84, as I think there are some improvments that are helpful in any case. We can fix stuff as needed as part of this issue.",
           "createdAt": "2024-10-18T21:23:49Z",
           "updatedAt": "2024-10-18T21:23:49Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "2024/10/24 interim: I misunderstood the issue that @martinthomson is raising here. What's actually needed is an extension point for `TaskConfig` itself. For example, the parties may want to agree on the identity (e.g., a URI) of whichever party gets the aggregate result. This could be expressed as an extension for taskprov.\r\n\r\nSo we'll create a PR that adds an extension point to `TaskConfig` (similar to the report extensions in DAP) and ask IANA to create a registry for it.\r\n\r\n",
+          "createdAt": "2024-10-24T21:56:46Z",
+          "updatedAt": "2024-10-24T21:58:19Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I recommend that the DP mechanisms be removed from the taskprov draft in favor of being specified in the document that first defines a real DP mechanism.  The extension mechanism should be enough for DP.\r\n\r\nI can see two ways of dealing with new DP mechanisms:\r\n\r\n1. Define a new extension for each and sketch out some rules for how to handle cases where there are multiple mechanisms (apply all of them or don't allow multiple both seem reasonable, though I'd probably choose the latter).\r\n2. Define a new extension for all DP mechanisms and have that contain content that is based on the choice of mechanism.  That sort of nesting would match the current design, but would also run afoul of recommendations in RFC 9170.",
+          "createdAt": "2024-10-25T03:59:40Z",
+          "updatedAt": "2024-10-25T03:59:40Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks @martinthomson! I've filed #88 which is more narrowly scoped on this issue ... I'll reference your comment there.",
+          "createdAt": "2024-10-25T14:10:18Z",
+          "updatedAt": "2024-10-25T14:10:18Z"
+        }
+      ]
+    },
+    {
+      "number": 88,
+      "id": "I_kwDOH4FR586buZpP",
+      "title": "Consider removing the extension point for DP mechanisms",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/88",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking"
+      ],
+      "body": "2024/10/26 interim: It's a little confusing that this draft defines a a registry for DP mechanism codepoints. We could instead move DP mechanisms into a generic task config extension: see https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/85#issuecomment-2436405240.",
+      "createdAt": "2024-10-24T22:00:06Z",
+      "updatedAt": "2024-10-25T14:53:36Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "MT's point, which I agree with: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/85#issuecomment-2436771339",
+          "createdAt": "2024-10-25T14:11:03Z",
+          "updatedAt": "2024-10-25T14:11:03Z"
         }
       ]
     }
@@ -6490,7 +6541,7 @@
       "id": "PR_kwDOH4FR5859_eIR",
       "title": "Address issue 62 - adding task start time",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/76",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "junyechen1996",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -6501,17 +6552,19 @@
       ],
       "body": "Closes #62.",
       "createdAt": "2024-10-08T19:40:49Z",
-      "updatedAt": "2024-10-22T23:51:32Z",
+      "updatedAt": "2024-10-25T14:54:05Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "junyec/issue-62",
-      "headRefOid": "f82e057e42dbb3a0d8581d4d94c75cbd23792055",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "3102c0d1919b65edda40ea8dcc588ac3be012a2f",
+      "closedAt": "2024-10-25T14:54:05Z",
+      "mergedAt": "2024-10-25T14:54:05Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "bd9e96b739c38ea661d7093d4ed75125b0237985"
+      },
       "comments": [
         {
           "author": "junyechen1996",
@@ -6519,6 +6572,20 @@
           "body": "Rebased, assuming https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/624 is merged.",
           "createdAt": "2024-10-22T17:41:41Z",
           "updatedAt": "2024-10-22T17:41:41Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "2024/10/24 interim: @junyechen1996 instead of `Time task_start` and `Time task_end`, we will have `Time task_start` and `Duration task_duration`. That way we avoid encoding invalid task validity ranges.",
+          "createdAt": "2024-10-24T22:05:05Z",
+          "updatedAt": "2024-10-24T22:05:05Z"
+        },
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> 2024/10/24 interim: @junyechen1996 instead of `Time task_start` and `Time task_end`, we will have `Time task_start` and `Duration task_duration`. That way we avoid encoding invalid task validity ranges.\r\n\r\nUpdated the PR to reflect this^.",
+          "createdAt": "2024-10-25T05:16:59Z",
+          "updatedAt": "2024-10-25T05:16:59Z"
         }
       ],
       "reviews": [
@@ -6572,6 +6639,19 @@
           "body": "Thanks for taking initiative here.",
           "createdAt": "2024-10-22T23:51:32Z",
           "updatedAt": "2024-10-22T23:51:32Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586Oxj9k",
+          "commit": {
+            "abbreviatedOid": "3102c0d"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-25T13:49:10Z",
+          "updatedAt": "2024-10-25T13:49:10Z",
           "comments": []
         }
       ]
@@ -6942,7 +7022,7 @@
       "id": "PR_kwDOH4FR585_fpQd",
       "title": "Address issue 83 - more bytes for DpMechanism",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/86",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "junyechen1996",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -6953,18 +7033,35 @@
       ],
       "body": "Closes #83 .",
       "createdAt": "2024-10-22T17:43:48Z",
-      "updatedAt": "2024-10-22T23:32:52Z",
+      "updatedAt": "2024-10-25T14:54:27Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "junyec/issue-83-dp-codepoint",
-      "headRefOid": "35199d4c507d679a43e75c8c009ab4bd8c240b2a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "e64e80735c43dbea381ec4fa0b7c83c264484966",
+      "closedAt": "2024-10-25T14:54:27Z",
+      "mergedAt": "2024-10-25T14:54:27Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "eabacecb502930e38d2d7b445daad601e12ac3e0"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "2024/10/24 interim: @junyechen1996 please reduce this from four bytes to two.",
+          "createdAt": "2024-10-24T22:06:45Z",
+          "updatedAt": "2024-10-24T22:06:45Z"
+        },
+        {
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> 2024/10/24 interim: @junyechen1996 please reduce this from four bytes to two.\r\n\r\nUpdated the PR to reflect this^.",
+          "createdAt": "2024-10-25T05:19:35Z",
+          "updatedAt": "2024-10-25T05:19:35Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOH4FR586ON-dc",
@@ -6998,6 +7095,19 @@
           "createdAt": "2024-10-22T23:32:52Z",
           "updatedAt": "2024-10-22T23:32:52Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586OxjmC",
+          "commit": {
+            "abbreviatedOid": "e64e807"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-25T13:48:32Z",
+          "updatedAt": "2024-10-25T13:48:32Z",
+          "comments": []
         }
       ]
     },
@@ -7006,7 +7116,7 @@
       "id": "PR_kwDOH4FR585_q0J3",
       "title": "Fix a typo in \"Extending this Document\"",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/87",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -7016,13 +7126,58 @@
       ],
       "body": "",
       "createdAt": "2024-10-23T19:15:45Z",
-      "updatedAt": "2024-10-23T19:16:09Z",
+      "updatedAt": "2024-10-25T20:18:49Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "ca4edce14124bee6b2333908f8eb321cf4251f83",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/typo",
       "headRefOid": "6a219784634e9c880fcc887f729f3c2d6e2068cc",
+      "closedAt": "2024-10-25T20:18:49Z",
+      "mergedAt": "2024-10-25T20:18:49Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "e4eb0fb4ebf1471baea4b5e687169ea3ff05cce6"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586O1ByG",
+          "commit": {
+            "abbreviatedOid": "6a21978"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-25T19:44:53Z",
+          "updatedAt": "2024-10-25T19:44:53Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 89,
+      "id": "PR_kwDOH4FR585_7h-Q",
+      "title": "Add an extension field to `TaskConfig`",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/89",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking"
+      ],
+      "body": "Closes #85. We'll consider #88 (whether to remove the DP mechanism and suggest implementations do this in an extension) in a future PR.\r\n\r\nNotable features:\r\n\r\n* Create a registry for new taskbind extensions\r\n* Make extensions mandatory-to-implement when provisioning a task\r\n\r\ncc @martinthomson",
+      "createdAt": "2024-10-25T16:45:30Z",
+      "updatedAt": "2024-10-25T16:45:43Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "eabacecb502930e38d2d7b445daad601e12ac3e0",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/85",
+      "headRefOid": "f482756b1660693838e8db9c5a265bbed758c56d",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,

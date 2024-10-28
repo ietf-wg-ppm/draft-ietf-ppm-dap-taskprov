@@ -745,7 +745,7 @@ Table of Contents
 
    Name:  The name of the extension
 
-   Reference:  Where the eechanism is defined
+   Reference:  Where the mechanism is defined
 
    The initial contents of this registry are listed in the following
    table.

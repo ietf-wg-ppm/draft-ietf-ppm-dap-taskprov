@@ -1415,7 +1415,7 @@ struct {
     opaque vdaf_config&lt;1..2^16-1&gt;;
 
     /* Taskbind Extensions. */
-    Extension extensions&lt;0..2^16-1&gt;;
+    TaskbindExtension extensions&lt;0..2^16-1&gt;;
 } TaskConfig;
 </pre><a href="#section-3.1-2" class="pilcrow">¶</a>
 </div>
@@ -1457,7 +1457,7 @@ opaque <code>dp_config</code> contains the following structure:<a href="#section
 enum {
     reserved(0), /* Reserved for testing purposes */
     none(1),
-    (2^16-1)
+    (65535)
 } DpMechanism;
 
 struct {
@@ -1527,14 +1527,14 @@ Collector. (Only the Aggregators are identified in <code>TaskConfig</code>.)<a h
 <div class="lang-tls-presentation sourcecode" id="section-3.2-3">
 <pre>
 struct {
-  ExtensionType extension_type;
+  TaskbindExtensionType extension_type;
   opaque extension_data&lt;0..2^16-1&gt;;
-} Extension;
+} TaskbindExtension;
 
 enum {
   reserved(0),
-  (2^16-1)
-} ExtensionType;
+  (65535)
+} TaskbindExtensionType;
 </pre><a href="#section-3.2-3" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-4">The <code>extension_type</code> identifies the extension and <code>extension_data</code> is

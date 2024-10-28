@@ -264,7 +264,7 @@ Table of Contents
        opaque vdaf_config<1..2^16-1>;
 
        /* Taskbind Extensions. */
-       Extension extensions<0..2^16-1>;
+       TaskbindExtension extensions<0..2^16-1>;
    } TaskConfig;
 
    The purpose of TaskConfig is to define all parameters that are
@@ -303,7 +303,7 @@ Table of Contents
    enum {
        reserved(0), /* Reserved for testing purposes */
        none(1),
-       (2^16-1)
+       (65535)
    } DpMechanism;
 
    struct {
@@ -369,14 +369,14 @@ Table of Contents
    Each extension is structured as follows:
 
    struct {
-     ExtensionType extension_type;
+     TaskbindExtensionType extension_type;
      opaque extension_data<0..2^16-1>;
-   } Extension;
+   } TaskbindExtension;
 
    enum {
      reserved(0),
-     (2^16-1)
-   } ExtensionType;
+     (65535)
+   } TaskbindExtensionType;
 
    The extension_type identifies the extension and extension_data is
    structured as specified by the extension.

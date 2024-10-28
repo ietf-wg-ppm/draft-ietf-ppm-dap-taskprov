@@ -190,7 +190,7 @@ Table of Contents
 
    enum {
        taskbind(0xff00),
-       (65535)
+       (2^16-1)
    } ExtensionType;
 
    The payload of the extension MUST be empty.  If the payload is non-
@@ -303,7 +303,7 @@ Table of Contents
    enum {
        reserved(0), /* Reserved for testing purposes */
        none(1),
-       (65535)
+       (2^16-1)
    } DpMechanism;
 
    struct {
@@ -375,7 +375,7 @@ Table of Contents
 
    enum {
      reserved(0),
-     (65535)
+     (2^16-1)
    } TaskbindExtensionType;
 
    The extension_type identifies the extension and extension_data is

@@ -1343,7 +1343,7 @@ the report extensions for each Aggregator as described in <span><a href="https:/
 <pre>
 enum {
     taskbind(0xff00),
-    (65535)
+    (2^16-1)
 } ExtensionType;
 </pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
@@ -1457,7 +1457,7 @@ opaque <code>dp_config</code> contains the following structure:<a href="#section
 enum {
     reserved(0), /* Reserved for testing purposes */
     none(1),
-    (65535)
+    (2^16-1)
 } DpMechanism;
 
 struct {
@@ -1533,7 +1533,7 @@ struct {
 
 enum {
   reserved(0),
-  (65535)
+  (2^16-1)
 } TaskbindExtensionType;
 </pre><a href="#section-3.2-3" class="pilcrow">¶</a>
 </div>

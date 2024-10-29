@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 1 May 2025                                           Cloudflare
-                                                         28 October 2024
+Expires: 2 May 2025                                           Cloudflare
+                                                         29 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2025.
+   This Internet-Draft will expire on 2 May 2025.
 
 Copyright Notice
 
@@ -385,6 +385,12 @@ Table of Contents
    described in Section 4.  In particular protocols participants MUST
    opt-out of tasks containing unrecognized extensions.  See
    Section 4.4.
+
+   Note that Taskind extensions are semantically distinct from DAP
+   report extensions and do not share the same codepoint registry
+   (Section 7.2).  Future documents may want to define both a Taskbind
+   extension and a report extension, but there may also be situations
+   where a document defines one but not the other.
 
 4.  In-band Task Provisioning with the Taskbind Extension
 

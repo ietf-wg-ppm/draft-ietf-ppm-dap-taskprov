@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-27T01:06:32.111678+00:00",
+  "timestamp": "2024-10-29T01:03:30.119771+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -7171,19 +7171,144 @@
       ],
       "body": "Closes #85. We'll consider #88 (whether to remove the DP mechanism and suggest implementations do this in an extension) in a future PR.\r\n\r\nNotable features:\r\n\r\n* Create a registry for new taskbind extensions\r\n* Make extensions mandatory-to-implement when provisioning a task\r\n\r\ncc @martinthomson",
       "createdAt": "2024-10-25T16:45:30Z",
-      "updatedAt": "2024-10-25T16:45:43Z",
+      "updatedAt": "2024-10-28T14:48:19Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "eabacecb502930e38d2d7b445daad601e12ac3e0",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/85",
-      "headRefOid": "f482756b1660693838e8db9c5a265bbed758c56d",
+      "headRefOid": "588c65e2975b33e3f17a0a6abcca7ebbc51ce15c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586O6SDJ",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-27T22:43:12Z",
+          "updatedAt": "2024-10-27T22:46:21Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "```suggestion\r\n    /* The earliest timestamp that will be accepted for this task. */\r\n```",
+              "createdAt": "2024-10-27T22:43:12Z",
+              "updatedAt": "2024-10-27T22:46:21Z"
+            },
+            {
+              "originalPosition": 31,
+              "body": "This smells like an extension to me.",
+              "createdAt": "2024-10-27T22:44:04Z",
+              "updatedAt": "2024-10-27T22:46:21Z"
+            },
+            {
+              "originalPosition": 72,
+              "body": "The question I have is how codepoints here relate to codepoints in DAP, if that makes sense.\r\n\r\nIf I define an extension 0xAAAA here does that match the 0xAAAA codepoint in DAP?",
+              "createdAt": "2024-10-27T22:45:53Z",
+              "updatedAt": "2024-10-27T22:46:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586O__jb",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-28T13:50:38Z",
+          "updatedAt": "2024-10-28T13:50:38Z",
+          "comments": [
+            {
+              "originalPosition": 111,
+              "body": "```suggestion\r\n: Where the mechanism is defined\r\n```",
+              "createdAt": "2024-10-28T13:50:38Z",
+              "updatedAt": "2024-10-28T13:50:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PAASz",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-28T13:51:44Z",
+          "updatedAt": "2024-10-28T13:51:45Z",
+          "comments": [
+            {
+              "originalPosition": 72,
+              "body": "+1",
+              "createdAt": "2024-10-28T13:51:45Z",
+              "updatedAt": "2024-10-28T13:51:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PAG2J",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-28T14:01:13Z",
+          "updatedAt": "2024-10-28T14:01:13Z",
+          "comments": [
+            {
+              "originalPosition": 63,
+              "body": "nit: the doc mentions DAP's ExtensionType which uses 65535, we should make it consistent, probably use 2^16-1 everywhere since that's what the other enum definition uses in this doc.",
+              "createdAt": "2024-10-28T14:01:13Z",
+              "updatedAt": "2024-10-28T14:01:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PAj9C",
+          "commit": {
+            "abbreviatedOid": "588c65e"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-28T14:35:32Z",
+          "updatedAt": "2024-10-28T14:48:14Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "I'm not sure it should be if it's mandatory to implement. In any case, I think we should discuss removing the task_info field in a separate issue.",
+              "createdAt": "2024-10-28T14:35:32Z",
+              "updatedAt": "2024-10-28T14:48:14Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "Good catch. I went with `2^16-1` to make the draft self-consistent. We wouldn't want to do `66535` because we also have a 32-bit codepoint in the draft.",
+              "createdAt": "2024-10-28T14:42:25Z",
+              "updatedAt": "2024-10-28T14:48:14Z"
+            },
+            {
+              "originalPosition": 72,
+              "body": "The intent is there are two types of extensions:\r\n* DAP report extensions\r\n* taskbind extensions\r\n\r\nFurther, these don't necessarily have anything to with each other. It's up to the document that specifies them. You could, for example, have a document that defines a report extension and taskbind extension that share a codepoint, as long as that codepoint is not allocated in either registry. But there might be cases where we want a taskprov extension but don't need a report extension or vice versa.\r\n\r\nI changed `ExtensionType` in this document to `TaskbindExtensionType` to hopefully make that more clear.\r\n\r\nThis is at least what I was envisioning! Happy to change this in some way if you don't think this is useful.\r\n",
+              "createdAt": "2024-10-28T14:45:08Z",
+              "updatedAt": "2024-10-28T14:48:14Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

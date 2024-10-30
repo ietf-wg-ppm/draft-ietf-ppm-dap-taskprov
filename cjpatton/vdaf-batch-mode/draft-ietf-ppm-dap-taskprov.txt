@@ -310,7 +310,7 @@ Table of Contents
 
    The vadf_config field contains parameters necessary to configure an
    instance of the VDAF.  Section 3.2 defines a suitable encoding of the
-   configuration of each VDAF specified in [VDAF].  VDAFs defined by
+   configuration for each VDAF specified in [VDAF].  VDAFs defined by
    future documents may also use this field as well; see Section 8 for
    details.
 
@@ -365,7 +365,7 @@ Table of Contents
 
    struct {
        uint16 bits; /* bit length of the input string */
-   } Poplar1;
+   } Poplar1Config;
 
 3.3.  Extensions
 

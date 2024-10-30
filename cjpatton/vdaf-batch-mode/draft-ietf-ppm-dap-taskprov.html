@@ -1532,8 +1532,8 @@ codepoint in the VDAF Identifiers registry.<a href="#section-3.1-9" class="pilcr
         </ul>
 <p id="section-3.1-11">The <code>vadf_config</code> field contains parameters necessary to configure an instance
 of the VDAF. <a href="#vdaf-config" class="auto internal xref">Section 3.2</a> defines a suitable encoding of the configuration
-of each VDAF specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. VDAFs defined by future documents may also
-use this field as well; see <a href="#extending-this-doc" class="auto internal xref">Section 8</a> for details.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
+for each VDAF specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. VDAFs defined by future documents may
+also use this field as well; see <a href="#extending-this-doc" class="auto internal xref">Section 8</a> for details.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
 <p id="section-3.1-12">The length prefix of the <code>vdaf_config</code> ensures that VDAF config can be decoded
 even if the VDAF type is not recognized.<a href="#section-3.1-12" class="pilcrow">¶</a></p>
 <p id="section-3.1-13">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
@@ -1627,7 +1627,7 @@ struct {
 <pre>
 struct {
     uint16 bits; /* bit length of the input string */
-} Poplar1;
+} Poplar1Config;
 </pre><a href="#section-3.2.6-1" class="pilcrow">¶</a>
 </div>
 </section>

@@ -103,6 +103,34 @@ make task configuration completely in-band, via HTTP request headers. Note that
 this mechanism is an optional feature of this specification; it is not required
 to implement the DAP report extension in {{definition}}.
 
+## Change Log
+
+(RFC EDITOR: Remove this section.)
+
+(\*) Indicates a change that breaks wire compatibility with the previous draft.
+
+01:
+
+- Add an extension point to the `TaskConfig` structure and define rules for
+  processing extensions. (\*)
+
+- Remove DP mechanisms. (\*)
+
+- Add guidelines for extending this document to account for new VDAFs or DAP
+  batch modes. Improve the extension points for these in `TaskConfig` in order
+  to make this easier. (\*)
+
+- Add a salt to the task ID computation. (\*)
+
+- Harmonize task lifetime parameters with {{!DAP}} by adding a task start time
+  and replacing the task end time with a task duration. (\*)
+
+- Harmonize batch mode parameters with {{!DAP}} by removing the deprecated
+  `max_batch_query_count` and `max_batch_size` parameters. (\*)
+
+- Task provisioning: Remove guidance for per-task HPKE configurations, as this
+  feature was deprecated by DAP.
+
 # Conventions and Definitions
 
 {::boilerplate bcp14-tagged}

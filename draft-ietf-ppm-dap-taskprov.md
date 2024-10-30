@@ -204,9 +204,6 @@ struct {
     /* The duration of the task. */
     Duration task_duration;
 
-    /* Differential privacy (DP) configuration. */
-    opaque dp_config<1..2^16-1>;
-
     /* Determines the VDAF type and its config parameters. */
     opaque vdaf_config<1..2^16-1>;
 
@@ -245,28 +242,6 @@ struct {
 The length prefix of the `query_config` ensures that the `QueryConfig` structure
 can be decoded even if an unrecognized variant is encountered (i.e., an
 unimplemented query type).
-
-The `dp_config` field defines a mechanism for differential privacy (DP). The
-opaque `dp_config` contains the following structure:
-
-~~~
-enum {
-    reserved(0), /* Reserved for testing purposes */
-    none(1),
-    (2^16-1)
-} DpMechanism;
-
-struct {
-    DpMechanism dp_mechanism;
-    select (DpConfig.dp_mechanism) {
-        case none: Empty;
-    };
-} DpConfig;
-~~~
-
-The length prefix of the `dp_config` ensures that the `DpConfig` structure can
-be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented DP mechanism).
 
 The `vdaf_config` defines the configuration of the VDAF in use for this task.
 Its content is as follows (codepoints are as defined in
@@ -451,8 +426,7 @@ A protocol participant MAY "opt out" of a task if:
    configuration disseminated by the Author does not match the existing
    configuration.
 
-1. The VDAF config, DP mechanism, or other parameters are deemed insufficient
-   for privacy.
+1. The VDAF config or other parameters are deemed insufficient for privacy.
 
 1. A secure connection to one or both of the Aggregator endpoints could not be
    established.
@@ -463,7 +437,7 @@ A protocol participant MUST opt out if:
 
 1. The task has ended.
 
-1. The DAP batch mode, VDAF, DP mechanism is not implemented.
+1. The DAP batch mode or VDAF is not implemented.
 
 1. One of the extensions is not recognized.
 
@@ -654,8 +628,8 @@ out once they have opted in.
 
 # IANA Considerations
 
-This document requests a codepoint for the `taskbind` extension and for
-creation of a new registry for DP mechanisms.
+This document requests a codepoint for the `taskbind` report extension and for
+creation of a new registry for Taskbind extensions.
 
 (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this document.)
 
@@ -696,29 +670,6 @@ The initial contents of this registry are listed in the following table.
 | `0x0000` | `reserved` | {{taskbind-extensions}} of RFC XXXX |
 {: #taskbind-extension-id title="Initial contents of the Taskbind Extensions registry."}
 
-## Registry for DP Mechanisms {#dp-mechanism-registry}
-
-A new registry will be (RFC EDITOR: change "will be" to "has been") created for
-the "Distributed Aggregation Protocol (DAP)" page called "Differential Privacy
-(DP) Mechanisms". This registry contains the following columns:
-
-Value:
-: The two-byte identifier for the DP mechanism
-
-Name:
-: The name of the DP mechanism
-
-Reference:
-: Where the DP mechanism is defined
-
-The initial contents of this registry are listed in the following table.
-
-| Value    | Name       | Reference                     |
-|:---------|:-----------|:------------------------------|
-| `0x0000` | `reserved` | {{task-encoding}} of RFC XXXX |
-| `0x0001` | `none`     | {{task-encoding}} of RFC XXXX |
-{: #dp-mechanism-id title="Initial contents of the Differential Privacy (DP) Mechanisms registry."}
-
 ## DAP Sub-namespace for DAP
 
 > TODO Figure out how to ask IANA to register the errors in
@@ -732,17 +683,15 @@ that define:
 
 1. A new DAP batch mode
 1. A new VDAF
-1. A new DP mechanism
+1. A new Taskbind extension
 
-Such documents SHOULD include a section titled "Taskbind Considerations" that
-specifies an encoding of any configuration parameters associated with the DAP
-batch mode, VDAF, or DP mechanism. This encoding extends the `BatchConfig`
-structure, the `VdafConfig` structure, or the `DpConfig` structure
-respectively.
+Documents defining either a new DAP batch mode or VDAF SHOULD include a section
+titled "Taskbind Considerations" that specifies how to extend the `BatchConfig`
+structure and the `VdafConfig` structure respectively.
 
 Note that the registry for batch modes is defined by {{!DAP}}; the registry for
-VDAFs is defined by {{!VDAF}}; and the registry for DP mechanisms is defined in
-{{dp-mechanism-registry}} of this document.
+VDAFs is defined by {{!VDAF}}; and the registry for Taskbind extensions is defined in
+{{taskbind-extension-registry} of this document.
 
 --- back
 

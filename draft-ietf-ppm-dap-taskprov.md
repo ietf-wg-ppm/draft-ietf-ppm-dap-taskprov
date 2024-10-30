@@ -178,6 +178,8 @@ ID of the request.
 The task configuration is encoded as follows:
 
 ~~~
+uint32 VdafType; /* As defined in Section 10 of [VDAF] */
+
 struct {
     /* Info specific for a task. */
     opaque task_info<1..2^8-1>;
@@ -195,6 +197,7 @@ struct {
     uint32 min_batch_size;
 
     /* The batch mode and its parameters. */
+    BatchMode batch_mode;
     opaque batch_config<1..2^16-1>;
 
     /* The earliest timestamp that will be accepted for this task. */
@@ -205,6 +208,7 @@ struct {
     Duration task_duration;
 
     /* Determines the VDAF type and its config parameters. */
+    VdafType vdaf_type;
     opaque vdaf_config<1..2^16-1>;
 
     /* Taskbind Extensions. */
@@ -227,64 +231,90 @@ This structure does not include cryptographic assets shared by only a subset of
 the parties, including the secret VDAF verification key {{!VDAF}} or public
 HPKE configurations {{!RFC9180}}.
 
-The `batch_config` field defines the DAP batch mode. Its contents are as follows:
+The `batch_mode` field indicates the DAP batch mode and corresponds to a
+codepoint in the Batch Modes Registry.
 
-~~~
-struct {
-    BatchMode batch_mode;
-    select (BatchMode.batch_mode) {
-        case time_interval:   Empty;
-        case leader_selected: Empty;
-    };
-} BatchConfig;
-~~~
+> TODO Add a reference to the IANA registry for batch modes created by
+> {{!DAP}}.
 
-The length prefix of the `query_config` ensures that the `QueryConfig` structure
-can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented query type).
+The `batch_config` field contains any parameters that are required for
+configuring the batch mode. For the time-interval and leader-selected batch
+modes specified in {{!DAP}}, the payload is empty. Batch modes defined by
+future documents may specify a non-empty payload; see {{extending-this-doc}}
+for details. The length prefix of the `batch_config` ensures that the batch
+config can be decoded even if the batch mode is unrecognized.
 
-The `vdaf_config` defines the configuration of the VDAF in use for this task.
-Its content is as follows (codepoints are as defined in
-{{Section 10 of !VDAF}}):
+The `vdaf_type` field indicates the VDAF for the task and corresponds to a
+codepoint in the VDAF Identifiers registry.
 
-~~~
-enum {
-    reserved(0x00000000),
-    prio3_count(0x00000001),
-    prio3_sum(0x00000002),
-    prio3_sum_vec(0x00000003),
-    prio3_histogram(0x00000004),
-    prio3_multihot_count_vec(0x00000005),
-    poplar1(0x00000006),
-    (2^32-1)
-} VdafType;
+> TODO: Add a reference to the IANA registry created by {{!VDAF}}.
 
-struct {
-    VdafType vdaf_type;
-    select (VdafConfig.vdaf_type) {
-        case prio3_count:
-            Empty;
-        case prio3_sum:
-            uint8;  /* bit length of the summand */
-        case prio3_sum_vec:
-            uint32; /* length of the vector */
-            uint8;  /* bit length of each summand */
-            uint32; /* size of each proof chunk */
-        case prio3_histogram:
-            uint32; /* number of buckets */
-            uint32; /* size of each proof chunk */
-        case poplar1:
-            uint16; /* bit length of input string */
-    };
-} VdafConfig;
-~~~
+The `vadf_config` field contains parameters necessary to configure an instance
+of the VDAF. {{vdaf-config}} defines a suitable encoding of the configuration
+for each VDAF specified in {{!VDAF}}. VDAFs defined by future documents may
+also use this field as well; see {{extending-this-doc}} for details.
 
-The length prefix of the `vdaf_config` ensures that the `VdafConfig` structure
-can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).
+The length prefix of the `vdaf_config` ensures that VDAF config can be decoded
+even if the VDAF type is not recognized.
 
 The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 {{!DAP}}.
+
+## VDAF config {#vdaf-config}
+
+This section defines the payload of `TaskConfig.vdaf_config` for each VDAF
+specified in {{!VDAF}}. In some cases, the VDAF supports more than two
+Aggregators; but since DAP only supports two Aggregators, we do not include the
+number of Aggregators in the encoding (cf. {{Section C of !VDAF}}).
+
+### Prio3Count
+
+The payload is empty.
+
+### Prio3Sum
+
+~~~
+struct {
+    uint32 max_measurement; /* largest summand */
+} Prio3SumConfig;
+~~~
+
+### Prio3SumVec
+
+~~~
+struct {
+    uint32 length;       /* length of the vector */
+    uint8 bits;          /* bit length of each summand */
+    uint32 chunk_length; /* size of each proof chunk */
+} Prio3SumVecConfig;
+~~~
+
+### Prio3Histogram
+
+~~~
+struct {
+    uint32 length;       /* number of buckets */
+    uint32 chunk_length; /* size of each proof chunk */
+} Prio3HistogramConfig;
+~~~
+
+### Prio3MultihotCountVec
+
+~~~
+struct {
+    uint32 length;       /* length of the vector */
+    uint32 chunk_length; /* size of each proof chunk */
+    uint32 max_weight;   /* largest vector weight /
+} Prio3MultihotCountVecConfig;
+~~~
+
+### Poplar1
+
+~~~
+struct {
+    uint16 bits; /* bit length of the input string */
+} Poplar1Config;
+~~~
 
 ## Extensions {#taskbind-extensions}
 
@@ -676,7 +706,7 @@ The initial contents of this registry are listed in the following table.
 > {{urn-space-errors}}. See
 > https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/34
 
-# Extending this Document
+# Extending this Document {#extending-this-doc}
 
 The behavior of the `taskbind` extension may be extended by future documents
 that define:
@@ -686,8 +716,8 @@ that define:
 1. A new Taskbind extension
 
 Documents defining either a new DAP batch mode or VDAF SHOULD include a section
-titled "Taskbind Considerations" that specifies how to extend the `BatchConfig`
-structure and the `VdafConfig` structure respectively.
+titled "Taskbind Considerations" that specifies the payload of
+`TaskConfig.batch_config` or `TaskConfig.vdaf_config` respectively.
 
 Note that the registry for batch modes is defined by {{!DAP}}; the registry for
 VDAFs is defined by {{!VDAF}}; and the registry for Taskbind extensions is defined in

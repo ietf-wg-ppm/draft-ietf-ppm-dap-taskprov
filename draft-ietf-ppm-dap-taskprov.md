@@ -61,11 +61,11 @@ provisioning that builds on the report extension.
 (RFC EDITOR: Remove this paragraph.) This draft is maintained in
 https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-12}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-13}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-12}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-13}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. See
 {{Section 4.3 of !DAP}} for a complete listing.
 
@@ -130,6 +130,10 @@ to implement the DAP report extension in {{definition}}.
 
 - Task provisioning: Remove guidance for per-task HPKE configurations, as this
   feature was deprecated by DAP.
+
+- Bump draft-ietf-ppm-dap-12 to 13 {{!DAP}}. (\*)
+
+- Bump draft-irtf-cfrg-vdaf-12 to 13 {{!VDAF}}.
 
 # Conventions and Definitions
 

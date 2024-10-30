@@ -758,11 +758,10 @@ Table of Contents
 
    3.  A new Taskbind extension
 
-   Such documents SHOULD include a section titled "Taskbind
-   Considerations" that specifies an encoding of any configuration
-   parameters associated with the DAP batch mode, VDAF, or Taskind
-   mechanism.  The encoding of the batch mode and VDAF extends the
-   BatchConfig structure and the VdafConfig structure respectively.
+   Documents defining either a new DAP batch mode or VDAF SHOULD include
+   a section titled "Taskbind Considerations" that specifies how to
+   extend the BatchConfig structure and the VdafConfig structure
+   respectively.
 
    Note that the registry for batch modes is defined by [DAP]; the
    registry for VDAFs is defined by [VDAF]; and the registry for

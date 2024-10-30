@@ -1208,7 +1208,30 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
                 <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-task-encoding" class="internal xref">Task Encoding</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-extensions" class="internal xref">Extensions</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-vdaf-config" class="internal xref">VDAF config</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-prio3count" class="internal xref">Prio3Count</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2">
+                    <p id="section-toc.1-1.3.2.2.2.2.1"><a href="#section-3.2.2" class="auto internal xref">3.2.2</a>.  <a href="#name-prio3sum" class="internal xref">Prio3Sum</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.3">
+                    <p id="section-toc.1-1.3.2.2.2.3.1"><a href="#section-3.2.3" class="auto internal xref">3.2.3</a>.  <a href="#name-prio3sumvec" class="internal xref">Prio3SumVec</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.4">
+                    <p id="section-toc.1-1.3.2.2.2.4.1"><a href="#section-3.2.4" class="auto internal xref">3.2.4</a>.  <a href="#name-prio3histogram" class="internal xref">Prio3Histogram</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.5">
+                    <p id="section-toc.1-1.3.2.2.2.5.1"><a href="#section-3.2.5" class="auto internal xref">3.2.5</a>.  <a href="#name-prio3multihotcountvec" class="internal xref">Prio3MultihotCountVec</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.6">
+                    <p id="section-toc.1-1.3.2.2.2.6.1"><a href="#section-3.2.6" class="auto internal xref">3.2.6</a>.  <a href="#name-poplar1" class="internal xref">Poplar1</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-extensions" class="internal xref">Extensions</a></p>
 </li>
             </ul>
 </li>
@@ -1432,6 +1455,8 @@ ID of the request.<a href="#section-3-11" class="pilcrow">¶</a></p>
 <p id="section-3.1-1">The task configuration is encoded as follows:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.1-2">
 <pre>
+uint32 VdafType; /* As defined in Section 10 of [VDAF] */
+
 struct {
     /* Info specific for a task. */
     opaque task_info&lt;1..2^8-1&gt;;
@@ -1460,7 +1485,7 @@ struct {
     Duration task_duration;
 
     /* Determines the VDAF type and its config parameters. */
-    Vdaftype vdaf_type;
+    VdafType vdaf_type;
     opaque vdaf_config&lt;1..2^16-1&gt;;
 
     /* Taskbind Extensions. */
@@ -1478,7 +1503,7 @@ this task.<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-4.2">
             <p id="section-3.1-4.2.1"><code>extensions</code> is a list of extensions to this document. The format and
-semantics of extensions are describe in <a href="#taskbind-extensions" class="auto internal xref">Section 3.2</a>.<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
+semantics of extensions are describe in <a href="#taskbind-extensions" class="auto internal xref">Section 3.3</a>.<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-3.1-5">This structure does not include cryptographic assets shared by only a subset of
@@ -1494,72 +1519,132 @@ codepoint in the Batch Modes Registry.<a href="#section-3.1-6" class="pilcrow">�
         </ul>
 <p id="section-3.1-8">The <code>batch_config</code> field contains any parameters that are required for
 configuring the batch mode. For the time-interval and leader-selected batch
-modes specified in <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>, the payload is empty. Future documents that define
-new batch modes and wish to extend this document<a href="#section-3.1-8" class="pilcrow">¶</a></p>
-<p id="section-3.1-9">The length prefix of the
-<code>batch_config</code> ensures that the batch mode config structure can be decoded even
-if the batch mode is unrecognized.<a href="#section-3.1-9" class="pilcrow">¶</a></p>
-<p id="section-3.1-10">The <code>vdaf_type</code> field indicates the VDAF for the task and corresponds to a
-codepoint in the VDAF Identifiers registry.<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+modes specified in <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>, the payload is empty. Batch modes defined by
+future documents may specify a non-empty payload; see <a href="#extending-this-doc" class="auto internal xref">Section 8</a>
+for details. The length prefix of the <code>batch_config</code> ensures that the batch
+config can be decoded even if the batch mode is unrecognized.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<p id="section-3.1-9">The <code>vdaf_type</code> field indicates the VDAF for the task and corresponds to a
+codepoint in the VDAF Identifiers registry.<a href="#section-3.1-9" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-3.1-11.1">
-            <p id="section-3.1-11.1.1">TODO: Add a reference to the IANA registry created by <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-3.1-11.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-3.1-10.1">
+            <p id="section-3.1-10.1.1">TODO: Add a reference to the IANA registry created by <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-3.1-10.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.1-12">the configuration of the VDAF in use for this task.
-Its content is as follows (codepoints are as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#section-10" class="relref">Section 10</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>):<a href="#section-3.1-12" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.1-13">
-<pre>
-enum {
-    reserved(0x00000000),
-    prio3_count(0x00000001),
-    prio3_sum(0x00000002),
-    prio3_sum_vec(0x00000003),
-    prio3_histogram(0x00000004),
-    prio3_multihot_count_vec(0x00000005),
-    poplar1(0x00000006),
-    (2^32-1)
-} VdafType;
-
-struct {
-    VdafType vdaf_type;
-    select (VdafConfig.vdaf_type) {
-        case prio3_count:
-            Empty;
-        case prio3_sum:
-            uint8;  /* bit length of the summand */
-        case prio3_sum_vec:
-            uint32; /* length of the vector */
-            uint8;  /* bit length of each summand */
-            uint32; /* size of each proof chunk */
-        case prio3_histogram:
-            uint32; /* number of buckets */
-            uint32; /* size of each proof chunk */
-        case poplar1:
-            uint16; /* bit length of input string */
-    };
-} VdafConfig;
-</pre><a href="#section-3.1-13" class="pilcrow">¶</a>
+<p id="section-3.1-11">The <code>vadf_config</code> field contains parameters necessary to configure an instance
+of the VDAF. <a href="#vdaf-config" class="auto internal xref">Section 3.2</a> defines a suitable encoding of the configuration
+of each VDAF specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. VDAFs defined by future documents may also
+use this field as well; see <a href="#extending-this-doc" class="auto internal xref">Section 8</a> for details.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
+<p id="section-3.1-12">The length prefix of the <code>vdaf_config</code> ensures that VDAF config can be decoded
+even if the VDAF type is not recognized.<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<p id="section-3.1-13">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
+<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-13" class="pilcrow">¶</a></p>
+</section>
 </div>
-<p id="section-3.1-14">The length prefix of the <code>vdaf_config</code> ensures that the <code>VdafConfig</code> structure
-can be decoded even if an unrecognized variant is encountered (i.e., an
-unimplemented VDAF).<a href="#section-3.1-14" class="pilcrow">¶</a></p>
-<p id="section-3.1-15">The definition of <code>Time</code>, <code>Duration</code>, <code>Url</code>, and <code>BatchMode</code> follow those in
-<span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-3.1-15" class="pilcrow">¶</a></p>
+<div id="vdaf-config">
+<section id="section-3.2">
+        <h3 id="name-vdaf-config">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-vdaf-config" class="section-name selfRef">VDAF config</a>
+        </h3>
+<p id="section-3.2-1">This section defines the payload of <code>TaskConfig.vdaf_config</code> for each VDAF
+specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. In some cases, the VDAF supports more than two
+Aggregators; but since DAP only supports two Aggregators, we do not include the
+number of Aggregators in the encoding (cf. <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-12#appendix-C" class="relref">Appendix C</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<div id="prio3count">
+<section id="section-3.2.1">
+          <h4 id="name-prio3count">
+<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-prio3count" class="section-name selfRef">Prio3Count</a>
+          </h4>
+<p id="section-3.2.1-1">The payload is empty.<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="prio3sum">
+<section id="section-3.2.2">
+          <h4 id="name-prio3sum">
+<a href="#section-3.2.2" class="section-number selfRef">3.2.2. </a><a href="#name-prio3sum" class="section-name selfRef">Prio3Sum</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.2-1">
+<pre>
+struct {
+    uint32 max_measurement; /* largest summand */
+} Prio3SumConfig;
+</pre><a href="#section-3.2.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="prio3sumvec">
+<section id="section-3.2.3">
+          <h4 id="name-prio3sumvec">
+<a href="#section-3.2.3" class="section-number selfRef">3.2.3. </a><a href="#name-prio3sumvec" class="section-name selfRef">Prio3SumVec</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.3-1">
+<pre>
+struct {
+    uint32 length;       /* length of the vector */
+    uint8 bits;          /* bit length of each summand */
+    uint32 chunk_length; /* size of each proof chunk */
+} Prio3SumVecConfig;
+</pre><a href="#section-3.2.3-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="prio3histogram">
+<section id="section-3.2.4">
+          <h4 id="name-prio3histogram">
+<a href="#section-3.2.4" class="section-number selfRef">3.2.4. </a><a href="#name-prio3histogram" class="section-name selfRef">Prio3Histogram</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.4-1">
+<pre>
+struct {
+    uint32 length;       /* number of buckets */
+    uint32 chunk_length; /* size of each proof chunk */
+} Prio3HistogramConfig;
+</pre><a href="#section-3.2.4-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="prio3multihotcountvec">
+<section id="section-3.2.5">
+          <h4 id="name-prio3multihotcountvec">
+<a href="#section-3.2.5" class="section-number selfRef">3.2.5. </a><a href="#name-prio3multihotcountvec" class="section-name selfRef">Prio3MultihotCountVec</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.5-1">
+<pre>
+struct {
+    uint32 length;       /* length of the vector */
+    uint32 chunk_length; /* size of each proof chunk */
+    uint32 max_weight;   /* largest vector weight /
+} Prio3MultihotCountVecConfig;
+</pre><a href="#section-3.2.5-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="poplar1">
+<section id="section-3.2.6">
+          <h4 id="name-poplar1">
+<a href="#section-3.2.6" class="section-number selfRef">3.2.6. </a><a href="#name-poplar1" class="section-name selfRef">Poplar1</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-3.2.6-1">
+<pre>
+struct {
+    uint16 bits; /* bit length of the input string */
+} Poplar1;
+</pre><a href="#section-3.2.6-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="taskbind-extensions">
-<section id="section-3.2">
+<section id="section-3.3">
         <h3 id="name-extensions">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-extensions" class="section-name selfRef">Extensions</a>
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-extensions" class="section-name selfRef">Extensions</a>
         </h3>
-<p id="section-3.2-1">The <code>TaskConfig</code> structure includes a list of extensions. In general,
+<p id="section-3.3-1">The <code>TaskConfig</code> structure includes a list of extensions. In general,
 extensions can be used to bind additional, application-specific information to
 the task. For example, an extension might be used to encode the identity of the
-Collector. (Only the Aggregators are identified in <code>TaskConfig</code>.)<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">Each extension is structured as follows:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<div class="lang-tls-presentation sourcecode" id="section-3.2-3">
+Collector. (Only the Aggregators are identified in <code>TaskConfig</code>.)<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">Each extension is structured as follows:<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<div class="lang-tls-presentation sourcecode" id="section-3.3-3">
 <pre>
 struct {
   TaskbindExtensionType extension_type;
@@ -1570,18 +1655,18 @@ enum {
   reserved(0),
   (2^16-1)
 } TaskbindExtensionType;
-</pre><a href="#section-3.2-3" class="pilcrow">¶</a>
+</pre><a href="#section-3.3-3" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-4">The <code>extension_type</code> identifies the extension and <code>extension_data</code> is
-structured as specified by the extension.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.2-5">Extensions are treated as mandatory-to-implement in the protocol described in
+<p id="section-3.3-4">The <code>extension_type</code> identifies the extension and <code>extension_data</code> is
+structured as specified by the extension.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">Extensions are treated as mandatory-to-implement in the protocol described in
 <a href="#taskprov" class="auto internal xref">Section 4</a>. In particular protocols participants <span class="bcp14">MUST</span> opt-out of tasks
-containing unrecognized extensions. See <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.2-6">Note that Taskind extensions are semantically distinct from DAP report
+containing unrecognized extensions. See <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-6">Note that Taskind extensions are semantically distinct from DAP report
 extensions and do not share the same codepoint registry
 (<a href="#taskbind-extension-registry" class="auto internal xref">Section 7.2</a>). Future documents may want to define both a
 Taskbind extension and a report extension, but there may also be situations
-where a document defines one but not the other.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+where a document defines one but not the other.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2021,7 +2106,7 @@ This registry contains the following columns:<a href="#section-7.2-1" class="pil
                 <code>reserved</code>
 </td>
               <td class="text-left" rowspan="1" colspan="1">
-                <a href="#taskbind-extensions" class="auto internal xref">Section 3.2</a> of RFC XXXX</td>
+                <a href="#taskbind-extensions" class="auto internal xref">Section 3.3</a> of RFC XXXX</td>
             </tr>
           </tbody>
         </table>
@@ -2062,11 +2147,9 @@ that define:<a href="#section-8-1" class="pilcrow">¶</a></p>
           <p id="section-8-2.3.1">A new Taskbind extension<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-8-3">Such documents <span class="bcp14">SHOULD</span> include a section titled "Taskbind Considerations" that
-specifies an encoding of any configuration parameters associated with the DAP
-batch mode, VDAF, or Taskind mechanism. The encoding of the batch mode and VDAF
-extends the <code>BatchConfig</code> structure and the <code>VdafConfig</code> structure
-respectively.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-3">Documents defining either a new DAP batch mode or VDAF <span class="bcp14">SHOULD</span> include a section
+titled "Taskbind Considerations" that specifies the payload of
+<code>TaskConfig.batch_config</code> or <code>TaskConfig.vdaf_config</code> respectively.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">Note that the registry for batch modes is defined by <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>; the registry for
 VDAFs is defined by <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>; and the registry for Taskbind extensions is defined in
 <a href="#taskbind-extension-registry" class="auto internal xref">Section 7.2</a> of this document.<a href="#section-8-4" class="pilcrow">¶</a></p>

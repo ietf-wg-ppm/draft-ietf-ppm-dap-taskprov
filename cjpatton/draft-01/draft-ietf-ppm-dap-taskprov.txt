@@ -664,7 +664,7 @@ Table of Contents
    turn is bound to each report uploaded for a task.  Furthermore,
    inclusion of the Taskbind extension in the report means Aggregators
    that do not implement this extension will reject the report as
-   required by (Section 4.5.1.4 of [DAP]).
+   required by (Section 4.5.3 of [DAP]).
 
    The task provisioning mechanism in Section 4 extends the threat model
    of DAP by including a new logical role, called the Author.  The

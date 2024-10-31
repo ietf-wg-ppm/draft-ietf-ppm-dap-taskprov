@@ -76,7 +76,14 @@ Table of Contents
    2.  Conventions and Definitions
    3.  The Taskbind Extension
      3.1.  Task Encoding
-     3.2.  Extensions
+     3.2.  VDAF config
+       3.2.1.  Prio3Count
+       3.2.2.  Prio3Sum
+       3.2.3.  Prio3SumVec
+       3.2.4.  Prio3Histogram
+       3.2.5.  Prio3MultihotCountVec
+       3.2.6.  Poplar1
+     3.3.  Extensions
    4.  In-band Task Provisioning with the Taskbind Extension
      4.1.  Overview
      4.2.  Task Advertisement
@@ -230,6 +237,8 @@ Table of Contents
 
    The task configuration is encoded as follows:
 
+   uint32 VdafType; /* As defined in Section 10 of [VDAF] */
+
    struct {
        /* Info specific for a task. */
        opaque task_info<1..2^8-1>;
@@ -247,6 +256,7 @@ Table of Contents
        uint32 min_batch_size;
 
        /* The batch mode and its parameters. */
+       BatchMode batch_mode;
        opaque batch_config<1..2^16-1>;
 
        /* The earliest timestamp that will be accepted for this task. */
@@ -257,6 +267,7 @@ Table of Contents
        Duration task_duration;
 
        /* Determines the VDAF type and its config parameters. */
+       VdafType vdaf_type;
        opaque vdaf_config<1..2^16-1>;
 
        /* Taskbind Extensions. */
@@ -272,69 +283,91 @@ Table of Contents
       describing the purpose of this task.
 
    *  extensions is a list of extensions to this document.  The format
-      and semantics of extensions are describe in Section 3.2.
+      and semantics of extensions are describe in Section 3.3.
 
    This structure does not include cryptographic assets shared by only a
    subset of the parties, including the secret VDAF verification key
    [VDAF] or public HPKE configurations [RFC9180].
 
-   The batch_config field defines the DAP batch mode.  Its contents are
-   as follows:
+   The batch_mode field indicates the DAP batch mode and corresponds to
+   a codepoint in the Batch Modes Registry.
 
-   struct {
-       BatchMode batch_mode;
-       select (BatchMode.batch_mode) {
-           case time_interval:   Empty;
-           case leader_selected: Empty;
-       };
-   } BatchConfig;
+      TODO Add a reference to the IANA registry for batch modes created
+      by [DAP].
 
-   The length prefix of the query_config ensures that the QueryConfig
-   structure can be decoded even if an unrecognized variant is
-   encountered (i.e., an unimplemented query type).
+   The batch_config field contains any parameters that are required for
+   configuring the batch mode.  For the time-interval and leader-
+   selected batch modes specified in [DAP], the payload is empty.  Batch
+   modes defined by future documents may specify a non-empty payload;
+   see Section 8 for details.  The length prefix of the batch_config
+   ensures that the batch config can be decoded even if the batch mode
+   is unrecognized.
 
-   The vdaf_config defines the configuration of the VDAF in use for this
-   task.  Its content is as follows (codepoints are as defined in
-   Section 10 of [VDAF]):
+   The vdaf_type field indicates the VDAF for the task and corresponds
+   to a codepoint in the VDAF Identifiers registry.
 
-   enum {
-       reserved(0x00000000),
-       prio3_count(0x00000001),
-       prio3_sum(0x00000002),
-       prio3_sum_vec(0x00000003),
-       prio3_histogram(0x00000004),
-       prio3_multihot_count_vec(0x00000005),
-       poplar1(0x00000006),
-       (2^32-1)
-   } VdafType;
+      TODO: Add a reference to the IANA registry created by [VDAF].
 
-   struct {
-       VdafType vdaf_type;
-       select (VdafConfig.vdaf_type) {
-           case prio3_count:
-               Empty;
-           case prio3_sum:
-               uint8;  /* bit length of the summand */
-           case prio3_sum_vec:
-               uint32; /* length of the vector */
-               uint8;  /* bit length of each summand */
-               uint32; /* size of each proof chunk */
-           case prio3_histogram:
-               uint32; /* number of buckets */
-               uint32; /* size of each proof chunk */
-           case poplar1:
-               uint16; /* bit length of input string */
-       };
-   } VdafConfig;
+   The vadf_config field contains parameters necessary to configure an
+   instance of the VDAF.  Section 3.2 defines a suitable encoding of the
+   configuration for each VDAF specified in [VDAF].  VDAFs defined by
+   future documents may also use this field as well; see Section 8 for
+   details.
 
-   The length prefix of the vdaf_config ensures that the VdafConfig
-   structure can be decoded even if an unrecognized variant is
-   encountered (i.e., an unimplemented VDAF).
+   The length prefix of the vdaf_config ensures that VDAF config can be
+   decoded even if the VDAF type is not recognized.
 
    The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
 
-3.2.  Extensions
+3.2.  VDAF config
+
+   This section defines the payload of TaskConfig.vdaf_config for each
+   VDAF specified in [VDAF].  In some cases, the VDAF supports more than
+   two Aggregators; but since DAP only supports two Aggregators, we do
+   not include the number of Aggregators in the encoding (cf.
+   Appendix C of [VDAF]).
+
+3.2.1.  Prio3Count
+
+   The payload is empty.
+
+3.2.2.  Prio3Sum
+
+   struct {
+       uint32 max_measurement; /* largest summand */
+   } Prio3SumConfig;
+
+3.2.3.  Prio3SumVec
+
+   struct {
+       uint32 length;       /* length of the vector */
+       uint8 bits;          /* bit length of each summand */
+       uint32 chunk_length; /* size of each proof chunk */
+   } Prio3SumVecConfig;
+
+3.2.4.  Prio3Histogram
+
+   struct {
+       uint32 length;       /* number of buckets */
+       uint32 chunk_length; /* size of each proof chunk */
+   } Prio3HistogramConfig;
+
+3.2.5.  Prio3MultihotCountVec
+
+   struct {
+       uint32 length;       /* length of the vector */
+       uint32 chunk_length; /* size of each proof chunk */
+       uint32 max_weight;   /* largest vector weight /
+   } Prio3MultihotCountVecConfig;
+
+3.2.6.  Poplar1
+
+   struct {
+       uint16 bits; /* bit length of the input string */
+   } Poplar1Config;
+
+3.3.  Extensions
 
    The TaskConfig structure includes a list of extensions.  In general,
    extensions can be used to bind additional, application-specific
@@ -735,7 +768,7 @@ Table of Contents
               +========+==========+=========================+
               | Value  | Name     | Reference               |
               +========+==========+=========================+
-              | 0x0000 | reserved | Section 3.2 of RFC XXXX |
+              | 0x0000 | reserved | Section 3.3 of RFC XXXX |
               +--------+----------+-------------------------+
 
                  Table 2: Initial contents of the Taskbind
@@ -759,9 +792,8 @@ Table of Contents
    3.  A new Taskbind extension
 
    Documents defining either a new DAP batch mode or VDAF SHOULD include
-   a section titled "Taskbind Considerations" that specifies how to
-   extend the BatchConfig structure and the VdafConfig structure
-   respectively.
+   a section titled "Taskbind Considerations" that specifies the payload
+   of TaskConfig.batch_config or TaskConfig.vdaf_config respectively.
 
    Note that the registry for batch modes is defined by [DAP]; the
    registry for VDAFs is defined by [VDAF]; and the registry for

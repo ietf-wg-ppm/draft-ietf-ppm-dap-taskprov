@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-10-29T01:03:30.119771+00:00",
+  "timestamp": "2024-10-31T01:02:56.916659+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1084,14 +1084,16 @@
       "state": "OPEN",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [
         "draft-01",
         "wire breaking"
       ],
       "body": "2024/10/26 interim: It's a little confusing that this draft defines a a registry for DP mechanism codepoints. We could instead move DP mechanisms into a generic task config extension: see https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/85#issuecomment-2436405240.",
       "createdAt": "2024-10-24T22:00:06Z",
-      "updatedAt": "2024-10-25T14:53:36Z",
+      "updatedAt": "2024-10-29T23:57:43Z",
       "closedAt": null,
       "comments": [
         {
@@ -1100,8 +1102,33 @@
           "body": "MT's point, which I agree with: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/85#issuecomment-2436771339",
           "createdAt": "2024-10-25T14:11:03Z",
           "updatedAt": "2024-10-25T14:11:03Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I've gotten some more feedback offline about this and we're good to remove this. PR incoming.",
+          "createdAt": "2024-10-29T23:57:42Z",
+          "updatedAt": "2024-10-29T23:57:42Z"
         }
       ]
+    },
+    {
+      "number": 92,
+      "id": "I_kwDOH4FR586ccGOX",
+      "title": "Add IANA considerations for task advertisement",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/92",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "pre-WGLC"
+      ],
+      "body": "In the optional in-band task provisioning protocol, the `TaskConfig` is conveyed in an HTTP header, \"dap-taskprov\". We need to register this header, [similar to how the DAP draft requests registration of the media types for protocol messages](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap/draft-ietf-ppm-dap.html#section-8.1). We also need to rename the header.",
+      "createdAt": "2024-10-30T16:12:18Z",
+      "updatedAt": "2024-10-30T16:12:18Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -7159,7 +7186,7 @@
     {
       "number": 89,
       "id": "PR_kwDOH4FR585_7h-Q",
-      "title": "Add an extension field to `TaskConfig`",
+      "title": "Add an extension field to `TaskConfig` (*)",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/89",
       "state": "OPEN",
       "author": "cjpatton",
@@ -7171,18 +7198,26 @@
       ],
       "body": "Closes #85. We'll consider #88 (whether to remove the DP mechanism and suggest implementations do this in an extension) in a future PR.\r\n\r\nNotable features:\r\n\r\n* Create a registry for new taskbind extensions\r\n* Make extensions mandatory-to-implement when provisioning a task\r\n\r\ncc @martinthomson",
       "createdAt": "2024-10-25T16:45:30Z",
-      "updatedAt": "2024-10-28T14:48:19Z",
+      "updatedAt": "2024-10-30T00:12:03Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
-      "baseRefOid": "eabacecb502930e38d2d7b445daad601e12ac3e0",
+      "baseRefOid": "e4eb0fb4ebf1471baea4b5e687169ea3ff05cce6",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/85",
-      "headRefOid": "588c65e2975b33e3f17a0a6abcca7ebbc51ce15c",
+      "headRefOid": "92f5c116266e1e4fd51e1c494b3a242e08f87b19",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Squashed (so that I can start stacking on this PR).",
+          "createdAt": "2024-10-30T00:03:18Z",
+          "updatedAt": "2024-10-30T00:03:18Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOH4FR586O6SDJ",
@@ -7305,6 +7340,274 @@
               "body": "The intent is there are two types of extensions:\r\n* DAP report extensions\r\n* taskbind extensions\r\n\r\nFurther, these don't necessarily have anything to with each other. It's up to the document that specifies them. You could, for example, have a document that defines a report extension and taskbind extension that share a codepoint, as long as that codepoint is not allocated in either registry. But there might be cases where we want a taskprov extension but don't need a report extension or vice versa.\r\n\r\nI changed `ExtensionType` in this document to `TaskbindExtensionType` to hopefully make that more clear.\r\n\r\nThis is at least what I was envisioning! Happy to change this in some way if you don't think this is useful.\r\n",
               "createdAt": "2024-10-28T14:45:08Z",
               "updatedAt": "2024-10-28T14:48:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PMcHr",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-29T15:55:44Z",
+          "updatedAt": "2024-10-29T15:55:44Z",
+          "comments": [
+            {
+              "originalPosition": 72,
+              "body": "I think this makes sense, do we want to add some text to explain this strategy. I can see this same question coming up in the future.",
+              "createdAt": "2024-10-29T15:55:44Z",
+              "updatedAt": "2024-10-29T15:55:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PMc7z",
+          "commit": {
+            "abbreviatedOid": "588c65e"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM.\r\n@cjpatton consider explaining the extension code point strategy in the text (perhaps in the main DAP text and refer to it from here)",
+          "createdAt": "2024-10-29T15:56:56Z",
+          "updatedAt": "2024-10-29T15:56:56Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586PMewK",
+          "commit": {
+            "abbreviatedOid": "f482756"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-29T15:59:33Z",
+          "updatedAt": "2024-10-29T15:59:33Z",
+          "comments": [
+            {
+              "originalPosition": 72,
+              "body": "Yup, will do.",
+              "createdAt": "2024-10-29T15:59:33Z",
+              "updatedAt": "2024-10-29T15:59:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PP0xS",
+          "commit": {
+            "abbreviatedOid": "588c65e"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-29T23:56:45Z",
+          "updatedAt": "2024-10-29T23:56:45Z",
+          "comments": [
+            {
+              "originalPosition": 72,
+              "body": "Done.",
+              "createdAt": "2024-10-29T23:56:45Z",
+              "updatedAt": "2024-10-29T23:56:45Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 90,
+      "id": "PR_kwDOH4FR586ATvSQ",
+      "title": "Remove DP mechanisms (*)",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/90",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking"
+      ],
+      "body": "Stacked on #89.\r\nCloses #88.\r\n\r\nThis can be expressed as a Taskbind extension.\r\n\r\n",
+      "createdAt": "2024-10-30T00:08:19Z",
+      "updatedAt": "2024-10-30T10:14:07Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/85",
+      "baseRefOid": "92f5c116266e1e4fd51e1c494b3a242e08f87b19",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/88",
+      "headRefOid": "e71ed51a2a17d31a7c9e984abe9a7d7e36ae4756",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586PTogy",
+          "commit": {
+            "abbreviatedOid": "e71ed51"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-30T10:14:07Z",
+          "updatedAt": "2024-10-30T10:14:07Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 91,
+      "id": "PR_kwDOH4FR586AT5kt",
+      "title": "Improve extension points for batch modes and VDAFs (*)",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/91",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01",
+        "wire breaking"
+      ],
+      "body": "Stacked on #90.\r\n\r\nAlong the same lines as\r\nhttps://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/627\r\n\r\nHarmonize the extension points for new batch modes or VDAFs with\r\nTasbind extensions by following the Tag-Length-Value (TLV) pattern. That\r\nis, encode the variant followed by length-prefixed payload, the format\r\nof which is determined by the variant. This is inteded to make it easier\r\nto extend the document in the future.\r\n\r\nThis change also has a couple of bug fixes:\r\n\r\n* Fix encoding of Prio3Sum config (the circuit now requires a maximum\r\n  measurement rather than the bit length of the maximum measurement).\r\n* Add encoding for Prio3MultihotCountVec\r\n\ufeff\ufeff",
+      "createdAt": "2024-10-30T01:00:41Z",
+      "updatedAt": "2024-10-30T17:00:58Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/88",
+      "baseRefOid": "e71ed51a2a17d31a7c9e984abe9a7d7e36ae4756",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/vdaf-batch-mode",
+      "headRefOid": "4e03a01a9e13cb478736915a7b834d563cb8cca6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586PQC6y",
+          "commit": {
+            "abbreviatedOid": "4e03a01"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-30T01:08:28Z",
+          "updatedAt": "2024-10-30T01:08:28Z",
+          "comments": [
+            {
+              "originalPosition": 177,
+              "body": "This change is the main pay off of this PR. \"Extend the `VdafConfig` structure\" is not very well defined.",
+              "createdAt": "2024-10-30T01:08:28Z",
+              "updatedAt": "2024-10-30T01:08:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PT7Qu",
+          "commit": {
+            "abbreviatedOid": "4e03a01"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-30T10:36:16Z",
+          "updatedAt": "2024-10-30T10:36:16Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR586PY2j3",
+          "commit": {
+            "abbreviatedOid": "4e03a01"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-30T17:00:55Z",
+          "updatedAt": "2024-10-30T17:00:58Z",
+          "comments": [
+            {
+              "originalPosition": 177,
+              "body": "So do we have any language on what if `batch_mode` or `vdaf_type` is unrecognized by an aggregator? (which is the initial motivation to make `vdaf_config` an opaque)",
+              "createdAt": "2024-10-30T17:00:55Z",
+              "updatedAt": "2024-10-30T17:00:58Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 93,
+      "id": "PR_kwDOH4FR586AawXi",
+      "title": "Preapre to cut draft 01",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/93",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-01"
+      ],
+      "body": "Stacked on #91.\r\n\r\n* Pass of draft:\r\n  * Update section references.\r\n  * Improve precision of terminology.\r\n  * Remove the \"Supporting HPKE Configurations Independent of Tasks\" section. This is no longer relevant since we removed support of per-task HPKE configs in DAP draft 12.\r\n  * Fix a few typos and minor grammar issues.\r\n  * In Security Considerations we recommend digitally signing the task config; mention that we can do this with a Taskbind extension.\r\n* Add a change log.\r\n* Bump base drafts.\r\n",
+      "createdAt": "2024-10-30T17:02:43Z",
+      "updatedAt": "2024-10-30T17:38:39Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/vdaf-batch-mode",
+      "baseRefOid": "4e03a01a9e13cb478736915a7b834d563cb8cca6",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/draft-01",
+      "headRefOid": "664b779985322488c57fc3da9818575d39d59a5d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586PY5hZ",
+          "commit": {
+            "abbreviatedOid": "f0b0df1"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2024-10-30T17:04:40Z",
+          "updatedAt": "2024-10-30T17:04:41Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "This draft doesn't exist. Once the draft is published, the build should pass.\r\n\r\nLikewise for {{!VDAF}}.",
+              "createdAt": "2024-10-30T17:04:41Z",
+              "updatedAt": "2024-10-30T17:04:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR586PY7z0",
+          "commit": {
+            "abbreviatedOid": "f0b0df1"
+          },
+          "author": "junyechen1996",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-10-30T17:07:14Z",
+          "updatedAt": "2024-10-30T17:34:30Z",
+          "comments": [
+            {
+              "originalPosition": 204,
+              "body": "```suggestion\r\njob and when it requests the Heolper's aggregate share during a collection job.\r\n```",
+              "createdAt": "2024-10-30T17:07:14Z",
+              "updatedAt": "2024-10-30T17:34:30Z"
             }
           ]
         }

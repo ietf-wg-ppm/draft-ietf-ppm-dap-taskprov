@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 28 April 2025                                        Cloudflare
-                                                         25 October 2024
+Expires: 4 May 2025                                           Cloudflare
+                                                         31 October 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 April 2025.
+   This Internet-Draft will expire on 4 May 2025.
 
 Copyright Notice
 
@@ -76,6 +76,7 @@ Table of Contents
    2.  Conventions and Definitions
    3.  The Taskbind Extension
      3.1.  Task Encoding
+     3.2.  Extensions
    4.  In-band Task Provisioning with the Taskbind Extension
      4.1.  Overview
      4.2.  Task Advertisement
@@ -93,8 +94,9 @@ Table of Contents
    6.  Operational Considerations
    7.  IANA Considerations
      7.1.  Report Extension
-     7.2.  Registry for DP Mechanisms
-     7.3.  DAP Sub-namespace for DAP
+     7.2.  Registry for Taskbind Extensions
+     7.3.  Registry for DP Mechanisms
+     7.4.  DAP Sub-namespace for DAP
    8.  Extending this Document
    9.  Normative References
    Contributors
@@ -188,7 +190,7 @@ Table of Contents
 
    enum {
        taskbind(0xff00),
-       (65535)
+       (2^16-1)
    } ExtensionType;
 
    The payload of the extension MUST be empty.  If the payload is non-
@@ -248,8 +250,8 @@ Table of Contents
        /* The batch mode and its parameters. */
        opaque batch_config<1..2^16-1>;
 
-       /* Time from which Clients will start uploading reports to this
-       task. */
+       /* The earliest timestamp that will be accepted for this task. */
+          task. */
        Time task_start;
 
        /* The duration of the task. */
@@ -260,16 +262,25 @@ Table of Contents
 
        /* Determines the VDAF type and its config parameters. */
        opaque vdaf_config<1..2^16-1>;
+
+       /* Taskbind Extensions. */
+       TaskbindExtension extensions<0..2^16-1>;
    } TaskConfig;
 
    The purpose of TaskConfig is to define all parameters that are
-   necessary for configuring each party.  It includes all the fields to
-   be associated with a task.  It also includes an opaque task_info
-   field that is specific to a deployment.  For example, this can be a
-   string describing the purpose of this task.  It does not include
-   cryptographic assets shared by only a subset of the parties,
-   including the secret VDAF verification key [VDAF] or public HPKE
-   configurations [RFC9180].
+   necessary for configuring each party.  It includes all parameters
+   listed in Section 4.3 of [DAP] as well as two additional fields:
+
+   *  task_info is an opaque field whose contents are specific to the
+      deployment.  For example, this might be a human-readable string
+      describing the purpose of this task.
+
+   *  extensions is a list of extensions to this document.  The format
+      and semantics of extensions are describe in Section 3.2.
+
+   This structure does not include cryptographic assets shared by only a
+   subset of the parties, including the secret VDAF verification key
+   [VDAF] or public HPKE configurations [RFC9180].
 
    The batch_config field defines the DAP batch mode.  Its contents are
    as follows:
@@ -346,6 +357,40 @@ Table of Contents
 
    The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
+
+3.2.  Extensions
+
+   The TaskConfig structure includes a list of extensions.  In general,
+   extensions can be used to bind additional, application-specific
+   information to the task.  For example, an extension might be used to
+   encode the identity of the Collector.  (Only the Aggregators are
+   identified in TaskConfig.)
+
+   Each extension is structured as follows:
+
+   struct {
+     TaskbindExtensionType extension_type;
+     opaque extension_data<0..2^16-1>;
+   } TaskbindExtension;
+
+   enum {
+     reserved(0),
+     (2^16-1)
+   } TaskbindExtensionType;
+
+   The extension_type identifies the extension and extension_data is
+   structured as specified by the extension.
+
+   Extensions are treated as mandatory-to-implement in the protocol
+   described in Section 4.  In particular protocols participants MUST
+   opt-out of tasks containing unrecognized extensions.  See
+   Section 4.4.
+
+   Note that Taskind extensions are semantically distinct from DAP
+   report extensions and do not share the same codepoint registry
+   (Section 7.2).  Future documents may want to define both a Taskbind
+   extension and a report extension, but there may also be situations
+   where a document defines one but not the other.
 
 4.  In-band Task Provisioning with the Taskbind Extension
 
@@ -469,9 +514,13 @@ Table of Contents
 
    4.  The task lifetime is too long.
 
-   A protocol participant MUST opt out if the task has ended or if it
-   does not support an indicated task parameter (e.g., VDAF, DP
-   mechanism, or DAP batch mode).
+   A protocol participant MUST opt out if:
+
+   1.  The task has ended.
+
+   2.  The DAP batch mode, VDAF, DP mechanism is not implemented.
+
+   3.  One of the extensions is not recognized.
 
    The behavior of each protocol participant is determined by whether or
    not they opt in to a task.
@@ -692,7 +741,31 @@ Table of Contents
 
    Reference:  RFC XXXX
 
-7.2.  Registry for DP Mechanisms
+7.2.  Registry for Taskbind Extensions
+
+   A new registry will be (RFC EDITOR: change "will be" to "has been")
+   created for the "Distributed Aggregation Protocol (DAP)" page called
+   "Taskbind Extensions".  This registry contains the following columns:
+
+   Value:  The two-byte identifier for the extension
+
+   Name:  The name of the extension
+
+   Reference:  Where the mechanism is defined
+
+   The initial contents of this registry are listed in the following
+   table.
+
+              +========+==========+=========================+
+              | Value  | Name     | Reference               |
+              +========+==========+=========================+
+              | 0x0000 | reserved | Section 3.2 of RFC XXXX |
+              +--------+----------+-------------------------+
+
+                 Table 2: Initial contents of the Taskbind
+                            Extensions registry.
+
+7.3.  Registry for DP Mechanisms
 
    A new registry will be (RFC EDITOR: change "will be" to "has been")
    created for the "Distributed Aggregation Protocol (DAP)" page called
@@ -716,11 +789,11 @@ Table of Contents
               | 0x0001 | none     | Section 3.1 of RFC XXXX |
               +--------+----------+-------------------------+
 
-                      Table 2: Initial contents of the
+                      Table 3: Initial contents of the
                     Differential Privacy (DP) Mechanisms
                                  registry.
 
-7.3.  DAP Sub-namespace for DAP
+7.4.  DAP Sub-namespace for DAP
 
       TODO Figure out how to ask IANA to register the errors in Table 1.
       See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/
@@ -745,7 +818,7 @@ Table of Contents
 
    Note that the registry for batch modes is defined by [DAP]; the
    registry for VDAFs is defined by [VDAF]; and the registry for DP
-   mechanisms is defined in Section 7.2 of this document.
+   mechanisms is defined in Section 7.3 of this document.
 
 9.  Normative References
 

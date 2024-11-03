@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 4 May 2025                                           Cloudflare
-                                                         31 October 2024
+Expires: 7 May 2025                                           Cloudflare
+                                                         3 November 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 May 2025.
+   This Internet-Draft will expire on 7 May 2025.
 
 Copyright Notice
 
@@ -73,6 +73,7 @@ Copyright Notice
 Table of Contents
 
    1.  Introduction
+     1.1.  Change Log
    2.  Conventions and Definitions
    3.  The Taskbind Extension
      3.1.  Task Encoding
@@ -89,14 +90,13 @@ Table of Contents
      4.2.  Task Advertisement
      4.3.  Deriving the VDAF Verification Key
      4.4.  Opting into a Task
-     4.5.  Supporting HPKE Configurations Independent of Tasks
-     4.6.  Client Behavior
-     4.7.  Leader Behavior
-       4.7.1.  Upload Protocol
-       4.7.2.  Aggregate Protocol
-       4.7.3.  Collect Protocol
-     4.8.  Helper Behavior
-     4.9.  Collector Behavior
+     4.5.  Client Behavior
+     4.6.  Leader Behavior
+       4.6.1.  Upload Protocol
+       4.6.2.  Aggregation Protocol
+       4.6.3.  Collection Protocol
+     4.7.  Helper Behavior
+     4.8.  Collector Behavior
    5.  Security Considerations
    6.  Operational Considerations
    7.  IANA Considerations
@@ -118,7 +118,7 @@ Table of Contents
    determines, among other things, the cryptographic scheme to use for
    the secure computation (a Verifiable Distributed Aggregation Function
    [VDAF]), how reports are partitioned into batches, and privacy
-   parameters such as the minimum size of each batch.  See Section 4.2
+   parameters such as the minimum size of each batch.  See Section 4.3
    of [DAP] for a complete listing.
 
    In order to execute a task securely, it is required that all parties
@@ -143,7 +143,7 @@ Table of Contents
    then each aggregator checks if the task ID was computed properly: if
    not, it rejects the report.  This cryptographic binding of the task
    to its parameters ensures that the report is only processed if the
-   client and aggregator agree on the task parameters.
+   Client and Aggregator agree on the task parameters.
 
    One reason this task-binding property is desirable is that it makes
    the process by which parties are provisioned with task parameters
@@ -156,8 +156,43 @@ Table of Contents
    that is built on top of the extension in Section 3.  Its chief design
    goal is to make task configuration completely in-band, via HTTP
    request headers.  Note that this mechanism is an optional feature of
-   this specification; it is not required to implement the protocol
+   this specification; it is not required to implement the DAP report
    extension in Section 3.
+
+1.1.  Change Log
+
+   (RFC EDITOR: Remove this section.)
+
+   (*) Indicates a change that breaks wire compatibility with the
+   previous draft.
+
+   01:
+
+   *  Add an extension point to the TaskConfig structure and define
+      rules for processing extensions. (*)
+
+   *  Remove DP mechanisms. (*)
+
+   *  Add guidelines for extending this document to account for new
+      VDAFs or DAP batch modes.  Improve the extension points for these
+      in TaskConfig in order to make this easier. (*)
+
+   *  Add a salt to the task ID computation. (*)
+
+   *  Harmonize task lifetime parameters with [DAP] by adding a task
+      start time and replacing the task end time with a task duration.
+      (*)
+
+   *  Harmonize batch mode parameters with [DAP] by removing the
+      deprecated max_batch_query_count and max_batch_size parameters.
+      (*)
+
+   *  Task provisioning: Remove guidance for per-task HPKE
+      configurations, as this feature was deprecated by DAP.
+
+   *  Bump draft-ietf-ppm-dap-12 to 13 [DAP]. (*)
+
+   *  Bump draft-irtf-cfrg-vdaf-12 to 13 [VDAF].
 
 2.  Conventions and Definitions
 
@@ -216,7 +251,7 @@ Table of Contents
    aggregated if the Client and Aggregator agree on the parameters.
    This is accomplished by the Aggregator behavior below.
 
-   During aggregation (Section 4.5 of [DAP]), each Aggregator processes
+   During aggregation (Section 4.6 of [DAP]), each Aggregator processes
    a report with the Taskbind extension as follows.
 
    First, it looks up the ID and parameters associated with the task.
@@ -391,11 +426,11 @@ Table of Contents
    structured as specified by the extension.
 
    Extensions are treated as mandatory-to-implement in the protocol
-   described in Section 4.  In particular protocols participants MUST
+   described in Section 4.  In particular, protocols participants MUST
    opt-out of tasks containing unrecognized extensions.  See
    Section 4.4.
 
-   Note that Taskind extensions are semantically distinct from DAP
+   Note that Taskbind extensions are semantically distinct from DAP
    report extensions and do not share the same codepoint registry
    (Section 7.2).  Future documents may want to define both a Taskbind
    extension and a report extension, but there may also be situations
@@ -451,14 +486,14 @@ Table of Contents
    The process of provisioning a task begins when the Author
    disseminates the task configuration to the Collector and each of the
    Clients.  When a Client issues an upload request to the Leader (as
-   described in Section 4.3 of [DAP]), it includes in an HTTP header the
+   described in Section 4.5 of [DAP]), it includes in an HTTP header the
    task configuration it used to generate the report.  We refer to this
    process as "task advertisement".  Before consuming the report, the
    Leader parses the configuration and decides whether to opt-in; if
    not, the task's execution halts.
 
    Otherwise, if the Leader does opt-in, it advertises the task to the
-   Helper during the aggregation protocol (Section 4.4 of [DAP]).  In
+   Helper during the aggregation protocol (Section 4.6 of [DAP]).  In
    particular, it includes the task configuration in an HTTP header of
    each aggregation job request for that task.  Before proceeding, the
    Helper must first parse the configuration and decide whether to opt-
@@ -467,10 +502,10 @@ Table of Contents
 4.2.  Task Advertisement
 
    To advertise a task to its peer, a protocol participant includes a
-   header "dap-taskprov" with a request incident to the task execution.
-   The value is the TaskConfig structure defined Section 3.1, expanded
-   into its URL-safe, unpadded Base 64 representation as specified in
-   Sections 5 and 3.2 of [RFC4648].
+   header "dap-taskprov" with an HTTP request incident to the task
+   execution.  The value is the TaskConfig structure defined
+   Section 3.1, expanded into its URL-safe, unpadded Base 64
+   representation as specified in Sections 5 and 3.2 of [RFC4648].
 
 4.3.  Deriving the VDAF Verification Key
 
@@ -498,7 +533,7 @@ Table of Contents
 
    where task_id is as defined in Section 3.  Functions HKDF-Extract()
    and HKDF-Expand() are as defined in [RFC5869].  Both functions are
-   instantiated with SHA-256.
+   instantiated with SHA-256() as defined in [SHS].
 
 4.4.  Opting into a Task
 
@@ -534,31 +569,11 @@ Table of Contents
    The behavior of each protocol participant is determined by whether or
    not they opt in to a task.
 
-4.5.  Supporting HPKE Configurations Independent of Tasks
-
-   In DAP, Clients need to know the HPKE configuration of each
-   Aggregator before sending reports.  (See HPKE Configuration Request
-   in [DAP].)  However, in a DAP deployment that supports the task
-   provisioning mechanism described in this section, if a Client
-   requests the Aggregator's HPKE configuration with the task ID
-   computed as described in Section 3, the task ID may not be configured
-   in the Aggregator yet, because the Aggregator is still waiting for
-   the task to be advertised by a Client.
-
-   To mitigate this issue, each Aggregator SHOULD choose which HPKE
-   configuration to advertise to Clients independent of the task ID.  It
-   MAY continue to support per-task HPKE configurations for other tasks
-   that are configured out-of-band.
-
-   In addition, if a Client intends to advertise a task via the Taskbind
-   extension, it SHOULD NOT specify the task_id parameter when
-   requesting the HPKE configuration from an Aggregator.
-
-4.6.  Client Behavior
+4.5.  Client Behavior
 
    Upon receiving a TaskConfig from the Author, the Client decides
    whether to opt into the task as described in Section 4.4.  If the
-   Client opts out, it MUST not attempt to upload reports for the task.
+   Client opts out, it MUST NOT attempt to upload reports for the task.
 
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
@@ -574,9 +589,9 @@ Table of Contents
    Client MUST retry the upload request with the "dap-taskprov" HTTP
    header.
 
-4.7.  Leader Behavior
+4.6.  Leader Behavior
 
-4.7.1.  Upload Protocol
+4.6.1.  Upload Protocol
 
    Upon receiving a Client report, if the Leader does not support the
    Section 4 mechanism, it will ignore the "dap-taskprov" HTTP header.
@@ -584,11 +599,12 @@ Table of Contents
    the upload request with "unrecognizedTask".
 
    Otherwise, if the Leader does support this mechanism, it first checks
-   if the "dap-taskprov" HTTP header is specified.  If not, that means
-   the Client has skipped task advertisement.  If the Leader recognizes
-   the task ID, it will include the client report in the aggregation of
-   that task ID.  Otherwise, it MUST abort with "unrecognizedTask".  The
-   Client will then retry with the task advertisement.
+   if the "dap-taskprov" HTTP header is specified.  If not present, that
+   means the Client has skipped task advertisement.  If the Leader
+   recognizes the task ID, it will include the client report in the
+   aggregation of that task ID.  Otherwise, it MUST abort with
+   "unrecognizedTask".  The Client will then retry with the task
+   advertisement.
 
    If the Client advertises the task, the Leader checks that the task ID
    indicated by the upload request matches the task ID derived from the
@@ -603,19 +619,19 @@ Table of Contents
    upload request as usual.
 
    During the upload flow, if the Leader's report share does not present
-   a taskbind extension type, Leader MUST abort the upload request with
-   "invalidMessage".
+   a taskbind extension type, the Leader MUST abort the upload request
+   with "invalidMessage".
 
-4.7.2.  Aggregate Protocol
+4.6.2.  Aggregation Protocol
 
    When the Leader opts in to a task, it SHOULD derive the VDAF
    verification key for that task as described in Section 4.3.  The
    Leader MUST advertise the task to the Helper in every request
    incident to the task as described in Section 3.
 
-4.7.3.  Collect Protocol
+4.6.3.  Collection Protocol
 
-   The Collector might issue a collect request for a task provisioned by
+   The Collector might create a collection job for a task provisioned by
    this mechanism prior to opting into the task.  In this case, the
    Leader would need to abort the collect request with
    "unrecognizedTask".  When it does so, it is up to the Collector to
@@ -628,49 +644,52 @@ Table of Contents
    The Leader MUST advertise the task in every aggregate share request
    issued to the Helper as described in Section 4.2.
 
-4.8.  Helper Behavior
+4.7.  Helper Behavior
+
+   The Leader advertises a task to the Helper during each step of an
+   aggregation job and when it requests the Heolper's aggregate share
+   during a collection job.
 
    Upon receiving a task advertisement from the Leader, If the Helper
    does not support this mechanism, it will ignore the "dap-taskprov"
-   HTTP header and process the aggregate request as usual.  In
-   particular, if the Helper does not recognize the task ID, it MUST
-   abort the aggregate request with error "unrecognizedTask".
-   Otherwise, if the Helper supports this mechanism, it proceeds as
-   follows.
+   HTTP header and process the request as usual.  In particular, if the
+   Helper does not recognize the task ID, it MUST abort the request with
+   error "unrecognizedTask".  Otherwise, if the Helper supports this
+   mechanism, it proceeds as follows.
 
    First, the Helper attempts to parse payload of the "dap-taskprov"
    HTTP header.  If this step fails, the Helper MUST abort with
    "invalidMessage".
 
-   Next, the Helper checks that the task ID indicated in the aggregation
-   request matches the task ID derived from the TaskConfig as defined in
+   Next, the Helper checks that the task ID indicated in the request
+   matches the task ID derived from the TaskConfig as defined in
    Section 3.  If not, the Helper MUST abort with "unrecognizedTask".
 
    Next, the Helper decides whether to opt in to the task as described
-   in Section 4.4.  If it opts out, it MUST abort the aggregation job
-   request with "invalidTask".
+   in Section 4.4.  If it opts out, it MUST abort the request with
+   "invalidTask".
 
    Finally, the Helper completes the request as usual, deriving the VDAF
-   verification key for the task as described in Section 4.3.  For any
-   report share that does not include the taskbind extension with an
-   empty payload, the Helper MUST mark the report as invalid with error
-   "invalid_message" and reject it.
+   verification key for the task as described in Section 4.3.  During an
+   aggregation job, for any report share that does not include the
+   taskbind extension with an empty payload, the Helper MUST mark the
+   report as invalid with error "invalid_message" and reject it.
 
-4.9.  Collector Behavior
+4.8.  Collector Behavior
 
    Upon receiving a TaskConfig from the Author, the Collector first
    decides whether to opt into the task as described in Section 4.4.  If
-   the Collector opts out, it MUST NOT attempt to issue collect requests
-   for the task.
+   the Collector opts out, it MUST NOT attempt to initialize collection
+   jobs for the task.
 
    Otherwise, once opted in, the Collector MAY begin to issue collect
    requests for the task.  The task ID for each request MUST be derived
    from the TaskConfig as described in Section 4.4.  The Collector MUST
-   advertise the task as described in Section 3.
+   advertise the task as described in Section 4.2.
 
-   If the Leader responds to a collect request with an
-   "unrecognizedTask" error, the Collector MAY retry its collect request
-   after waiting an appropriate amount of time.
+   If the Leader responds to a collection request with an
+   "unrecognizedTask" error, the Collector MAY retry its request after
+   waiting an appropriate amount of time.
 
 5.  Security Considerations
 
@@ -679,9 +698,9 @@ Table of Contents
    execution of a DAP task implies agreement on the task configuration.
    This is provided by binding the parameters to the task ID, which in
    turn is bound to each report uploaded for a task.  Furthermore,
-   inclusion of the Taskbind extension in the report share means
-   Aggregators that do not implement this extension will reject the
-   report as required by (Section 4.5.1.4 of [DAP]).
+   inclusion of the Taskbind extension in the report means Aggregators
+   that do not implement this extension will reject the report as
+   required by (Section 4.5.3 of [DAP]).
 
    The task provisioning mechanism in Section 4 extends the threat model
    of DAP by including a new logical role, called the Author.  The
@@ -712,7 +731,8 @@ Table of Contents
    Aggregators themselves.  This can be mitigated by limiting the rate
    at which new tasks are configured.  In addition, deployments SHOULD
    arrange for the Author to digitally sign the task configuration so
-   that Clients cannot forge task creation.
+   that Clients cannot forge task creation, e.g., via an extension to
+   Taskbind (Section 3.3).
 
 6.  Operational Considerations
 
@@ -804,9 +824,9 @@ Table of Contents
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-12, 10 October 2024,
+              draft-ietf-ppm-dap-13, 2 November 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              12>.
+              13>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -838,9 +858,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-12, 4
-              October 2024, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-vdaf-12>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-13, 2
+              November 2024, <https://datatracker.ietf.org/doc/html/
+              draft-irtf-cfrg-vdaf-13>.
 
 Contributors
 

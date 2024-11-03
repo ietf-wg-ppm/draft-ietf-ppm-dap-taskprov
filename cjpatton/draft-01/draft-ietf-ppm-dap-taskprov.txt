@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 3 May 2025                                           Cloudflare
-                                                         30 October 2024
+Expires: 7 May 2025                                           Cloudflare
+                                                         3 November 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 May 2025.
+   This Internet-Draft will expire on 7 May 2025.
 
 Copyright Notice
 
@@ -189,6 +189,10 @@ Table of Contents
 
    *  Task provisioning: Remove guidance for per-task HPKE
       configurations, as this feature was deprecated by DAP.
+
+   *  Bump draft-ietf-ppm-dap-12 to 13 [DAP]. (*)
+
+   *  Bump draft-irtf-cfrg-vdaf-12 to 13 [VDAF].
 
 2.  Conventions and Definitions
 
@@ -644,7 +648,7 @@ Table of Contents
 
    The Leader advertises a task to the Helper during each step of an
    aggregation job and when it requests the Heolper's aggregate share
-   during a colleciton job.
+   during a collection job.
 
    Upon receiving a task advertisement from the Leader, If the Helper
    does not support this mechanism, it will ignore the "dap-taskprov"
@@ -820,9 +824,9 @@ Table of Contents
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-12, 10 October 2024,
+              draft-ietf-ppm-dap-13, 2 November 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              12>.
+              13>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -854,9 +858,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-12, 4
-              October 2024, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-vdaf-12>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-13, 2
+              November 2024, <https://datatracker.ietf.org/doc/html/
+              draft-irtf-cfrg-vdaf-13>.
 
 Contributors
 

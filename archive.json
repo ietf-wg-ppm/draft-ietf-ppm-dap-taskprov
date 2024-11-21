@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-19T01:05:18.655298+00:00",
+  "timestamp": "2024-11-21T01:04:26.095132+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1127,6 +1127,22 @@
       "body": "In the optional in-band task provisioning protocol, the `TaskConfig` is conveyed in an HTTP header, \"dap-taskprov\". We need to register this header, [similar to how the DAP draft requests registration of the media types for protocol messages](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap/draft-ietf-ppm-dap.html#section-8.1). We also need to rename the header.",
       "createdAt": "2024-10-30T16:12:18Z",
       "updatedAt": "2024-10-30T16:12:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 94,
+      "id": "I_kwDOH4FR586fmalb",
+      "title": "Provide guidance on whether to use public vs private extension for Taskbind",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/94",
+      "state": "OPEN",
+      "author": "branlwyd",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "DAP-13 introduced the concept of \"[public extensions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/632)\", complementing the preexisting (private) extension mechanism.\r\n\r\nThese extensions can conflict with one another (i.e. it is not possible to send the same extension type in both the public & private extensions), but it is left open if/how the choice of public vs private extensions changes the semantics of any given extension.\r\n\r\nI think taskprov should provide some guidance as to which type of extension the Taskbind extension should be used with.\r\n\r\nMy initial thoughts are: the Taskbind extension uses an empty extension body, and is purposefully included in the extensions for both the Leader & Helper aggregators. Therefore, I think recommending this extension to be included in the public extensions makes sense. I don't have a strong opinion on whether we should block including this extension in the private extensions.",
+      "createdAt": "2024-11-21T00:57:47Z",
+      "updatedAt": "2024-11-21T00:57:47Z",
       "closedAt": null,
       "comments": []
     }

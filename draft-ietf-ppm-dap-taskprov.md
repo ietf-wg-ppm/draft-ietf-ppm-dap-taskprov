@@ -230,10 +230,9 @@ struct {
 
     /* The batch mode and its parameters. */
     BatchMode batch_mode;
-    opaque batch_config<1..2^16-1>;
+    opaque batch_config<0..2^16-1>;
 
     /* The earliest timestamp that will be accepted for this task. */
-       task. */
     Time task_start;
 
     /* The duration of the task. */
@@ -241,7 +240,7 @@ struct {
 
     /* Determines the VDAF type and its config parameters. */
     VdafType vdaf_type;
-    opaque vdaf_config<1..2^16-1>;
+    opaque vdaf_config<0..2^16-1>;
 
     /* Taskbind Extensions. */
     TaskbindExtension extensions<0..2^16-1>;

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-11-21T01:04:26.095132+00:00",
+  "timestamp": "2024-11-24T01:10:24.818054+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1142,9 +1142,17 @@
       "labels": [],
       "body": "DAP-13 introduced the concept of \"[public extensions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/632)\", complementing the preexisting (private) extension mechanism.\r\n\r\nThese extensions can conflict with one another (i.e. it is not possible to send the same extension type in both the public & private extensions), but it is left open if/how the choice of public vs private extensions changes the semantics of any given extension.\r\n\r\nI think taskprov should provide some guidance as to which type of extension the Taskbind extension should be used with.\r\n\r\nMy initial thoughts are: the Taskbind extension uses an empty extension body, and is purposefully included in the extensions for both the Leader & Helper aggregators. Therefore, I think recommending this extension to be included in the public extensions makes sense. I don't have a strong opinion on whether we should block including this extension in the private extensions.",
       "createdAt": "2024-11-21T00:57:47Z",
-      "updatedAt": "2024-11-21T00:57:47Z",
+      "updatedAt": "2024-11-21T19:15:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "branlwyd",
+          "authorAssociation": "NONE",
+          "body": "Ah, actually, the [Client Behavior](https://www.ietf.org/archive/id/draft-ietf-ppm-dap-taskprov-01.html#name-client-behavior) section says the following:\r\n\r\n> The extension codepoint taskbind MUST be offered in the extensions field of both Leader and Helper's PlaintextInputShare. In addition, each report's task ID MUST be computed as described in [Section 3](https://www.ietf.org/archive/id/draft-ietf-ppm-dap-taskprov-01.html#definition).\r\n\r\nThis implies that the extension must be included in the _private_ extensions, since private extensions are included in each aggregators' `PlaintextInputShare`.\r\n\r\nI suggest we at least accept public extensions, too, and probably recommend the use of a public extension.",
+          "createdAt": "2024-11-21T19:15:05Z",
+          "updatedAt": "2024-11-21T19:15:05Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -7669,6 +7677,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 95,
+      "id": "PR_kwDOH4FR586CwBJL",
+      "title": "Tweak lower bounds on field lengths to 0 instead of 1.",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/95",
+      "state": "OPEN",
+      "author": "branlwyd",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Both of the relevant fields can include zero-length values in some cases, so this change is required for taskprov to be implementable (while still following the specification).\r\n\r\nAlso, clean up a comment typo.",
+      "createdAt": "2024-11-22T02:03:56Z",
+      "updatedAt": "2024-11-22T02:03:57Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "60f6f491714f9074d1924b12fd56d4e72ff7cff8",
+      "headRepository": "branlwyd/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "bran/editorial",
+      "headRefOid": "32d0c001fc863fe22e1be6d70bf9b922d55ca9cb",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }

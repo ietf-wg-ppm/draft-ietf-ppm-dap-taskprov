@@ -296,7 +296,7 @@ The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 This section defines the payload of `TaskConfig.vdaf_config` for each VDAF
 specified in {{!VDAF}}. In some cases, the VDAF supports more than two
 Aggregators; but since DAP only supports two Aggregators, we do not include the
-number of Aggregators in the encoding (cf. {{Section C of !VDAF}}).
+number of Aggregators in the encoding (cf. {{Section 7 of !VDAF}}).
 
 ### Prio3Count
 

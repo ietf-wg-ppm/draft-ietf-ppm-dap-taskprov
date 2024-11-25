@@ -80,7 +80,7 @@ agreement on the task parameters. On the other hand, disagreement between a
 Client and the Aggregators should prevent reports uploaded by that Client from
 being processed.
 
-{{definition}} specifies a report extension ({{Section 4.4.3 of !DAP}}) that
+{{definition}} specifies a report extension ({{Section 4.5.3 of !DAP}}) that
 endows DAP with this property. First, it specifies an encoding of all task
 parameters that are relevant to all parties. This excludes cryptographic
 assets, such as the secret VDAF verification key ({{Section 5 of !VDAF}}) or
@@ -160,7 +160,7 @@ Task author:
 # The Taskbind Extension {#definition}
 
 To use the Taskbind extension, the Client includes the following extension in
-the report extensions for each Aggregator as described in {{Section 4.4.3 of
+the report extensions for each Aggregator as described in {{Section 4.5.3 of
 !DAP}}:
 
 ~~~

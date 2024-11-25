@@ -684,7 +684,7 @@ creation of a new registry for Taskbind extensions.
 
 The following entry will be (RFC EDITOR: change "will be" to "has been") added
 to the "Report Extension Identifiers" registry of the "Distributed Aggregation
-Protocol (DAP)" page created by {{!VDAF}}:
+Protocol (DAP)" page created by {{!DAP}}:
 
 Value:
 : `0xff00`

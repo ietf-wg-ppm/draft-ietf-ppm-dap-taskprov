@@ -281,7 +281,7 @@ codepoint in the VDAF Identifiers registry.
 
 > TODO: Add a reference to the IANA registry created by {{!VDAF}}.
 
-The `vadf_config` field contains parameters necessary to configure an instance
+The `vdaf_config` field contains parameters necessary to configure an instance
 of the VDAF. {{vdaf-config}} defines a suitable encoding of the configuration
 for each VDAF specified in {{!VDAF}}. VDAFs defined by future documents may
 also use this field as well; see {{extending-this-doc}} for details.
@@ -579,7 +579,7 @@ the Helper as described in {{task-advertisement}}.
 ## Helper Behavior
 
 The Leader advertises a task to the Helper during each step of an aggregation
-job and when it requests the Heolper's aggregate share during a collection job.
+job and when it requests the Helper's aggregate share during a collection job.
 
 Upon receiving a task advertisement from the Leader, If the Helper does not
 support this mechanism, it will ignore the "dap-taskprov" HTTP header and
@@ -739,7 +739,7 @@ titled "Taskbind Considerations" that specifies the payload of
 
 Note that the registry for batch modes is defined by {{!DAP}}; the registry for
 VDAFs is defined by {{!VDAF}}; and the registry for Taskbind extensions is defined in
-{{taskbind-extension-registry} of this document.
+{{taskbind-extension-registry}} of this document.
 
 --- back
 

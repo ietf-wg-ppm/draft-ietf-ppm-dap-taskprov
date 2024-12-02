@@ -1539,7 +1539,7 @@ codepoint in the VDAF Identifiers registry.<a href="#section-3.1-9" class="pilcr
             <p id="section-3.1-10.1.1">TODO: Add a reference to the IANA registry created by <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-3.1-10.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.1-11">The <code>vadf_config</code> field contains parameters necessary to configure an instance
+<p id="section-3.1-11">The <code>vdaf_config</code> field contains parameters necessary to configure an instance
 of the VDAF. <a href="#vdaf-config" class="auto internal xref">Section 3.2</a> defines a suitable encoding of the configuration
 for each VDAF specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. VDAFs defined by future documents may
 also use this field as well; see <a href="#extending-this-doc" class="auto internal xref">Section 8</a> for details.<a href="#section-3.1-11" class="pilcrow">¶</a></p>
@@ -1916,7 +1916,7 @@ the Helper as described in <a href="#task-advertisement" class="auto internal xr
 <a href="#section-4.7" class="section-number selfRef">4.7. </a><a href="#name-helper-behavior" class="section-name selfRef">Helper Behavior</a>
         </h3>
 <p id="section-4.7-1">The Leader advertises a task to the Helper during each step of an aggregation
-job and when it requests the Heolper's aggregate share during a collection job.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
+job and when it requests the Helper's aggregate share during a collection job.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
 <p id="section-4.7-2">Upon receiving a task advertisement from the Leader, If the Helper does not
 support this mechanism, it will ignore the "dap-taskprov" HTTP header and
 process the request as usual. In particular, if the Helper does not recognize

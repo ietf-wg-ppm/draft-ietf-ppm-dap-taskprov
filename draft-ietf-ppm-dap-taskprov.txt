@@ -342,7 +342,7 @@ Table of Contents
 
       TODO: Add a reference to the IANA registry created by [VDAF].
 
-   The vadf_config field contains parameters necessary to configure an
+   The vdaf_config field contains parameters necessary to configure an
    instance of the VDAF.  Section 3.2 defines a suitable encoding of the
    configuration for each VDAF specified in [VDAF].  VDAFs defined by
    future documents may also use this field as well; see Section 8 for
@@ -646,7 +646,7 @@ Table of Contents
 4.7.  Helper Behavior
 
    The Leader advertises a task to the Helper during each step of an
-   aggregation job and when it requests the Heolper's aggregate share
+   aggregation job and when it requests the Helper's aggregate share
    during a collection job.
 
    Upon receiving a task advertisement from the Leader, If the Helper

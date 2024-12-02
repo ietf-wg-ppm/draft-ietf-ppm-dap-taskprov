@@ -1302,7 +1302,7 @@ party does not know the parameters that were enforced.<a href="#section-1-3" cla
 agreement on the task parameters. On the other hand, disagreement between a
 Client and the Aggregators should prevent reports uploaded by that Client from
 being processed.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5"><a href="#definition" class="auto internal xref">Section 3</a> specifies a report extension (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-4.4.3" class="relref">Section 4.4.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>) that
+<p id="section-1-5"><a href="#definition" class="auto internal xref">Section 3</a> specifies a report extension (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-4.5.3" class="relref">Section 4.5.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>) that
 endows DAP with this property. First, it specifies an encoding of all task
 parameters that are relevant to all parties. This excludes cryptographic
 assets, such as the secret VDAF verification key (<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-13#section-5" class="relref">Section 5</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>) or
@@ -1421,7 +1421,7 @@ used:<a href="#section-2-4" class="pilcrow">¶</a></p>
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-the-taskbind-extension" class="section-name selfRef">The Taskbind Extension</a>
       </h2>
 <p id="section-3-1">To use the Taskbind extension, the Client includes the following extension in
-the report extensions for each Aggregator as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-4.4.3" class="relref">Section 4.4.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
+the report extensions for each Aggregator as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-4.5.3" class="relref">Section 4.5.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-2">
 <pre>
 enum {
@@ -1557,7 +1557,7 @@ even if the VDAF type is not recognized.<a href="#section-3.1-12" class="pilcrow
 <p id="section-3.2-1">This section defines the payload of <code>TaskConfig.vdaf_config</code> for each VDAF
 specified in <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>. In some cases, the VDAF supports more than two
 Aggregators; but since DAP only supports two Aggregators, we do not include the
-number of Aggregators in the encoding (cf. <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-13#appendix-C" class="relref">Appendix C</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+number of Aggregators in the encoding (cf. <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-13#section-7" class="relref">Section 7</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <div id="prio3count">
 <section id="section-3.2.1">
           <h4 id="name-prio3count">
@@ -2030,7 +2030,7 @@ creation of a new registry for Taskbind extensions.<a href="#section-7-1" class=
         </h3>
 <p id="section-7.1-1">The following entry will be (RFC EDITOR: change "will be" to "has been") added
 to the "Report Extension Identifiers" registry of the "Distributed Aggregation
-Protocol (DAP)" page created by <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+Protocol (DAP)" page created by <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-7.1-2">
           <dt id="section-7.1-2.1">Value:</dt>
           <dd style="margin-left: 1.5em" id="section-7.1-2.2">

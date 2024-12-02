@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 7 May 2025                                           Cloudflare
-                                                         3 November 2024
+Expires: 5 June 2025                                          Cloudflare
+                                                         2 December 2024
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 May 2025.
+   This Internet-Draft will expire on 5 June 2025.
 
 Copyright Notice
 
@@ -292,10 +292,9 @@ Table of Contents
 
        /* The batch mode and its parameters. */
        BatchMode batch_mode;
-       opaque batch_config<1..2^16-1>;
+       opaque batch_config<0..2^16-1>;
 
        /* The earliest timestamp that will be accepted for this task. */
-          task. */
        Time task_start;
 
        /* The duration of the task. */
@@ -303,7 +302,7 @@ Table of Contents
 
        /* Determines the VDAF type and its config parameters. */
        VdafType vdaf_type;
-       opaque vdaf_config<1..2^16-1>;
+       opaque vdaf_config<0..2^16-1>;
 
        /* Taskbind Extensions. */
        TaskbindExtension extensions<0..2^16-1>;

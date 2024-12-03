@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-01T01:17:37.524657+00:00",
+  "timestamp": "2024-12-03T01:08:11.236324+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -82,6 +82,11 @@
       "name": "editorial",
       "description": "",
       "color": "3D9B39"
+    },
+    {
+      "name": "draft-02",
+      "description": "",
+      "color": "E161B3"
     }
   ],
   "issues": [
@@ -1137,20 +1142,31 @@
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/94",
       "state": "OPEN",
       "author": "branlwyd",
-      "authorAssociation": "NONE",
-      "assignees": [],
-      "labels": [],
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [
+        "branlwyd"
+      ],
+      "labels": [
+        "draft-02"
+      ],
       "body": "DAP-13 introduced the concept of \"[public extensions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/632)\", complementing the preexisting (private) extension mechanism.\r\n\r\nThese extensions can conflict with one another (i.e. it is not possible to send the same extension type in both the public & private extensions), but it is left open if/how the choice of public vs private extensions changes the semantics of any given extension.\r\n\r\nI think taskprov should provide some guidance as to which type of extension the Taskbind extension should be used with.\r\n\r\nMy initial thoughts are: the Taskbind extension uses an empty extension body, and is purposefully included in the extensions for both the Leader & Helper aggregators. Therefore, I think recommending this extension to be included in the public extensions makes sense. I don't have a strong opinion on whether we should block including this extension in the private extensions.",
       "createdAt": "2024-11-21T00:57:47Z",
-      "updatedAt": "2024-11-21T19:15:06Z",
+      "updatedAt": "2024-12-02T18:19:46Z",
       "closedAt": null,
       "comments": [
         {
           "author": "branlwyd",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Ah, actually, the [Client Behavior](https://www.ietf.org/archive/id/draft-ietf-ppm-dap-taskprov-01.html#name-client-behavior) section says the following:\r\n\r\n> The extension codepoint taskbind MUST be offered in the extensions field of both Leader and Helper's PlaintextInputShare. In addition, each report's task ID MUST be computed as described in [Section 3](https://www.ietf.org/archive/id/draft-ietf-ppm-dap-taskprov-01.html#definition).\r\n\r\nThis implies that the extension must be included in the _private_ extensions, since private extensions are included in each aggregators' `PlaintextInputShare`.\r\n\r\nI suggest we at least accept public extensions, too, and probably recommend the use of a public extension.",
           "createdAt": "2024-11-21T19:15:05Z",
           "updatedAt": "2024-11-21T19:15:05Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "SGTM. @branlwyd would you mind working on a PR?",
+          "createdAt": "2024-12-02T18:19:19Z",
+          "updatedAt": "2024-12-02T18:19:19Z"
         }
       ]
     }
@@ -7683,78 +7699,135 @@
       "id": "PR_kwDOH4FR586CwBJL",
       "title": "Tweak lower bounds on field lengths to 0 instead of 1.",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/95",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "branlwyd",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "editorial",
+        "draft-02"
+      ],
       "body": "Both of the relevant fields can include zero-length values in some cases, so this change is required for taskprov to be implementable (while still following the specification).\r\n\r\nAlso, clean up a comment typo.",
       "createdAt": "2024-11-22T02:03:56Z",
-      "updatedAt": "2024-11-22T02:03:57Z",
+      "updatedAt": "2024-12-02T18:22:19Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "60f6f491714f9074d1924b12fd56d4e72ff7cff8",
       "headRepository": "branlwyd/draft-ietf-ppm-dap-taskprov",
       "headRefName": "bran/editorial",
       "headRefOid": "32d0c001fc863fe22e1be6d70bf9b922d55ca9cb",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-12-02T18:22:18Z",
+      "mergedAt": "2024-12-02T18:22:18Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "fbbba298b62639dba532306de2970d9658b6a6f7"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586Tbxjm",
+          "commit": {
+            "abbreviatedOid": "32d0c00"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "\ud83d\udc4d  thanks!",
+          "createdAt": "2024-12-02T18:20:08Z",
+          "updatedAt": "2024-12-02T18:20:08Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 96,
       "id": "PR_kwDOH4FR586DG4XM",
       "title": "Fix references",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/96",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "editorial",
+        "draft-02"
+      ],
       "body": "This fixes a few editorial issues in references.\r\n\r\n* One of the IANA considerations sections had a reference to VDAF that should instead be a reference to DAP.\r\n* There was a reference to `{{Section C of !VDAF}}`. Appendix C is the test vectors. Based on context, I think this should have been a reference to the Prio3 section, so I changed it accordingly.\r\n* I updated invalid section numbers pointing to the section of DAP discussing extensions.",
       "createdAt": "2024-11-25T23:16:17Z",
-      "updatedAt": "2024-11-25T23:16:17Z",
+      "updatedAt": "2024-12-02T18:22:34Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "60f6f491714f9074d1924b12fd56d4e72ff7cff8",
       "headRepository": "divergentdave/draft-wang-ppm-dap-taskprov",
       "headRefName": "david/fix-ref",
       "headRefOid": "5c4f873967012816fd60aaf7c918c2266543c340",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-12-02T18:22:34Z",
+      "mergedAt": "2024-12-02T18:22:34Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "24baddf0e3de64f5b34c465f4836011a33228e35"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586TbyTn",
+          "commit": {
+            "abbreviatedOid": "5c4f873"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "\u2764\ufe0f !",
+          "createdAt": "2024-12-02T18:21:16Z",
+          "updatedAt": "2024-12-02T18:21:16Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 97,
       "id": "PR_kwDOH4FR586DNOvA",
       "title": "Fix a typo",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/97",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "editorial",
+        "draft-02"
+      ],
       "body": "This fixes a typo.",
       "createdAt": "2024-11-26T15:28:23Z",
-      "updatedAt": "2024-11-26T16:29:24Z",
+      "updatedAt": "2024-12-02T18:22:50Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "60f6f491714f9074d1924b12fd56d4e72ff7cff8",
       "headRepository": "divergentdave/draft-wang-ppm-dap-taskprov",
       "headRefName": "david/fix-typo",
       "headRefOid": "6ce88ea59e280c25ed4a6569b0109c7ee99fcde3",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2024-12-02T18:22:50Z",
+      "mergedAt": "2024-12-02T18:22:50Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "5f04046a2cd14202811a8365e61733b750f15ea7"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586TbymD",
+          "commit": {
+            "abbreviatedOid": "6ce88ea"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2024-12-02T18:21:55Z",
+          "updatedAt": "2024-12-02T18:21:55Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }

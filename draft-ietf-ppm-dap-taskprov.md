@@ -511,10 +511,12 @@ Upon receiving a `TaskConfig` from the Author, the Client decides whether to
 opt into the task as described in {{provisioning-a-task}}. If the Client opts
 out, it MUST NOT attempt to upload reports for the task.
 
-Once the client opts into a task, it may begin uploading reports for the task
-to the Leader. The extension codepoint `taskbind` MUST be offered in the
-`extensions` field of both Leader and Helper's `PlaintextInputShare`. In
-addition, each report's task ID MUST be computed as described in {{definition}}.
+Once the client opts into a task, it may begin uploading reports for the task to
+the Leader. The extension codepoint `taskbind` MUST be offered in both the
+Leader and the Helper's report extensions. The extension may be included in
+either the public or private report extensions; it is RECOMMENDED that the
+extension be included in the public extensions. In addition, each report's task
+ID MUST be computed as described in {{definition}}.
 
 The Client SHOULD advertise the task configuration by specifying the encoded
 `TaskConfig` described in {{definition}} in the "dap-taskprov" HTTP header, but

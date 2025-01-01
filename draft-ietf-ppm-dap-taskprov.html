@@ -15,22 +15,22 @@ will only aggregate the report if all parties agree on the task parameters.
 This document also specifies an optional mechanism for in-band task
 provisioning that builds on the report extension. 
     " name="description">
-<meta content="xml2rfc 3.24.0" name="generator">
+<meta content="xml2rfc 3.25.0" name="generator">
 <meta content="next generation" name="keyword">
 <meta content="unicorn" name="keyword">
 <meta content="sparkling distributed ledger" name="keyword">
 <meta content="draft-ietf-ppm-dap-taskprov-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.24.0
-    Python 3.12.7
+  xml2rfc 3.25.0
+    Python 3.12.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.4
     lxml 5.3.0
     platformdirs 4.3.6
-    pycountry 22.3.5
-    PyYAML 6.0.1
+    pycountry 24.6.1
+    PyYAML 6.0.2
     requests 2.32.3
     setuptools 70.3.0
     wcwidth 0.2.13
@@ -542,7 +542,11 @@ figcaption, caption {
   }
   pre, svg {
     display: inline-block;
-    overflow-x: auto;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
   }
   pre {
     max-width: 100%;
@@ -1048,11 +1052,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">DAP-Taskprov</td>
-<td class="right">December 2024</td>
+<td class="right">January 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wang &amp; Patton</td>
-<td class="center">Expires 5 June 2025</td>
+<td class="center">Expires 5 July 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-ppm-dap-taskprov-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-12-02" class="published">2 December 2024</time>
+<time datetime="2025-01-01" class="published">1 January 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-06-05">5 June 2025</time></dd>
+<dd class="expires"><time datetime="2025-07-05">5 July 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1129,7 +1133,7 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 July 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1138,7 +1142,7 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2024 IETF Trust and the persons identified as the
+            Copyright (c) 2025 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1832,10 +1836,12 @@ opt in to a task.<a href="#section-4.4-6" class="pilcrow">¶</a></p>
 <p id="section-4.5-1">Upon receiving a <code>TaskConfig</code> from the Author, the Client decides whether to
 opt into the task as described in <a href="#provisioning-a-task" class="auto internal xref">Section 4.4</a>. If the Client opts
 out, it <span class="bcp14">MUST NOT</span> attempt to upload reports for the task.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
-<p id="section-4.5-2">Once the client opts into a task, it may begin uploading reports for the task
-to the Leader. The extension codepoint <code>taskbind</code> <span class="bcp14">MUST</span> be offered in the
-<code>extensions</code> field of both Leader and Helper's <code>PlaintextInputShare</code>. In
-addition, each report's task ID <span class="bcp14">MUST</span> be computed as described in <a href="#definition" class="auto internal xref">Section 3</a>.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
+<p id="section-4.5-2">Once the client opts into a task, it may begin uploading reports for the task to
+the Leader. The extension codepoint <code>taskbind</code> <span class="bcp14">MUST</span> be offered in both the
+Leader and the Helper's report extensions. The extension may be included in
+either the public or private report extensions; it is <span class="bcp14">RECOMMENDED</span> that the
+extension be included in the public extensions. In addition, each report's task
+ID <span class="bcp14">MUST</span> be computed as described in <a href="#definition" class="auto internal xref">Section 3</a>.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
 <p id="section-4.5-3">The Client <span class="bcp14">SHOULD</span> advertise the task configuration by specifying the encoded
 <code>TaskConfig</code> described in <a href="#definition" class="auto internal xref">Section 3</a> in the "dap-taskprov" HTTP header, but
 <span class="bcp14">MAY</span> choose to omit this header in order to save network bandwidth. However, the

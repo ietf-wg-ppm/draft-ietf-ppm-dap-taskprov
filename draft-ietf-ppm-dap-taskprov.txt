@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 5 June 2025                                          Cloudflare
-                                                         2 December 2024
+Expires: 5 July 2025                                          Cloudflare
+                                                          1 January 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,11 +54,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 June 2025.
+   This Internet-Draft will expire on 5 July 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -576,8 +576,10 @@ Table of Contents
 
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.  The extension codepoint taskbind MUST be
-   offered in the extensions field of both Leader and Helper's
-   PlaintextInputShare.  In addition, each report's task ID MUST be
+   offered in both the Leader and the Helper's report extensions.  The
+   extension may be included in either the public or private report
+   extensions; it is RECOMMENDED that the extension be included in the
+   public extensions.  In addition, each report's task ID MUST be
    computed as described in Section 3.
 
    The Client SHOULD advertise the task configuration by specifying the

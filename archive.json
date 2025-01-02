@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-31T01:01:54.206584+00:00",
+  "timestamp": "2025-01-02T01:01:37.798220+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -7834,24 +7834,26 @@
       "id": "PR_kwDOH4FR586E5hv3",
       "title": "Allow taskbind extension to be included in public report extensions.",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/98",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "branlwyd",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The extension can also be included in the private extensions; standard DAP semantics will disallow it from being included in both extension mechanisms.",
       "createdAt": "2024-12-11T18:34:38Z",
-      "updatedAt": "2024-12-11T18:36:21Z",
+      "updatedAt": "2025-01-01T15:49:47Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "5f04046a2cd14202811a8365e61733b750f15ea7",
       "headRepository": "branlwyd/draft-ietf-ppm-dap-taskprov",
       "headRefName": "bran/public-extension",
       "headRefOid": "26531ce7cb51777c46896422a9cde5c0550ef901",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-01-01T15:49:47Z",
+      "mergedAt": "2025-01-01T15:49:47Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "a017717f7637b32efabaf5849b38aad6172e631b"
+      },
       "comments": [
         {
           "author": "branlwyd",
@@ -7861,7 +7863,21 @@
           "updatedAt": "2024-12-11T18:35:15Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR586WnUZd",
+          "commit": {
+            "abbreviatedOid": "26531ce"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-01-01T15:49:41Z",
+          "updatedAt": "2025-01-01T15:49:41Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }

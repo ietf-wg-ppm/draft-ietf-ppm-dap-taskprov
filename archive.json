@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-12T01:08:50.094699+00:00",
+  "timestamp": "2025-01-14T00:59:20.904645+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1140,19 +1140,19 @@
       "id": "I_kwDOH4FR586fmalb",
       "title": "Provide guidance on whether to use public vs private extension for Taskbind",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/94",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "branlwyd",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
-        "branlwyd"
+        "cjpatton"
       ],
       "labels": [
         "draft-02"
       ],
       "body": "DAP-13 introduced the concept of \"[public extensions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/632)\", complementing the preexisting (private) extension mechanism.\r\n\r\nThese extensions can conflict with one another (i.e. it is not possible to send the same extension type in both the public & private extensions), but it is left open if/how the choice of public vs private extensions changes the semantics of any given extension.\r\n\r\nI think taskprov should provide some guidance as to which type of extension the Taskbind extension should be used with.\r\n\r\nMy initial thoughts are: the Taskbind extension uses an empty extension body, and is purposefully included in the extensions for both the Leader & Helper aggregators. Therefore, I think recommending this extension to be included in the public extensions makes sense. I don't have a strong opinion on whether we should block including this extension in the private extensions.",
       "createdAt": "2024-11-21T00:57:47Z",
-      "updatedAt": "2024-12-02T18:19:46Z",
-      "closedAt": null,
+      "updatedAt": "2025-01-13T21:26:48Z",
+      "closedAt": "2025-01-13T21:26:48Z",
       "comments": [
         {
           "author": "branlwyd",
@@ -1169,6 +1169,24 @@
           "updatedAt": "2024-12-02T18:19:19Z"
         }
       ]
+    },
+    {
+      "number": 99,
+      "id": "I_kwDOH4FR586mBtDM",
+      "title": "Bump DAP-13 -> 14, VDAF-13 -> 14",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/99",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-02"
+      ],
+      "body": "VDAF-14 is out; there are no breaking changes.\r\nDAP-13 is not out yet.",
+      "createdAt": "2025-01-13T21:27:50Z",
+      "updatedAt": "2025-01-13T21:28:22Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-14T00:59:20.904645+00:00",
+  "timestamp": "2025-01-16T01:00:23.125341+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -87,6 +87,11 @@
       "name": "draft-02",
       "description": "",
       "color": "E161B3"
+    },
+    {
+      "name": "feature",
+      "description": "",
+      "color": "99E5FC"
     }
   ],
   "issues": [
@@ -1178,13 +1183,57 @@
       "state": "OPEN",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "junyechen1996"
+      ],
       "labels": [
         "draft-02"
       ],
       "body": "VDAF-14 is out; there are no breaking changes.\r\nDAP-13 is not out yet.",
       "createdAt": "2025-01-13T21:27:50Z",
-      "updatedAt": "2025-01-13T21:28:22Z",
+      "updatedAt": "2025-01-14T21:04:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 100,
+      "id": "I_kwDOH4FR586mLgZD",
+      "title": "Disallow repeated extensions",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/100",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "draft-02",
+        "feature"
+      ],
+      "body": "DAP forbids any report extension appearing twice in the same report. We should do the same for taskprov extensions.",
+      "createdAt": "2025-01-14T18:43:23Z",
+      "updatedAt": "2025-01-14T21:04:02Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 101,
+      "id": "I_kwDOH4FR586mLuq_",
+      "title": "Consider renaming \"Taskbind\" to \"Taskprov\" in a few places",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/101",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "junyechen1996"
+      ],
+      "labels": [
+        "editorial",
+        "draft-02"
+      ],
+      "body": "The word \"Taskprov\" is hardcoded in our DAP implementations. It's also the name we use to refer to this extension in spoken word. However in the draft we've tried somewhat half-heartedly to adopt the name \"Taskbind\" instead.\r\n\r\nTo keep the the draft consistent with the language to revert the following changes:\r\n\r\n1. Change\r\n\r\n```\r\nenum {\r\n    taskbind(0xff00),\r\n    (2^16-1)\r\n} ExtensionType;\r\n```\r\nto\r\n\r\n```\r\nenum {\r\n    taskprov(0xff00),\r\n    (2^16-1)\r\n} ExtensionType;\r\n\r\n2. Change `TaskbindExtension` to `TaskprovExtension`\r\n\r\n3. Replace each instance of the \"Taskbind extension\" in the text with \"Taskprov extension\".\r\n\r\nWe'd continue to describe this extension as primarily being about binding the task parameters to task execution.",
+      "createdAt": "2025-01-14T19:13:10Z",
+      "updatedAt": "2025-01-14T21:03:54Z",
       "closedAt": null,
       "comments": []
     }

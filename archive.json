@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-06T01:04:50.439817+00:00",
+  "timestamp": "2025-03-09T00:56:47.408289+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1234,6 +1234,22 @@
       "body": "The word \"Taskprov\" is hardcoded in our DAP implementations. It's also the name we use to refer to this extension in spoken word. However in the draft we've tried somewhat half-heartedly to adopt the name \"Taskbind\" instead.\r\n\r\nTo keep the the draft consistent with the language to revert the following changes:\r\n\r\n1. Change\r\n\r\n```\r\nenum {\r\n    taskbind(0xff00),\r\n    (2^16-1)\r\n} ExtensionType;\r\n```\r\nto\r\n\r\n```\r\nenum {\r\n    taskprov(0xff00),\r\n    (2^16-1)\r\n} ExtensionType;\r\n\r\n2. Change `TaskbindExtension` to `TaskprovExtension`\r\n\r\n3. Replace each instance of the \"Taskbind extension\" in the text with \"Taskprov extension\".\r\n\r\nWe'd continue to describe this extension as primarily being about binding the task parameters to task execution.",
       "createdAt": "2025-01-14T19:13:10Z",
       "updatedAt": "2025-01-14T21:03:54Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 102,
+      "id": "I_kwDOH4FR586s7YAi",
+      "title": "Task enumeration attacks",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/102",
+      "state": "OPEN",
+      "author": "tgeoghegan",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "`taskbind` defines a means of deterministically deriving a DAP task ID from an [encoding of the task](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov-01#section-3.1). That encoding includes things like the VDAF configuration as well as identifiers for the participating aggregators. I wonder if this makes it possible to enumerate taskprov tasks supported by an aggregator, as well as partner aggregators.\n\nIf I can guess at a pair of aggregator URLs and a VDAF config, then I can construct a report and upload it to the task leader and see if the upload gets accepted, which reveals that I guessed correctly. There are quite a few fields on `TaskConfig`, but the space to explore isn't THAT big, especially since I might have insight into what VDAF is in use (perhaps because a software vendor might publish some details about how they're using DAP) and what the likely set of aggregators that might be participating is.\n\nUsing request authentication is a partial mitigation here: presumably if an HTTP client can authenticate to the aggregator, there's a measure of trust implied there. But imagine a setting where one aggregator uses taskprov with two different partners. You want to allow each partner to dynamically configure tasks, but you don't want to let them walk the task space and learn about your other partner.\n\nI think this merits at least a mention in security considerations (alongside the existing discussion of the DoS attack where storage gets flooded with spurious task definitions), but a more robust fix would be to add a field to `TaskConfig` that is REQUIRED to be, let's say, 32 bytes of randomness. That would make it impossible to guess valid `TaskConfig`s.",
+      "createdAt": "2025-03-06T19:29:21Z",
+      "updatedAt": "2025-03-06T19:29:21Z",
       "closedAt": null,
       "comments": []
     }

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-11T01:05:24.170737+00:00",
+  "timestamp": "2025-03-13T01:05:45.726136+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1249,7 +1249,7 @@
       "labels": [],
       "body": "`taskbind` defines a means of deterministically deriving a DAP task ID from an [encoding of the task](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov-01#section-3.1). That encoding includes things like the VDAF configuration as well as identifiers for the participating aggregators. I wonder if this makes it possible to enumerate taskprov tasks supported by an aggregator, as well as partner aggregators.\n\nIf I can guess at a pair of aggregator URLs and a VDAF config, then I can construct a report and upload it to the task leader and see if the upload gets accepted, which reveals that I guessed correctly. There are quite a few fields on `TaskConfig`, but the space to explore isn't THAT big, especially since I might have insight into what VDAF is in use (perhaps because a software vendor might publish some details about how they're using DAP) and what the likely set of aggregators that might be participating is.\n\nUsing request authentication is a partial mitigation here: presumably if an HTTP client can authenticate to the aggregator, there's a measure of trust implied there. But imagine a setting where one aggregator uses taskprov with two different partners. You want to allow each partner to dynamically configure tasks, but you don't want to let them walk the task space and learn about your other partner.\n\nI think this merits at least a mention in security considerations (alongside the existing discussion of the DoS attack where storage gets flooded with spurious task definitions), but a more robust fix would be to add a field to `TaskConfig` that is REQUIRED to be, let's say, 32 bytes of randomness. That would make it impossible to guess valid `TaskConfig`s.",
       "createdAt": "2025-03-06T19:29:21Z",
-      "updatedAt": "2025-03-10T15:03:03Z",
+      "updatedAt": "2025-03-12T23:15:52Z",
       "closedAt": null,
       "comments": [
         {
@@ -1258,6 +1258,20 @@
           "body": "As noted [here](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/664#issuecomment-2710882733), I don't think this should be a core security requirement of DAP or taskbind. Therefore I think REQUIRED is inappropriate. This could be worth a paragraph in security considerations with a recommended mitigation.\n\nAs for the mechanism itself:\n\n1. 32 bytes of entropy is overkill, since we're not concerned about birthday attacks. I think 16 bytes would be sufficient\n2. Note that we may only be able to justify the security of this mechanism heuristically, since sticking randomness in the input of SHA-256 does not make the output pseudorandom. If we care about this a lot, then we should, then we should replace SHA-256 with HKDF-Extract. In fact, we might be able to get away with something like SHA-3 here.\n3. As far as where to stick the entropy, the task info field should work. This could also go in the extensions field of the task config.\n\n\n",
           "createdAt": "2025-03-10T15:03:02Z",
           "updatedAt": "2025-03-10T15:03:02Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Isn't there a collision risk with taskprov?  Or do we expect that the number of tasks is low enough that we'd be fine.",
+          "createdAt": "2025-03-12T21:34:45Z",
+          "updatedAt": "2025-03-12T21:34:45Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Isn't there a collision risk with taskprov? Or do we expect that the number of tasks is low enough that we'd be fine.\n\nYup, if task1 and task2 have identical an `TaskConfig`, then you'll derive the task ID. Though tasks are likely to have different task start and end times, which would result in different `TaskConfig`s. Also,`TaskConfig.task_info` would probably have different values.",
+          "createdAt": "2025-03-12T23:15:50Z",
+          "updatedAt": "2025-03-12T23:15:50Z"
         }
       ]
     }

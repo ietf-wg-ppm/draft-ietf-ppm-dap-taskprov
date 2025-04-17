@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-01T01:15:03.539289+00:00",
+  "timestamp": "2025-04-17T01:08:30.904976+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1249,7 +1249,7 @@
       "labels": [],
       "body": "`taskbind` defines a means of deterministically deriving a DAP task ID from an [encoding of the task](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov-01#section-3.1). That encoding includes things like the VDAF configuration as well as identifiers for the participating aggregators. I wonder if this makes it possible to enumerate taskprov tasks supported by an aggregator, as well as partner aggregators.\n\nIf I can guess at a pair of aggregator URLs and a VDAF config, then I can construct a report and upload it to the task leader and see if the upload gets accepted, which reveals that I guessed correctly. There are quite a few fields on `TaskConfig`, but the space to explore isn't THAT big, especially since I might have insight into what VDAF is in use (perhaps because a software vendor might publish some details about how they're using DAP) and what the likely set of aggregators that might be participating is.\n\nUsing request authentication is a partial mitigation here: presumably if an HTTP client can authenticate to the aggregator, there's a measure of trust implied there. But imagine a setting where one aggregator uses taskprov with two different partners. You want to allow each partner to dynamically configure tasks, but you don't want to let them walk the task space and learn about your other partner.\n\nI think this merits at least a mention in security considerations (alongside the existing discussion of the DoS attack where storage gets flooded with spurious task definitions), but a more robust fix would be to add a field to `TaskConfig` that is REQUIRED to be, let's say, 32 bytes of randomness. That would make it impossible to guess valid `TaskConfig`s.",
       "createdAt": "2025-03-06T19:29:21Z",
-      "updatedAt": "2025-03-12T23:15:52Z",
+      "updatedAt": "2025-04-16T18:34:01Z",
       "closedAt": null,
       "comments": [
         {
@@ -1272,6 +1272,20 @@
           "body": "> Isn't there a collision risk with taskprov? Or do we expect that the number of tasks is low enough that we'd be fine.\n\nYup, if task1 and task2 have identical an `TaskConfig`, then you'll derive the task ID. Though tasks are likely to have different task start and end times, which would result in different `TaskConfig`s. Also,`TaskConfig.task_info` would probably have different values.",
           "createdAt": "2025-03-12T23:15:50Z",
           "updatedAt": "2025-03-12T23:15:50Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "I am adding a security consideration about this to DAP in https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/679. Taskprov might still want to say something more specific to its task ID derivation scheme, but I'm comfortable with whatever the editors choose to do here.",
+          "createdAt": "2025-04-15T17:07:05Z",
+          "updatedAt": "2025-04-15T17:07:05Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "What we'll do here is mention the attack in security considerations and suggest two migitations. Either:\n1. Add a random string to the info string that is known only to legitimate clients, aggregators and collectors\n2. Require authentication of the DAP APIs so that enumeration is only possible by trusted parties",
+          "createdAt": "2025-04-16T18:34:00Z",
+          "updatedAt": "2025-04-16T18:34:00Z"
         }
       ]
     }

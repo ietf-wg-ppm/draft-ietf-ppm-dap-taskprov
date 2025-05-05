@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 5 July 2025                                          Cloudflare
-                                                          1 January 2025
+Expires: 6 November 2025                                      Cloudflare
+                                                              5 May 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 July 2025.
+   This Internet-Draft will expire on 6 November 2025.
 
 Copyright Notice
 
@@ -165,6 +165,15 @@ Table of Contents
 
    (*) Indicates a change that breaks wire compatibility with the
    previous draft.
+
+   02:
+
+   *  Don't specify a lower limit for vector bounds.
+
+   *  Update normative references.
+
+   *  Recommend including the report extension in the public extensions
+      list.
 
    01:
 
@@ -359,7 +368,7 @@ Table of Contents
    This section defines the payload of TaskConfig.vdaf_config for each
    VDAF specified in [VDAF].  In some cases, the VDAF supports more than
    two Aggregators; but since DAP only supports two Aggregators, we do
-   not include the number of Aggregators in the encoding (cf.  Section 7
+   not include the number of Aggregators in the encoding (cf. Section 7
    of [VDAF]).
 
 3.2.1.  Prio3Count

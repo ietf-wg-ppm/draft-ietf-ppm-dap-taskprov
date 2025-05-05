@@ -109,6 +109,14 @@ to implement the DAP report extension in {{definition}}.
 
 (\*) Indicates a change that breaks wire compatibility with the previous draft.
 
+02:
+
+- Don't specify a lower limit for vector bounds.
+
+- Update normative references.
+
+- Recommend including the report extension in the public extensions list.
+
 01:
 
 - Add an extension point to the `TaskConfig` structure and define rules for

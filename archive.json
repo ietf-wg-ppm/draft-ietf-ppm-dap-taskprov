@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-17T01:08:30.904976+00:00",
+  "timestamp": "2025-05-06T01:10:48.553066+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1178,7 +1178,7 @@
     {
       "number": 99,
       "id": "I_kwDOH4FR586mBtDM",
-      "title": "Bump DAP-13 -> 14, VDAF-13 -> 14",
+      "title": "Bump DAP-13 -> 15, VDAF-13 -> 14",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/99",
       "state": "OPEN",
       "author": "cjpatton",
@@ -1189,9 +1189,9 @@
       "labels": [
         "draft-02"
       ],
-      "body": "VDAF-14 is out; there are no breaking changes.\r\nDAP-13 is not out yet.",
+      "body": "VDAF-14 is out; there are no breaking changes.\nDAP-15 is out; there are no changes relevant for taskprov.",
       "createdAt": "2025-01-13T21:27:50Z",
-      "updatedAt": "2025-01-14T21:04:10Z",
+      "updatedAt": "2025-05-05T21:42:54Z",
       "closedAt": null,
       "comments": []
     },
@@ -7997,6 +7997,42 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 103,
+      "id": "PR_kwDOH4FR586VANeH",
+      "title": "Update change log for draft 02",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/103",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-05-05T21:39:43Z",
+      "updatedAt": "2025-05-05T21:41:03Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "a017717f7637b32efabaf5849b38aad6172e631b",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/bump-cl",
+      "headRefOid": "606deeea28b57c68bf3c5cc4bad6d7782ae5bcac",
+      "closedAt": "2025-05-05T21:41:03Z",
+      "mergedAt": "2025-05-05T21:41:03Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "37509dfb9c9e0cd8c25f8027e1a9773acdfc987f"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@wangshan I'm merging this without review so I can get it done in time to cut -02 before the document expires.",
+          "createdAt": "2025-05-05T21:41:00Z",
+          "updatedAt": "2025-05-05T21:41:00Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }

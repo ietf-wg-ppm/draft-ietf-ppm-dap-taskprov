@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 6 November 2025                                      Cloudflare
-                                                              5 May 2025
+Expires: 1 March 2026                                         Cloudflare
+                                                          28 August 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 November 2025.
+   This Internet-Draft will expire on 1 March 2026.
 
 Copyright Notice
 
@@ -75,7 +75,7 @@ Table of Contents
    1.  Introduction
      1.1.  Change Log
    2.  Conventions and Definitions
-   3.  The Taskbind Extension
+   3.  The Taskprov Extension
      3.1.  Task Encoding
      3.2.  VDAF config
        3.2.1.  Prio3Count
@@ -85,7 +85,7 @@ Table of Contents
        3.2.5.  Prio3MultihotCountVec
        3.2.6.  Poplar1
      3.3.  Extensions
-   4.  In-band Task Provisioning with the Taskbind Extension
+   4.  In-band Task Provisioning with the Taskprov Extension
      4.1.  Overview
      4.2.  Task Advertisement
      4.3.  Deriving the VDAF Verification Key
@@ -101,7 +101,7 @@ Table of Contents
    6.  Operational Considerations
    7.  IANA Considerations
      7.1.  Report Extension
-     7.2.  Registry for Taskbind Extensions
+     7.2.  Registry for Taskprov Extensions
      7.3.  DAP Sub-namespace for DAP
    8.  Extending this Document
    9.  Normative References
@@ -232,21 +232,21 @@ Table of Contents
    Task author:  The entity that defines a task's configuration in the
       provisioning mechanism of Section 4.
 
-3.  The Taskbind Extension
+3.  The Taskprov Extension
 
-   To use the Taskbind extension, the Client includes the following
+   To use the Taskprov extension, the Client includes the following
    extension in the report extensions for each Aggregator as described
    in Section 4.5.3 of [DAP]:
 
    enum {
-       taskbind(0xff00),
+       taskprov(0xff00),
        (2^16-1)
    } ExtensionType;
 
    The payload of the extension MUST be empty.  If the payload is non-
    empty, then the Aggregator MUST reject the report.
 
-   When the client uses the Taskbind extension, it computes the task ID
+   When the client uses the Taskprov extension, it computes the task ID
    (Section 4.2 of [DAP]) as follows:
 
    task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
@@ -261,7 +261,7 @@ Table of Contents
    This is accomplished by the Aggregator behavior below.
 
    During aggregation (Section 4.6 of [DAP]), each Aggregator processes
-   a report with the Taskbind extension as follows.
+   a report with the Taskprov extension as follows.
 
    First, it looks up the ID and parameters associated with the task.
    Note the task has already been configured; otherwise the Aggregator
@@ -313,8 +313,8 @@ Table of Contents
        VdafType vdaf_type;
        opaque vdaf_config<0..2^16-1>;
 
-       /* Taskbind Extensions. */
-       TaskbindExtension extensions<0..2^16-1>;
+       /* Taskprov Extensions. */
+       TaskprovExtension extensions<0..2^16-1>;
    } TaskConfig;
 
    The purpose of TaskConfig is to define all parameters that are
@@ -421,14 +421,14 @@ Table of Contents
    Each extension is structured as follows:
 
    struct {
-     TaskbindExtensionType extension_type;
+     TaskprovExtensionType extension_type;
      opaque extension_data<0..2^16-1>;
-   } TaskbindExtension;
+   } TaskprovExtension;
 
    enum {
      reserved(0),
      (2^16-1)
-   } TaskbindExtensionType;
+   } TaskprovExtensionType;
 
    The extension_type identifies the extension and extension_data is
    structured as specified by the extension.
@@ -438,13 +438,13 @@ Table of Contents
    opt-out of tasks containing unrecognized extensions.  See
    Section 4.4.
 
-   Note that Taskbind extensions are semantically distinct from DAP
+   Note that Taskprov extensions are semantically distinct from DAP
    report extensions and do not share the same codepoint registry
-   (Section 7.2).  Future documents may want to define both a Taskbind
+   (Section 7.2).  Future documents may want to define both a Taskprov
    extension and a report extension, but there may also be situations
    where a document defines one but not the other.
 
-4.  In-band Task Provisioning with the Taskbind Extension
+4.  In-band Task Provisioning with the Taskprov Extension
 
    Before a task can be executed, it is necessary to first provision the
    Clients, Aggregators, and Collector with the task's configuration.
@@ -584,7 +584,7 @@ Table of Contents
    Client opts out, it MUST NOT attempt to upload reports for the task.
 
    Once the client opts into a task, it may begin uploading reports for
-   the task to the Leader.  The extension codepoint taskbind MUST be
+   the task to the Leader.  The extension codepoint taskprov MUST be
    offered in both the Leader and the Helper's report extensions.  The
    extension may be included in either the public or private report
    extensions; it is RECOMMENDED that the extension be included in the
@@ -629,7 +629,7 @@ Table of Contents
    upload request as usual.
 
    During the upload flow, if the Leader's report share does not present
-   a taskbind extension type, the Leader MUST abort the upload request
+   a taskprov extension type, the Leader MUST abort the upload request
    with "invalidMessage".
 
 4.6.2.  Aggregation Protocol
@@ -682,7 +682,7 @@ Table of Contents
    Finally, the Helper completes the request as usual, deriving the VDAF
    verification key for the task as described in Section 4.3.  During an
    aggregation job, for any report share that does not include the
-   taskbind extension with an empty payload, the Helper MUST mark the
+   taskprov extension with an empty payload, the Helper MUST mark the
    report as invalid with error "invalid_message" and reject it.
 
 4.8.  Collector Behavior
@@ -703,12 +703,12 @@ Table of Contents
 
 5.  Security Considerations
 
-   The Taskbind extension has the same security and privacy
+   The Taskprov extension has the same security and privacy
    considerations as the core DAP protocol.  In addition, successful
    execution of a DAP task implies agreement on the task configuration.
    This is provided by binding the parameters to the task ID, which in
    turn is bound to each report uploaded for a task.  Furthermore,
-   inclusion of the Taskbind extension in the report means Aggregators
+   inclusion of the Taskprov extension in the report means Aggregators
    that do not implement this extension will reject the report as
    required by (Section 4.5.3 of [DAP]).
 
@@ -742,11 +742,11 @@ Table of Contents
    at which new tasks are configured.  In addition, deployments SHOULD
    arrange for the Author to digitally sign the task configuration so
    that Clients cannot forge task creation, e.g., via an extension to
-   Taskbind (Section 3.3).
+   Taskprov (Section 3.3).
 
 6.  Operational Considerations
 
-   The Taskbind extension does not introduce any new operational
+   The Taskprov extension does not introduce any new operational
    considerations for DAP.
 
    The task provisioning mechanism in Section 4 is designed so that the
@@ -762,8 +762,8 @@ Table of Contents
 
 7.  IANA Considerations
 
-   This document requests a codepoint for the taskbind report extension
-   and for creation of a new registry for Taskbind extensions.
+   This document requests a codepoint for the taskprov report extension
+   and for creation of a new registry for Taskprov extensions.
 
    (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
    document.)
@@ -776,15 +776,15 @@ Table of Contents
 
    Value:  0xff00
 
-   Name:  taskbind
+   Name:  taskprov
 
    Reference:  RFC XXXX
 
-7.2.  Registry for Taskbind Extensions
+7.2.  Registry for Taskprov Extensions
 
    A new registry will be (RFC EDITOR: change "will be" to "has been")
    created for the "Distributed Aggregation Protocol (DAP)" page called
-   "Taskbind Extensions".  This registry contains the following columns:
+   "Taskprov Extensions".  This registry contains the following columns:
 
    Value:  The two-byte identifier for the extension
 
@@ -801,7 +801,7 @@ Table of Contents
               | 0x0000 | reserved | Section 3.3 of RFC XXXX |
               +--------+----------+-------------------------+
 
-                 Table 2: Initial contents of the Taskbind
+                 Table 2: Initial contents of the Taskprov
                             Extensions registry.
 
 7.3.  DAP Sub-namespace for DAP
@@ -812,22 +812,22 @@ Table of Contents
 
 8.  Extending this Document
 
-   The behavior of the taskbind extension may be extended by future
+   The behavior of the taskprov extension may be extended by future
    documents that define:
 
    1.  A new DAP batch mode
 
    2.  A new VDAF
 
-   3.  A new Taskbind extension
+   3.  A new Taskprov extension
 
    Documents defining either a new DAP batch mode or VDAF SHOULD include
-   a section titled "Taskbind Considerations" that specifies the payload
+   a section titled "Taskprov Considerations" that specifies the payload
    of TaskConfig.batch_config or TaskConfig.vdaf_config respectively.
 
    Note that the registry for batch modes is defined by [DAP]; the
    registry for VDAFs is defined by [VDAF]; and the registry for
-   Taskbind extensions is defined in Section 7.2 of this document.
+   Taskprov extensions is defined in Section 7.2 of this document.
 
 9.  Normative References
 

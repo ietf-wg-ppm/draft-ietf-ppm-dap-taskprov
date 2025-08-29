@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 1 March 2026                                         Cloudflare
-                                                          28 August 2025
+Expires: 2 March 2026                                         Cloudflare
+                                                          29 August 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 March 2026.
+   This Internet-Draft will expire on 2 March 2026.
 
 Copyright Notice
 
@@ -689,7 +689,7 @@ Table of Contents
    verification key for the task as described in Section 4.3.  During an
    aggregation job, for any report share that does not include the
    taskprov extension with an empty payload, the Helper MUST mark the
-   report as invalid with error "invalidMessage" and reject it.
+   report as invalid with error "invalid_message" and reject it.
 
 4.8.  Collector Behavior
 

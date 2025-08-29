@@ -668,6 +668,21 @@ SHOULD arrange for the Author to digitally sign the task configuration so that
 Clients cannot forge task creation, e.g., via an extension to Taskprov
 ({{taskprov-extensions}}).
 
+Support for the Taskprov extension may render a deployment of DAP more
+susceptible to task enumeration attacks ({{Section 8.6.1 of !DAP}}). For
+example, if the Leader's upload endpoint is unauthenticated, then any HTTP
+client can learn if a Leader supports a particular task configuration by
+uploading a report for it with the Taskprov extension. Aggregators can mitigate
+these kinds of attack by:
+
+1. Requiring authentication of all APIs, including the upload endpoint (see
+   {{Section 3.3 of !DAP}});
+
+1. Enforcing rate limits on unauthenticated APIs; or
+
+1. Including entropy in the `task_info` field of the `TaskConfig` in order to
+   make the task ID harder to predict (e.g., 16 bytes of output of a CSPRNG).
+
 # Operational Considerations
 
 The Taskprov extension does not introduce any new operational considerations

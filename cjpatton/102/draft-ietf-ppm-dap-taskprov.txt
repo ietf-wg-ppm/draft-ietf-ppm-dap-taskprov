@@ -752,8 +752,8 @@ Table of Contents
    Taskprov extension.  Aggregtors can mitigate these kinds of attack
    by:
 
-   1.  Require authentication of all APIs, including the upload endpoint
-       (see Section 3.3 of [DAP]);
+   1.  Requiring authentication of all APIs, including the upload
+       endpoint (see Section 3.3 of [DAP]);
 
    2.  Enforcing rate limits on unauthenticated APIs; or
 

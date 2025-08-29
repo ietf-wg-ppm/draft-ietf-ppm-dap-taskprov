@@ -383,6 +383,10 @@ Extensions are treated as mandatory-to-implement in the protocol described in
 {{taskprov}}. In particular, protocols participants MUST opt-out of tasks
 containing unrecognized extensions. See {{provisioning-a-task}}.
 
+If the same extension type appears more than once among the Taskprov extensions
+in the `TaskConfig` structure, then protocols participants MUST opt-out of tasks
+with repeated extensions.
+
 Note that Taskprov extensions are semantically distinct from DAP report
 extensions and do not share the same codepoint registry
 ({{taskprov-extension-registry}}). Future documents may want to define both a
@@ -509,6 +513,8 @@ A protocol participant MUST opt out if:
 1. The DAP batch mode or VDAF is not implemented.
 
 1. One of the extensions is not recognized.
+
+1. One of the extension types appear more than once.
 
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.

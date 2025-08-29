@@ -749,7 +749,7 @@ Table of Contents
    [DAP]).  For example, if the Leader's upload endpoint is
    unauthenticated, then any HTTP client can learn if a Leader supports
    a particular task configuration by uploading a report for it with the
-   Taskprov extension.  Aggregtors can mitigate these kinds of attack
+   Taskprov extension.  Aggregators can mitigate these kinds of attack
    by:
 
    1.  Requiring authentication of all APIs, including the upload

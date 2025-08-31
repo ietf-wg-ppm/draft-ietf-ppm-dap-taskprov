@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 1 March 2026                                         Cloudflare
-                                                          28 August 2025
+Expires: 4 March 2026                                         Cloudflare
+                                                          31 August 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 March 2026.
+   This Internet-Draft will expire on 4 March 2026.
 
 Copyright Notice
 
@@ -438,6 +438,10 @@ Table of Contents
    opt-out of tasks containing unrecognized extensions.  See
    Section 4.4.
 
+   If the same extension type appears more than once among the Taskprov
+   extensions in the TaskConfig structure, then protocols participants
+   MUST opt-out of tasks with repeated extensions.
+
    Note that Taskprov extensions are semantically distinct from DAP
    report extensions and do not share the same codepoint registry
    (Section 7.2).  Future documents may want to define both a Taskprov
@@ -573,6 +577,8 @@ Table of Contents
    2.  The DAP batch mode or VDAF is not implemented.
 
    3.  One of the extensions is not recognized.
+
+   4.  One of the extension types appear more than once.
 
    The behavior of each protocol participant is determined by whether or
    not they opt in to a task.

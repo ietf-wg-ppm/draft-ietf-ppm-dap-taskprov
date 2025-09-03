@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 4 March 2026                                         Cloudflare
-                                                          31 August 2025
+Expires: 7 March 2026                                         Cloudflare
+                                                        3 September 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 March 2026.
+   This Internet-Draft will expire on 7 March 2026.
 
 Copyright Notice
 
@@ -749,6 +749,23 @@ Table of Contents
    arrange for the Author to digitally sign the task configuration so
    that Clients cannot forge task creation, e.g., via an extension to
    Taskprov (Section 3.3).
+
+   Support for the Taskprov extension may render a deployment of DAP
+   more susceptible to task enumeration attacks (Section 8.6.1 of
+   [DAP]).  For example, if the Leader's upload endpoint is
+   unauthenticated, then any HTTP client can learn if a Leader supports
+   a particular task configuration by uploading a report for it with the
+   Taskprov extension.  Aggregators can mitigate these kinds of attack
+   by:
+
+   1.  Requiring authentication of all APIs, including the upload
+       endpoint (see Section 3.3 of [DAP]);
+
+   2.  Enforcing rate limits on unauthenticated APIs; or
+
+   3.  Including entropy in the task_info field of the TaskConfig in
+       order to make the task ID harder to predict (e.g., 16 bytes of
+       output of a CSPRNG).
 
 6.  Operational Considerations
 

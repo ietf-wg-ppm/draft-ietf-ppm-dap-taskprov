@@ -15,23 +15,23 @@ will only aggregate the report if all parties agree on the task parameters.
 This document also specifies an optional mechanism for in-band task
 provisioning that builds on the report extension. 
     " name="description">
-<meta content="xml2rfc 3.30.0" name="generator">
+<meta content="xml2rfc 3.30.1" name="generator">
 <meta content="next generation" name="keyword">
 <meta content="unicorn" name="keyword">
 <meta content="sparkling distributed ledger" name="keyword">
 <meta content="draft-ietf-ppm-dap-taskprov-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.0
+  xml2rfc 3.30.1
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.4.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
+    requests 2.32.5
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1052,11 +1052,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">DAP-Taskprov</td>
-<td class="right">August 2025</td>
+<td class="right">September 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Wang &amp; Patton</td>
-<td class="center">Expires 4 March 2026</td>
+<td class="center">Expires 7 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-ppm-dap-taskprov-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-08-31" class="published">31 August 2025</time>
+<time datetime="2025-09-03" class="published">3 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-03-04">4 March 2026</time></dd>
+<dd class="expires"><time datetime="2026-03-07">7 March 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1133,7 +1133,7 @@ provisioning that builds on the report extension.<a href="#section-abstract-1" c
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 7 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2019,6 +2019,25 @@ limiting the rate at which new tasks are configured. In addition, deployments
 <span class="bcp14">SHOULD</span> arrange for the Author to digitally sign the task configuration so that
 Clients cannot forge task creation, e.g., via an extension to Taskprov
 (<a href="#taskprov-extensions" class="auto internal xref">Section 3.3</a>).<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Support for the Taskprov extension may render a deployment of DAP more
+susceptible to task enumeration attacks (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-8.6.1" class="relref">Section 8.6.1</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). For
+example, if the Leader's upload endpoint is unauthenticated, then any HTTP
+client can learn if a Leader supports a particular task configuration by
+uploading a report for it with the Taskprov extension. Aggregators can mitigate
+these kinds of attack by:<a href="#section-5-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5-6">
+<li id="section-5-6.1">
+          <p id="section-5-6.1.1">Requiring authentication of all APIs, including the upload endpoint (see
+<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-13#section-3.3" class="relref">Section 3.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>);<a href="#section-5-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-6.2">
+          <p id="section-5-6.2.1">Enforcing rate limits on unauthenticated APIs; or<a href="#section-5-6.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-6.3">
+          <p id="section-5-6.3.1">Including entropy in the <code>task_info</code> field of the <code>TaskConfig</code> in order to
+make the task ID harder to predict (e.g., 16 bytes of output of a CSPRNG).<a href="#section-5-6.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
 </section>
 </div>
 <div id="operational-considerations">

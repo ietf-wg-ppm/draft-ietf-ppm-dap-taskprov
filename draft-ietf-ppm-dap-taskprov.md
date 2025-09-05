@@ -450,8 +450,8 @@ configuration and decide whether to opt-in; if not, the task's execution halts.
 
 ## Task Advertisement {#task-advertisement}
 
-To advertise a task to its peer, a protocol participant includes a header
-"dap-taskprov" with an HTTP request incident to the task execution. The value
+To advertise a task to its peer, a protocol participant includes the header
+"DAP-Taskprov" with an HTTP request incident to the task execution. The value
 is the `TaskConfig` structure defined {{task-encoding}}, expanded into its
 URL-safe, unpadded Base 64 representation as specified in {{Sections 5 and 3.2
 of !RFC4648}}.
@@ -533,30 +533,30 @@ extension be included in the public extensions. In addition, each report's task
 ID MUST be computed as described in {{definition}}.
 
 The Client SHOULD advertise the task configuration by specifying the encoded
-`TaskConfig` described in {{definition}} in the "dap-taskprov" HTTP header, but
+`TaskConfig` described in {{definition}} in the "DAP-Taskprov" HTTP header, but
 MAY choose to omit this header in order to save network bandwidth. However, the
 Leader may respond with "unrecognizedTask" if it has not been configured with
 this task. In this case, the Client MUST retry the upload request with the
-"dap-taskprov" HTTP header.
+"DAP-Taskprov" HTTP header.
 
 ## Leader Behavior
 
 ### Upload Protocol
 
 Upon receiving a Client report, if the Leader does not support the {{taskprov}}
-mechanism, it will ignore the "dap-taskprov" HTTP header. In particular, if the
+mechanism, it will ignore the "DAP-Taskprov" HTTP header. In particular, if the
 task ID is not recognized, then it MUST abort the upload request with
 "unrecognizedTask".
 
 Otherwise, if the Leader does support this mechanism, it first checks if the
-"dap-taskprov" HTTP header is specified. If not present, that means the Client
+"DAP-Taskprov" HTTP header is specified. If not present, that means the Client
 has skipped task advertisement. If the Leader recognizes the task ID, it will
 include the client report in the aggregation of that task ID. Otherwise, it
 MUST abort with "unrecognizedTask". The Client will then retry with the task
 advertisement.
 
 If the Client advertises the task, the Leader checks that the task ID indicated
-by the upload request matches the task ID derived from the "dap-taskprov" HTTP
+by the upload request matches the task ID derived from the "DAP-Taskprov" HTTP
 header as specified in {{definition}}. If the task ID does not match, then the
 Leader MUST abort with "unrecognizedTask".
 
@@ -597,12 +597,12 @@ The Leader advertises a task to the Helper during each step of an aggregation
 job and when it requests the Helper's aggregate share during a collection job.
 
 Upon receiving a task advertisement from the Leader, If the Helper does not
-support this mechanism, it will ignore the "dap-taskprov" HTTP header and
+support this mechanism, it will ignore the "DAP-Taskprov" HTTP header and
 process the request as usual. In particular, if the Helper does not recognize
 the task ID, it MUST abort the request with error "unrecognizedTask".
 Otherwise, if the Helper supports this mechanism, it proceeds as follows.
 
-First, the Helper attempts to parse payload of the "dap-taskprov" HTTP header.
+First, the Helper attempts to parse payload of the "DAP-Taskprov" HTTP header.
 If this step fails, the Helper MUST abort with "invalidMessage".
 
 Next, the Helper checks that the task ID indicated in the request matches the
@@ -753,6 +753,17 @@ The initial contents of this registry are listed in the following table.
 > TODO Figure out how to ask IANA to register the errors in
 > {{urn-space-errors}}. See
 > https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/34
+
+## HTTP Field Name Registration
+
+A new entry to the "Hypertext Transfer Protocol (HTTP) Field Name Registry"
+will be (RFC EDITOR: change "will be" to "has been") added for the in-band
+task-provisioning header:
+
+| Field Name   | Status    | Reference                |
+|:-------------|:----------|:-------------------------|
+| DAP-Taskprov | permanent | {{taskprov}} of RFC XXXX |
+{: #http-header title="Updates to the Hypertext Transfer Protocol (HTTP) Field Name Registry"}
 
 # Extending this Document {#extending-this-doc}
 

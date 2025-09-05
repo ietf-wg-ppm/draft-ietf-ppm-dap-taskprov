@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 7 March 2026                                         Cloudflare
-                                                        3 September 2025
+Expires: 9 March 2026                                         Cloudflare
+                                                        5 September 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 March 2026.
+   This Internet-Draft will expire on 9 March 2026.
 
 Copyright Notice
 
@@ -118,7 +118,7 @@ Table of Contents
    determines, among other things, the cryptographic scheme to use for
    the secure computation (a Verifiable Distributed Aggregation Function
    [VDAF]), how reports are partitioned into batches, and privacy
-   parameters such as the minimum size of each batch.  See Section 4.3
+   parameters such as the minimum size of each batch.  See Section 4.2
    of [DAP] for a complete listing.
 
    In order to execute a task securely, it is required that all parties
@@ -255,7 +255,7 @@ Table of Contents
    Function SHA-256() is as defined in [SHS].
 
    The task ID is bound to each report share (via HPKE authenticated and
-   associated data, see Section 4.4.2 of [DAP]).  Binding the parameters
+   associated data, see Section 4.5.2 of [DAP]).  Binding the parameters
    to the ID this way ensures, in turn, that the report is only
    aggregated if the Client and Aggregator agree on the parameters.
    This is accomplished by the Aggregator behavior below.
@@ -273,9 +273,9 @@ Table of Contents
    task ID does not match the task ID of the request, then it MUST
    reject the report with error "invalid_message".
 
-   During the upload flow (Section 4.4 of [DAP]), the Leader SHOULD
-   abort the request with "unrecognizedTask" if the derived task ID does
-   not match the task ID of the request.
+   During the upload interaction (Section 4.5 of [DAP]), the Leader
+   SHOULD abort the request with "unrecognizedTask" if the derived task
+   ID does not match the task ID of the request.
 
 3.1.  Task Encoding
 
@@ -319,7 +319,7 @@ Table of Contents
 
    The purpose of TaskConfig is to define all parameters that are
    necessary for configuring each party.  It includes all parameters
-   listed in Section 4.3 of [DAP] as well as two additional fields:
+   listed in Section 4.2 of [DAP] as well as two additional fields:
 
    *  task_info is an opaque field whose contents are specific to the
       deployment.  For example, this might be a human-readable string
@@ -368,8 +368,7 @@ Table of Contents
    This section defines the payload of TaskConfig.vdaf_config for each
    VDAF specified in [VDAF].  In some cases, the VDAF supports more than
    two Aggregators; but since DAP only supports two Aggregators, we do
-   not include the number of Aggregators in the encoding (cf. Section 7
-   of [VDAF]).
+   not include the number of Aggregators in the encoding.
 
 3.2.1.  Prio3Count
 
@@ -505,7 +504,7 @@ Table of Contents
    not, the task's execution halts.
 
    Otherwise, if the Leader does opt-in, it advertises the task to the
-   Helper during the aggregation protocol (Section 4.6 of [DAP]).  In
+   Helper during the aggregation interaction (Section 4.6 of [DAP]).  In
    particular, it includes the task configuration in an HTTP header of
    each aggregation job request for that task.  Before proceeding, the
    Helper must first parse the configuration and decide whether to opt-
@@ -857,9 +856,9 @@ Table of Contents
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-13, 2 November 2024,
+              draft-ietf-ppm-dap-16, 2 September 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              13>.
+              16>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -891,9 +890,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-13, 2
-              November 2024, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-vdaf-13>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-15, 17 June
+              2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
+              cfrg-vdaf-15>.
 
 Contributors
 

@@ -61,13 +61,13 @@ provisioning that builds on the report extension.
 (RFC EDITOR: Remove this paragraph.) This draft is maintained in
 https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-13}} enables secure aggregation
+The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-16}} enables secure aggregation
 of a set of reports submitted by Clients. This process is centered around a
 "task" that determines, among other things, the cryptographic scheme to use for
 the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-13}}), how reports are partitioned into
+{{!VDAF=I-D.draft-irtf-cfrg-vdaf-15}}), how reports are partitioned into
 batches, and privacy parameters such as the minimum size of each batch. See
-{{Section 4.3 of !DAP}} for a complete listing.
+{{Section 4.2 of !DAP}} for a complete listing.
 
 In order to execute a task securely, it is required that all parties agree on
 all parameters associated with the task. However, the core DAP specification
@@ -192,7 +192,7 @@ where `task_config` is a `TaskConfig` structure defined in {{task-encoding}}.
 Function SHA-256() is as defined in {{SHS}}.
 
 The task ID is bound to each report share (via HPKE authenticated and
-associated data, see {{Section 4.4.2 of !DAP}}). Binding the parameters to the
+associated data, see {{Section 4.5.2 of !DAP}}). Binding the parameters to the
 ID this way ensures, in turn, that the report is only aggregated if the Client
 and Aggregator agree on the parameters. This is accomplished by the Aggregator
 behavior below.
@@ -209,9 +209,9 @@ Next, the Aggregator encodes the parameters as a `TaskConfig` defined in
 does not match the task ID of the request, then it MUST reject the report with
 error "invalid_message".
 
-During the upload flow ({{Section 4.4 of !DAP}}), the Leader SHOULD abort the
-request with "unrecognizedTask" if the derived task ID does not match the task
-ID of the request.
+During the upload interaction ({{Section 4.5 of !DAP}}), the Leader SHOULD
+abort the request with "unrecognizedTask" if the derived task ID does not match
+the task ID of the request.
 
 ## Task Encoding {#task-encoding}
 
@@ -256,7 +256,7 @@ struct {
 ~~~
 
 The purpose of `TaskConfig` is to define all parameters that are necessary for
-configuring each party. It includes all parameters listed in {{Section 4.3 of
+configuring each party. It includes all parameters listed in {{Section 4.2 of
 !DAP}} as well as two additional fields:
 
 * `task_info` is an opaque field whose contents are specific to the deployment.
@@ -304,7 +304,7 @@ The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 This section defines the payload of `TaskConfig.vdaf_config` for each VDAF
 specified in {{!VDAF}}. In some cases, the VDAF supports more than two
 Aggregators; but since DAP only supports two Aggregators, we do not include the
-number of Aggregators in the encoding (cf. {{Section 7 of !VDAF}}).
+number of Aggregators in the encoding.
 
 ### Prio3Count
 
@@ -443,7 +443,7 @@ report, the Leader parses the configuration and decides whether to opt-in; if
 not, the task's execution halts.
 
 Otherwise, if the Leader does opt-in, it advertises the task to the Helper
-during the aggregation protocol ({{Section 4.6 of !DAP}}). In particular, it
+during the aggregation interaction ({{Section 4.6 of !DAP}}). In particular, it
 includes the task configuration in an HTTP header of each aggregation job
 request for that task. Before proceeding, the Helper must first parse the
 configuration and decide whether to opt-in; if not, the task's execution halts.

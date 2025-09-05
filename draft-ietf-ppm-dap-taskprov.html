@@ -1336,52 +1336,75 @@ to implement the DAP report extension in <a href="#definition" class="auto inter
         </h3>
 <p id="section-1.1-1">(RFC EDITOR: Remove this section.)<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 <p id="section-1.1-2">(*) Indicates a change that breaks wire compatibility with the previous draft.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
-<p id="section-1.1-3">02:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">03:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-4.1">
-            <p id="section-1.1-4.1.1">Don't specify a lower limit for vector bounds.<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-4.1.1">Handle repeated extensions in the <code>TaskprovExtension</code> field of the
+<code>TaskConfig</code> as an error.<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-4.2">
-            <p id="section-1.1-4.2.1">Update normative references.<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-4.2.1">Go back to calling the extension "Taskprov". The name "Taskbind" didn't
+stick.<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-4.3">
-            <p id="section-1.1-4.3.1">Recommend including the report extension in the public extensions list.<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-4.3.1">Add task enumeration attacks to security considerations.<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-4.4">
+            <p id="section-1.1-4.4.1">Add registration of the "DAP-Taskprov" to IANA considerations.<a href="#section-1.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-4.5">
+            <p id="section-1.1-4.5.1">Bump draft-ietf-ppm-dap-13 to 16 <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>.<a href="#section-1.1-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-4.6">
+            <p id="section-1.1-4.6.1">Bump draft-irtf-cfrg-vdaf-13 to 15 <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-1.1-4.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-1.1-5">01:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
+<p id="section-1.1-5">02:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-6.1">
-            <p id="section-1.1-6.1.1">Add an extension point to the <code>TaskConfig</code> structure and define rules for
-processing extensions. (*)<a href="#section-1.1-6.1.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-6.1.1">Don't specify a lower limit for vector bounds.<a href="#section-1.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-6.2">
-            <p id="section-1.1-6.2.1">Remove DP mechanisms. (*)<a href="#section-1.1-6.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-6.2.1">Update normative references.<a href="#section-1.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-6.3">
-            <p id="section-1.1-6.3.1">Add guidelines for extending this document to account for new VDAFs or DAP
+            <p id="section-1.1-6.3.1">Recommend including the report extension in the public extensions list.<a href="#section-1.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.1-7">01:<a href="#section-1.1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-8.1">
+            <p id="section-1.1-8.1.1">Add an extension point to the <code>TaskConfig</code> structure and define rules for
+processing extensions. (*)<a href="#section-1.1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-8.2">
+            <p id="section-1.1-8.2.1">Remove DP mechanisms. (*)<a href="#section-1.1-8.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-8.3">
+            <p id="section-1.1-8.3.1">Add guidelines for extending this document to account for new VDAFs or DAP
 batch modes. Improve the extension points for these in <code>TaskConfig</code> in order
-to make this easier. (*)<a href="#section-1.1-6.3.1" class="pilcrow">¶</a></p>
+to make this easier. (*)<a href="#section-1.1-8.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.4">
-            <p id="section-1.1-6.4.1">Add a salt to the task ID computation. (*)<a href="#section-1.1-6.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.4">
+            <p id="section-1.1-8.4.1">Add a salt to the task ID computation. (*)<a href="#section-1.1-8.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.5">
-            <p id="section-1.1-6.5.1">Harmonize task lifetime parameters with <span>[<a href="#DAP" class="cite xref">DAP</a>]</span> by adding a task start time
-and replacing the task end time with a task duration. (*)<a href="#section-1.1-6.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.5">
+            <p id="section-1.1-8.5.1">Harmonize task lifetime parameters with <span>[<a href="#DAP" class="cite xref">DAP</a>]</span> by adding a task start time
+and replacing the task end time with a task duration. (*)<a href="#section-1.1-8.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.6">
-            <p id="section-1.1-6.6.1">Harmonize batch mode parameters with <span>[<a href="#DAP" class="cite xref">DAP</a>]</span> by removing the deprecated
-<code>max_batch_query_count</code> and <code>max_batch_size</code> parameters. (*)<a href="#section-1.1-6.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.6">
+            <p id="section-1.1-8.6.1">Harmonize batch mode parameters with <span>[<a href="#DAP" class="cite xref">DAP</a>]</span> by removing the deprecated
+<code>max_batch_query_count</code> and <code>max_batch_size</code> parameters. (*)<a href="#section-1.1-8.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.7">
-            <p id="section-1.1-6.7.1">Task provisioning: Remove guidance for per-task HPKE configurations, as this
-feature was deprecated by DAP.<a href="#section-1.1-6.7.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.7">
+            <p id="section-1.1-8.7.1">Task provisioning: Remove guidance for per-task HPKE configurations, as this
+feature was deprecated by DAP.<a href="#section-1.1-8.7.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.8">
-            <p id="section-1.1-6.8.1">Bump draft-ietf-ppm-dap-12 to 13 <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>. (*)<a href="#section-1.1-6.8.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.8">
+            <p id="section-1.1-8.8.1">Bump draft-ietf-ppm-dap-12 to 13 <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>. (*)<a href="#section-1.1-8.8.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-6.9">
-            <p id="section-1.1-6.9.1">Bump draft-irtf-cfrg-vdaf-12 to 13 <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-1.1-6.9.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-1.1-8.9">
+            <p id="section-1.1-8.9.1">Bump draft-irtf-cfrg-vdaf-12 to 13 <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-1.1-8.9.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>

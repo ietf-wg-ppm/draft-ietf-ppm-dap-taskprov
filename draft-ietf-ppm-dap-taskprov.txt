@@ -167,6 +167,22 @@ Table of Contents
    (*) Indicates a change that breaks wire compatibility with the
    previous draft.
 
+   03:
+
+   *  Handle repeated extensions in the TaskprovExtension field of the
+      TaskConfig as an error.
+
+   *  Go back to calling the extension "Taskprov".  The name "Taskbind"
+      didn't stick.
+
+   *  Add task enumeration attacks to security considerations.
+
+   *  Add registration of the "DAP-Taskprov" to IANA considerations.
+
+   *  Bump draft-ietf-ppm-dap-13 to 16 [DAP].
+
+   *  Bump draft-irtf-cfrg-vdaf-13 to 15 [VDAF].
+
    02:
 
    *  Don't specify a lower limit for vector bounds.

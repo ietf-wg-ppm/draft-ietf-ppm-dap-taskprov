@@ -109,6 +109,11 @@ to implement the DAP report extension in {{definition}}.
 
 (\*) Indicates a change that breaks wire compatibility with the previous draft.
 
+04:
+
+- Redefine `time_precision` as its own `TimePrecision` type, to maintain
+  compatibility with DAP-16 {{!DAP}}. (\*)
+
 03:
 
 - Handle repeated extensions in the `TaskprovExtension` field of the
@@ -247,7 +252,7 @@ struct {
     Url helper_aggregator_endpoint;
 
     /* Time precision. */
-    Duration time_precision;
+    TimePrecision time_precision;
 
     /* Minimum batch size. */
     uint32 min_batch_size;
@@ -314,6 +319,15 @@ even if the VDAF type is not recognized.
 
 The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
 {{!DAP}}.
+
+The `time_precision` field of a task is used in calculating all `Time`s and
+`Duration`s within the task. {{Section 4.1.1 of !DAP}}
+
+~~~
+uint64 TimePrecision;
+~~~
+
+The `TimePrecision` type represents a nonzero number of seconds.
 
 ## VDAF config {#vdaf-config}
 

@@ -112,7 +112,7 @@ to implement the DAP report extension in {{definition}}.
 04:
 
 - Redefine `time_precision` as its own `TimePrecision` type, to maintain
-  compatibility with DAP-16 {{!DAP}}. (\*)
+  compatibility with DAP-16 {{!DAP}}.
 
 03:
 
@@ -126,7 +126,7 @@ to implement the DAP report extension in {{definition}}.
 
 - Add registration of the "DAP-Taskprov" to IANA considerations.
 
-- Bump draft-ietf-ppm-dap-13 to 16 {{!DAP}}.
+- Bump draft-ietf-ppm-dap-13 to 16 {{!DAP}}.  (\*)
 
 - Bump draft-irtf-cfrg-vdaf-13 to 15 {{!VDAF}}.
 

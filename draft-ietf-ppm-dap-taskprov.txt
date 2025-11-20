@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 9 March 2026                                         Cloudflare
-                                                        5 September 2025
+Expires: 24 May 2026                                          Cloudflare
+                                                        20 November 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 March 2026.
+   This Internet-Draft will expire on 24 May 2026.
 
 Copyright Notice
 
@@ -167,6 +167,11 @@ Table of Contents
    (*) Indicates a change that breaks wire compatibility with the
    previous draft.
 
+   04:
+
+   *  Redefine time_precision as its own TimePrecision type, to maintain
+      compatibility with DAP-16 [DAP].
+
    03:
 
    *  Handle repeated extensions in the TaskprovExtension field of the
@@ -179,7 +184,7 @@ Table of Contents
 
    *  Add registration of the "DAP-Taskprov" to IANA considerations.
 
-   *  Bump draft-ietf-ppm-dap-13 to 16 [DAP].
+   *  Bump draft-ietf-ppm-dap-13 to 16 [DAP].  (*)
 
    *  Bump draft-irtf-cfrg-vdaf-13 to 15 [VDAF].
 
@@ -311,7 +316,7 @@ Table of Contents
        Url helper_aggregator_endpoint;
 
        /* Time precision. */
-       Duration time_precision;
+       TimePrecision time_precision;
 
        /* Minimum batch size. */
        uint32 min_batch_size;
@@ -379,6 +384,13 @@ Table of Contents
 
    The definition of Time, Duration, Url, and BatchMode follow those in
    [DAP].
+
+   The time_precision field of a task is used in calculating all Times
+   and Durations within the task.  Section 4.1.1 of [DAP]
+
+   uint64 TimePrecision;
+
+   The TimePrecision type represents a nonzero number of seconds.
 
 3.2.  VDAF config
 

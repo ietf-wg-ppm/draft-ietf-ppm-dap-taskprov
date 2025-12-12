@@ -429,12 +429,12 @@ Before a task can be executed, it is necessary to first provision the Clients,
 Aggregators, and Collector with the task's configuration. The core DAP
 specification does not define a mechanism for provisioning tasks. This section
 describes a mechanism whose key feature is that task configuration is
-performed completely in-band, via HTTP request headers.
+performed completely in-band in an HTTP header field {{!RFC9651}}.
 
 This method presumes the existence of a logical "task author" (written as
 "Author" hereafter) who is capable of pushing configurations to Clients. All
-parameters required by downstream entities (the Aggregators) are carried by HTTP
-headers piggy-backed on the protocol flow.
+parameters required by downstream entities (the Aggregators) are carried by a
+header piggy-backed on the protocol flow.
 
 This mechanism is designed with the same security and privacy considerations of
 the core DAP protocol. The Author is not regarded as a trusted third party: it
@@ -454,8 +454,8 @@ relationships. These include:
 
 * Any assets required for authenticating HTTP requests.
 
-This section does not specify a mechanism for provisioning these assets; as in
-the core DAP protocol; these are presumed to be configured out-of-band.
+This section does not specify a mechanism for provisioning these assets. As in
+the core DAP protocol, these are presumed to be configured out-of-band.
 
 Note that we consider the VDAF verification key {{!VDAF}}, used by the
 Aggregators to aggregate reports, to be a task-specific asset. This document
@@ -467,10 +467,10 @@ which in turn is presumed to be configured out-of-band.
 The process of provisioning a task begins when the Author disseminates the task
 configuration to the Collector and each of the Clients. When a Client issues an
 upload request to the Leader (as described in {{Section 4.5 of !DAP}}), it
-includes in an HTTP header the task configuration it used to generate the
-report. We refer to this process as "task advertisement". Before consuming the
-report, the Leader parses the configuration and decides whether to opt-in; if
-not, the task's execution halts.
+includes in an HTTP header field {{!RFC9651}} the task configuration it used to
+generate the report. We refer to this process as "task advertisement". Before
+consuming the report, the Leader parses the configuration and decides whether
+to opt-in; if not, the task's execution halts.
 
 Otherwise, if the Leader does opt-in, it advertises the task to the Helper
 during the aggregation interaction ({{Section 4.6 of !DAP}}). In particular, it
@@ -478,13 +478,26 @@ includes the task configuration in an HTTP header of each aggregation job
 request for that task. Before proceeding, the Helper must first parse the
 configuration and decide whether to opt-in; if not, the task's execution halts.
 
-## Task Advertisement {#task-advertisement}
+## DAP-Taskprov Structured Header {#task-advertisement}
 
-To advertise a task to its peer, a protocol participant includes the header
-"DAP-Taskprov" with an HTTP request incident to the task execution. The value
-is the `TaskConfig` structure defined {{task-encoding}}, expanded into its
-URL-safe, unpadded Base 64 representation as specified in {{Sections 5 and 3.2
-of !RFC4648}}.
+The DAP-Taskprov HTTP header is used to advertise a task.
+
+DAP-Taskprov is an Item Structured Header Field {{!RFC9651}}. Its value MUST be
+a Byte Sequence ({{Section 3.3.5 of !RFC9651}}). Values of other types MUST be
+ignored.
+
+Its value conveys the task configuration with which the recipient is meant to
+process the DAP request. It MUST be a valid `TaskConfig` as defined in
+{{task-encoding}}. Otherwise, the value MUST be ignored.
+
+This document does not define any parameters for the header. Any parameters
+that are present MUST be ignored.
+
+For example:
+
+~~~
+    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
+~~~
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}
 
@@ -562,33 +575,32 @@ either the public or private report extensions; it is RECOMMENDED that the
 extension be included in the public extensions. In addition, each report's task
 ID MUST be computed as described in {{definition}}.
 
-The Client SHOULD advertise the task configuration by specifying the encoded
-`TaskConfig` described in {{definition}} in the "DAP-Taskprov" HTTP header, but
-MAY choose to omit this header in order to save network bandwidth. However, the
-Leader may respond with "unrecognizedTask" if it has not been configured with
-this task. In this case, the Client MUST retry the upload request with the
-"DAP-Taskprov" HTTP header.
+Clients advertise the task configuration as specified in {{task-advertisement}}
+in order to convey the task configuration to the Leader. If the Client does not
+advertise the task configuration and the Leader does not already have it, then
+the Leader will abort with error "unrecognizedTask". At this point, the Client
+may retry the upload with the task advertisement.
 
 ## Leader Behavior
 
 ### Upload Protocol
 
 Upon receiving a Client report, if the Leader does not support the {{taskprov}}
-mechanism, it will ignore the "DAP-Taskprov" HTTP header. In particular, if the
-task ID is not recognized, then it MUST abort the upload request with
+mechanism, it will ignore the DAP-Taskprov header. In particular, if the task
+ID is not recognized, then it MUST abort the upload request with
 "unrecognizedTask".
 
 Otherwise, if the Leader does support this mechanism, it first checks if the
-"DAP-Taskprov" HTTP header is specified. If not present, that means the Client
-has skipped task advertisement. If the Leader recognizes the task ID, it will
+DAP-Taskprov header is present. If not present, that means the Client has
+skipped task advertisement. If the Leader recognizes the task ID, it will
 include the client report in the aggregation of that task ID. Otherwise, it
 MUST abort with "unrecognizedTask". The Client will then retry with the task
 advertisement.
 
 If the Client advertises the task, the Leader checks that the task ID indicated
-by the upload request matches the task ID derived from the "DAP-Taskprov" HTTP
-header as specified in {{definition}}. If the task ID does not match, then the
-Leader MUST abort with "unrecognizedTask".
+by the upload request matches the task ID derived from the DAP-Taskprov header
+value. If the task ID does not match, then the Leader MUST abort with
+"unrecognizedTask".
 
 The Leader then decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the upload request with
@@ -606,7 +618,7 @@ During the upload flow, if the Leader's report share does not present a
 When the Leader opts in to a task, it SHOULD derive the VDAF verification key
 for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise
 the task to the Helper in every request incident to the task as described in
-{{definition}}.
+{{task-advertisement}}.
 
 ### Collection Protocol
 
@@ -627,15 +639,12 @@ The Leader advertises a task to the Helper during each step of an aggregation
 job and when it requests the Helper's aggregate share during a collection job.
 
 Upon receiving a task advertisement from the Leader, If the Helper does not
-support this mechanism, it will ignore the "DAP-Taskprov" HTTP header and
-process the request as usual. In particular, if the Helper does not recognize
-the task ID, it MUST abort the request with error "unrecognizedTask".
-Otherwise, if the Helper supports this mechanism, it proceeds as follows.
+support this mechanism, it will ignore the DAP-Taskprov header and process the
+request as usual. In particular, if the Helper does not recognize the task ID,
+it MUST abort the request with error "unrecognizedTask". Otherwise, if the
+Helper supports this mechanism, it proceeds as follows.
 
-First, the Helper attempts to parse payload of the "DAP-Taskprov" HTTP header.
-If this step fails, the Helper MUST abort with "invalidMessage".
-
-Next, the Helper checks that the task ID indicated in the request matches the
+First, the Helper checks that the task ID indicated in the request matches the
 task ID derived from the `TaskConfig` as defined in {{definition}}. If not, the
 Helper MUST abort with "unrecognizedTask".
 
@@ -787,12 +796,12 @@ The initial contents of this registry are listed in the following table.
 ## HTTP Field Name Registration
 
 A new entry to the "Hypertext Transfer Protocol (HTTP) Field Name Registry"
-will be (RFC EDITOR: change "will be" to "has been") added for the in-band
-task-provisioning header:
+will be (RFC EDITOR: change "will be" to "has been") added for the task
+advertisement header ({{task-advertisement}}):
 
-| Field Name   | Status    | Reference                |
-|:-------------|:----------|:-------------------------|
-| DAP-Taskprov | permanent | {{taskprov}} of RFC XXXX |
+| Field Name   | Status    | Structured Type | Reference                |
+|:-------------|:----------|:----------------|:-------------------------|
+| DAP-Taskprov | permanent | Item            | {{taskprov}} of RFC XXXX |
 {: #http-header title="Updates to the Hypertext Transfer Protocol (HTTP) Field Name Registry"}
 
 # Extending this Document {#extending-this-doc}

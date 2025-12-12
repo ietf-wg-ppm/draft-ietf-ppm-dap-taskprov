@@ -544,16 +544,16 @@ Table of Contents
    The DAP-Taskprov HTTP header field is used to advertise a task.
 
    DAP-Taskprov is an Item Structured Header Field [RFC9651].  Its value
-   MUST be a Byte Sequence (Section 3.3.4 of [RFC9651]).
+   MUST be a Byte Sequence (Section 3.3.5 of [RFC9651]).
 
    Its value conveys the task configuration with which the recipient is
-   meant to process the request.  It MUST be a valid TaskConfig as
-   defined in Section 3.1.  If not, the recipient MUST abort with error
-   "invalidMessage".
+   meant to process the DAP request.  It MUST be a valid TaskConfig as
+   defined in Section 3.1.  Otherwise, the recipient MUST abort with
+   error "invalidMessage".
 
    For example:
 
-   DAP-Taskprov: :XXX:
+       DAP-Taskprov: :XXX:
 
 4.3.  Deriving the VDAF Verification Key
 

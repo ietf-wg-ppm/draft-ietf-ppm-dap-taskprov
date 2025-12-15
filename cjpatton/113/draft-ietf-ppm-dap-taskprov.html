@@ -1805,7 +1805,8 @@ configuration and decide whether to opt-in; if not, the task's execution halts.<
         </h3>
 <p id="section-4.2-1">The DAP-Taskprov HTTP header is used to advertise a task.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.2-2">DAP-Taskprov is an Item Structured Header Field <span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span>. Its value <span class="bcp14">MUST</span> be
-a Byte Sequence (<span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.5" class="relref">Section 3.3.5</a> of [<a href="#RFC9651" class="cite xref">RFC9651</a>]</span>).<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+a Byte Sequence (<span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.5" class="relref">Section 3.3.5</a> of [<a href="#RFC9651" class="cite xref">RFC9651</a>]</span>). Values of other types <span class="bcp14">MUST</span> be
+ignored.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <p id="section-4.2-3">Its value conveys the task configuration with which the recipient is meant to
 process the DAP request. It <span class="bcp14">MUST</span> be a valid <code>TaskConfig</code> as defined in
 <a href="#task-encoding" class="auto internal xref">Section 3.1</a>. Otherwise, the value <span class="bcp14">MUST</span> be ignored.<a href="#section-4.2-3" class="pilcrow">¶</a></p>

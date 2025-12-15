@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 15 June 2026                                         Cloudflare
-                                                        12 December 2025
+Expires: 18 June 2026                                         Cloudflare
+                                                        15 December 2025
 
 
              Task Binding and In-Band Provisioning for DAP
@@ -54,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 June 2026.
+   This Internet-Draft will expire on 18 June 2026.
 
 Copyright Notice
 
@@ -483,13 +483,13 @@ Table of Contents
    The core DAP specification does not define a mechanism for
    provisioning tasks.  This section describes a mechanism whose key
    feature is that task configuration is performed completely in-band in
-   an HTTP Structured Header [RFC9651].
+   an HTTP header field [RFC9651].
 
    This method presumes the existence of a logical "task author"
    (written as "Author" hereafter) who is capable of pushing
    configurations to Clients.  All parameters required by downstream
-   entities (the Aggregators) are carried by a Structured Header piggy-
-   backed on the protocol flow.
+   entities (the Aggregators) are carried by a header piggy-backed on
+   the protocol flow.
 
    This mechanism is designed with the same security and privacy
    considerations of the core DAP protocol.  The Author is not regarded
@@ -526,8 +526,8 @@ Table of Contents
    The process of provisioning a task begins when the Author
    disseminates the task configuration to the Collector and each of the
    Clients.  When a Client issues an upload request to the Leader (as
-   described in Section 4.5 of [DAP]), it includes in an HTTP Structured
-   Header [RFC9651] the task configuration it used to generate the
+   described in Section 4.5 of [DAP]), it includes in an HTTP header
+   field [RFC9651] the task configuration it used to generate the
    report.  We refer to this process as "task advertisement".  Before
    consuming the report, the Leader parses the configuration and decides
    whether to opt-in; if not, the task's execution halts.
@@ -541,19 +541,21 @@ Table of Contents
 
 4.2.  DAP-Taskprov Structured Header
 
-   The DAP-Taskprov HTTP header field is used to advertise a task.
+   The DAP-Taskprov HTTP header is used to advertise a task.
 
    DAP-Taskprov is an Item Structured Header Field [RFC9651].  Its value
    MUST be a Byte Sequence (Section 3.3.5 of [RFC9651]).
 
    Its value conveys the task configuration with which the recipient is
    meant to process the DAP request.  It MUST be a valid TaskConfig as
-   defined in Section 3.1.  Otherwise, the recipient MUST abort with
-   error "invalidMessage".
+   defined in Section 3.1.  Otherwise, the value MUST be ignored.
+
+   This document does not define any parameters for the header.  Any
+   parameters that are present MUST be ignored.
 
    For example:
 
-       DAP-Taskprov: :XXX:
+    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
 
 4.3.  Deriving the VDAF Verification Key
 
@@ -633,12 +635,12 @@ Table of Contents
    public extensions.  In addition, each report's task ID MUST be
    computed as described in Section 3.
 
-   The Client SHOULD advertise the task configuration as specified in
-   Section 4.2, but MAY choose to omit this header in order to save
-   network bandwidth.  However, the Leader may respond with
-   "unrecognizedTask" if it has not been configured with this task.  In
-   this case, the Client MUST retry the upload request with the DAP-
-   Taskprov Structured Header.
+   Clients advertise the task configuration as specified in Section 4.2
+   in order to convey the task configuration to the Leader.  If the
+   Client does not advertise the task configuration and the Leader does
+   not already have it, then the Leader will abort with error
+   "unrecognizedTask".  At this point, the Client may retry the upload
+   with the task advertisement.
 
 4.6.  Leader Behavior
 
@@ -650,12 +652,11 @@ Table of Contents
    upload request with "unrecognizedTask".
 
    Otherwise, if the Leader does support this mechanism, it first checks
-   if the DAP-Taskprov Structured Header is present.  If not present,
-   that means the Client has skipped task advertisement.  If the Leader
-   recognizes the task ID, it will include the client report in the
-   aggregation of that task ID.  Otherwise, it MUST abort with
-   "unrecognizedTask".  The Client will then retry with the task
-   advertisement.
+   if the DAP-Taskprov header is present.  If not present, that means
+   the Client has skipped task advertisement.  If the Leader recognizes
+   the task ID, it will include the client report in the aggregation of
+   that task ID.  Otherwise, it MUST abort with "unrecognizedTask".  The
+   Client will then retry with the task advertisement.
 
    If the Client advertises the task, the Leader checks that the task ID
    indicated by the upload request matches the task ID derived from the

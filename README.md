@@ -1,6 +1,8 @@
+<!-- regenerate: on (set to off if you edit this file) -->
+
 # Task Binding and In-Band Provisioning for DAP
 
-This is the working area for the IETF [PPM Working Group](https://datatracker.ietf.org/wg/ppm/documents/) Internet-Draft, "Task Binding and In-Band Provisioning for DAP".
+This is the working area for the IETF [PPM Working Group](https://datatracker.ietf.org/group/ppm/documents/) Internet-Draft, "Task Binding and In-Band Provisioning for DAP".
 
 * [Editor's Copy](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/#go.draft-ietf-ppm-dap-taskprov.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-ppm-dap-taskprov)
@@ -13,9 +15,8 @@ This is the working area for the IETF [PPM Working Group](https://datatracker.ie
 See the
 [guidelines for contributions](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/blob/main/CONTRIBUTING.md).
 
-Contributions can be made by creating pull requests.
-The GitHub interface supports creating pull requests using the Edit (✏) button.
-
+The contributing file also has tips on how to make contributions, if you
+don't already know how to do that.
 
 ## Command Line Usage
 

@@ -261,12 +261,6 @@ struct {
     BatchMode batch_mode;
     opaque batch_config<0..2^16-1>;
 
-    /* The earliest timestamp that will be accepted for this task. */
-    Time task_start;
-
-    /* The duration of the task. */
-    Duration task_duration;
-
     /* Determines the VDAF type and its config parameters. */
     VdafType vdaf_type;
     opaque vdaf_config<0..2^16-1>;
@@ -317,17 +311,8 @@ also use this field as well; see {{extending-this-doc}} for details.
 The length prefix of the `vdaf_config` ensures that VDAF config can be decoded
 even if the VDAF type is not recognized.
 
-The definition of `Time`, `Duration`, `Url`, and `BatchMode` follow those in
-{{!DAP}}.
-
-The `time_precision` field of a task is used in calculating all `Time`s and
-`Duration`s within the task. {{Section 4.1.1 of !DAP}}
-
-~~~
-uint64 TimePrecision;
-~~~
-
-The `TimePrecision` type represents a nonzero number of seconds.
+The definition of `TimePrecision`, `Url`, and `BatchMode`
+follow those in {{!DAP}}.
 
 ## VDAF config {#vdaf-config}
 
@@ -402,6 +387,7 @@ struct {
 
 enum {
   reserved(0),
+  task_time(0xTBD),
   (2^16-1)
 } TaskprovExtensionType;
 ~~~
@@ -410,7 +396,7 @@ The `extension_type` identifies the extension and `extension_data` is
 structured as specified by the extension.
 
 Extensions are treated as mandatory-to-implement in the protocol described in
-{{taskprov}}. In particular, protocols participants MUST opt-out of tasks
+{{taskprov}}. In particular, protocol participants MUST opt-out of tasks
 containing unrecognized extensions. See {{provisioning-a-task}}.
 
 If the same extension type appears more than once among the Taskprov extensions
@@ -422,6 +408,26 @@ extensions and do not share the same codepoint registry
 ({{taskprov-extension-registry}}). Future documents may want to define both a
 Taskprov extension and a report extension, but there may also be situations
 where a document defines one but not the other.
+
+
+### Task Time Extension {#ext-time}
+
+The `task_time` extension (0xTBD) encodes the time that a task operates.
+Include this extension to limit the report times that can be accepted.
+
+~~~ tls-presentation
+struct {
+  Interval task_time;
+} TaskprovTaskTimeExtension;
+~~~
+
+The `task_time` extension includes a single `Interval` field,
+following the type definition of `Interval` from {{Section 4.1.1 of DAP}}.
+This uses the `time_precision` for the task.
+
+A task that is configured for a particular time interval cannot accept reports
+with timestamps outside of the defined interval.
+
 
 # In-band Task Provisioning with the Taskprov Extension {#taskprov}
 
@@ -776,6 +782,7 @@ The initial contents of this registry are listed in the following table.
 | Value    | Name       | Reference                     |
 |:---------|:-----------|:------------------------------|
 | `0x0000` | `reserved` | {{taskprov-extensions}} of RFC XXXX |
+| `0xTBD` | `task_time` | {{ext-time}} of RFC XXXX |
 {: #taskprov-extension-id title="Initial contents of the Taskprov Extensions registry."}
 
 ## DAP Sub-namespace for DAP

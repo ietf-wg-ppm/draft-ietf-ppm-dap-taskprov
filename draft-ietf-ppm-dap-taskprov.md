@@ -413,9 +413,9 @@ Extensions are treated as mandatory-to-implement in the protocol described in
 {{taskprov}}. In particular, protocols participants MUST opt-out of tasks
 containing unrecognized extensions. See {{provisioning-a-task}}.
 
-If the same extension type appears more than once among the Taskprov extensions
-in the `TaskConfig` structure, then protocols participants MUST opt-out of tasks
-with repeated extensions.
+Extensions MUST be encoded in strictly increasing order.
+If any `extension_type` value is equal to or less than the extension that precedes it,
+protocol participants MUST opt out of the associated task.
 
 Note that Taskprov extensions are semantically distinct from DAP report
 extensions and do not share the same codepoint registry

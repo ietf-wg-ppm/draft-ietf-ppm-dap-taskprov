@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-15T00:51:58.554357+00:00",
+  "timestamp": "2026-01-22T00:54:43.143957+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9267,7 +9267,7 @@
       "labels": [],
       "body": "As discussed, constraining the time of a task is something that was intended to drive key rotation, but other mechanisms are better suited to that and having a requirement to configure all clients with time information makes it more operationally challenging to use this.\r\n\r\nHaving the extension makes the decision to bind to a particular time range optional.\r\n\r\nNote that this doesn't get rid of time precision; that's something that needs to be agreed (or fixed).  In updating this, I'm banking on @tgeoghegan's change in https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/759 landing with a definition of `TimePrecision` that matches what I've removed here.",
       "createdAt": "2026-01-05T01:33:48Z",
-      "updatedAt": "2026-01-13T13:58:23Z",
+      "updatedAt": "2026-01-20T22:09:50Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "0806f70f677b1ce0419d80bb7d0481eb128089b0",
@@ -9294,6 +9294,46 @@
           "updatedAt": "2026-01-13T13:58:23Z"
         }
       ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR587bnSFo",
+          "commit": {
+            "abbreviatedOid": "8722938"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "As discussed in the Jan 20, 2026 meeting we agreed to 1). close this PR, 2). figure out how to move taskprov to core DAP, 3). Martin to recreate the PR once it's moved. ",
+          "createdAt": "2026-01-20T22:09:50Z",
+          "updatedAt": "2026-01-20T22:09:50Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 124,
+      "id": "PR_kwDOH4FR586-XX0v",
+      "title": "Sort extensions",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/124",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I wrote text for the collection job extension that I thought you might prefer.  Maybe you want to get this in before moving stuff around.  This is in some ways simpler than what was here previously. Easier to implement, anyway.\r\n\r\nCloses #123.",
+      "createdAt": "2026-01-21T05:05:12Z",
+      "updatedAt": "2026-01-21T05:05:13Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
+      "headRepository": "martinthomson/dap-taskprov",
+      "headRefName": "sort-ext",
+      "headRefOid": "691f6bdbd7f6219ec4f5d0b2cf4b52741722dd5f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-01T01:13:33.666744+00:00",
+  "timestamp": "2026-02-03T01:06:43.257551+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1681,9 +1681,17 @@
       "labels": [],
       "body": "The draft [presently says](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-3.1-13):\n\n> The definition of Time, Duration, Url, and BatchMode follow those in [[DAP](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-taskprov.html#DAP)].\n\nHowever, I can't find a definition of `Url` in DAP.\n\nI'm guessing that this is something simple like this:\n\n```tls-syntax\nopaque Url<1..2^16-1>;\n```\n\nIt would be good to have that defined.  (This probably applies to DAP now that the encoding of task configuration is moving, but I'm filing it here for better visibility.)",
       "createdAt": "2026-01-30T01:38:43Z",
-      "updatedAt": "2026-01-30T01:38:43Z",
+      "updatedAt": "2026-02-02T22:50:01Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yup, that's how it's intended to be defined. I believe at one point it was, in DAP.",
+          "createdAt": "2026-02-02T22:50:01Z",
+          "updatedAt": "2026-02-02T22:50:01Z"
+        }
+      ]
     }
   ],
   "pulls": [

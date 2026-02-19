@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-03T01:06:43.257551+00:00",
+  "timestamp": "2026-02-19T01:07:35.454681+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9284,21 +9284,21 @@
       "id": "PR_kwDOH4FR5867c724",
       "title": "Move task times to an extension",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/122",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As discussed, constraining the time of a task is something that was intended to drive key rotation, but other mechanisms are better suited to that and having a requirement to configure all clients with time information makes it more operationally challenging to use this.\r\n\r\nHaving the extension makes the decision to bind to a particular time range optional.\r\n\r\nNote that this doesn't get rid of time precision; that's something that needs to be agreed (or fixed).  In updating this, I'm banking on @tgeoghegan's change in https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/759 landing with a definition of `TimePrecision` that matches what I've removed here.",
       "createdAt": "2026-01-05T01:33:48Z",
-      "updatedAt": "2026-01-20T22:09:50Z",
+      "updatedAt": "2026-02-18T03:27:34Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "0806f70f677b1ce0419d80bb7d0481eb128089b0",
       "headRepository": "martinthomson/dap-taskprov",
       "headRefName": "time-extension",
       "headRefOid": "872293810d818da58b509f267d12f29945c77786",
-      "closedAt": null,
+      "closedAt": "2026-02-18T03:27:33Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -9316,6 +9316,13 @@
           "body": "we can discuss in DAP too, but just want to point out that the decision to have task start and duration is not just for key rotation, because key rotation can be independent of tasks. The original goal is to allow a time bounded task, some if not most collections should have a clear start and end. I believe this is also the spirit of DAP. @cjpatton @martinthomson ",
           "createdAt": "2026-01-13T13:58:23Z",
           "updatedAt": "2026-01-13T13:58:23Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/776 covers this now.",
+          "createdAt": "2026-02-18T03:27:34Z",
+          "updatedAt": "2026-02-18T03:27:34Z"
         }
       ],
       "reviews": [

@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-03T01:06:37.755314+00:00",
+  "timestamp": "2026-03-12T00:58:23.411121+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9379,7 +9379,7 @@
       "labels": [],
       "body": "PPM WG consensus is that we should do task configuration binding/commitment in DAP itself. This is realized in [1]. This PR on taskprov mostly deletes content that now lives in draft-ietf-ppm-dap, leaving the in-band task provisioning mechanism. A couple things to call out:\r\n\r\n- numerous portions of this document need to refer to DAP's discussion of task configuration, but since no draft including that is yet published, I put in a dummy section titled \"TODO fix dap reference\" and refer to that elsewhere. Once draft-ietf-ppm-dap-18 is released, we can replace those with specific section references, but for now, this gets us a buildable document we can review.\r\n- Since the task configuration mechanism in DAP also has extensions, taskprov doesn't need to define its own extension mechanism. And to my reading, the entire section on extending taskprov can be deleted, as its considerations now apply to DAP itself.\r\n\r\n[1]: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774",
       "createdAt": "2026-03-02T20:38:54Z",
-      "updatedAt": "2026-03-02T20:38:55Z",
+      "updatedAt": "2026-03-12T00:28:42Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
@@ -9390,8 +9390,37 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "@cjpatton Don't know why but you didn't get tagged as a reviewer here.",
+          "createdAt": "2026-03-10T18:46:17Z",
+          "updatedAt": "2026-03-10T18:46:17Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR587qcAxy",
+          "commit": {
+            "abbreviatedOid": "f2dda0b"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "All the report extension does now is ensure the task ID is derived deterministically from the task config. The intent was to bind the task config to report/aggregate shares via the task ID, but that's now accomplished by binding directly to the task config.\r\n\r\nWe could remove the report extension from the draft and leave just the task provisioning mechanism. We would need to figure out how to pick the ID: we could simply allow the Author to pick it and encode it alongside the config in the task advertisement header. This seems like it would be strictly more useful than what we have now.",
+          "createdAt": "2026-03-12T00:18:54Z",
+          "updatedAt": "2026-03-12T00:28:42Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "This is no longer true: agreement on the task ID is no longer necessary to agree on the parameters.",
+              "createdAt": "2026-03-12T00:18:55Z",
+              "updatedAt": "2026-03-12T00:26:48Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

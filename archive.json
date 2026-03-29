@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-26T01:13:27.358165+00:00",
+  "timestamp": "2026-03-29T01:16:31.894787+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9346,21 +9346,21 @@
       "id": "PR_kwDOH4FR586-XX0v",
       "title": "Sort extensions",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/124",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I wrote text for the collection job extension that I thought you might prefer.  Maybe you want to get this in before moving stuff around.  This is in some ways simpler than what was here previously. Easier to implement, anyway.\r\n\r\nCloses #123.",
       "createdAt": "2026-01-21T05:05:12Z",
-      "updatedAt": "2026-01-21T05:05:13Z",
+      "updatedAt": "2026-03-26T22:43:15Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
       "headRepository": "martinthomson/dap-taskprov",
       "headRefName": "sort-ext",
       "headRefOid": "691f6bdbd7f6219ec4f5d0b2cf4b52741722dd5f",
-      "closedAt": null,
+      "closedAt": "2026-03-26T22:43:15Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -9379,13 +9379,13 @@
       "labels": [],
       "body": "PPM WG consensus is that we should do task configuration binding/commitment in DAP itself. This is realized in [1]. This PR on taskprov mostly deletes content that now lives in draft-ietf-ppm-dap, leaving the in-band task provisioning mechanism. A couple things to call out:\r\n\r\n- numerous portions of this document need to refer to DAP's discussion of task configuration, but since no draft including that is yet published, I put in a dummy section titled \"TODO fix dap reference\" and refer to that elsewhere. Once draft-ietf-ppm-dap-18 is released, we can replace those with specific section references, but for now, this gets us a buildable document we can review.\r\n- Since the task configuration mechanism in DAP also has extensions, taskprov doesn't need to define its own extension mechanism. And to my reading, the entire section on extending taskprov can be deleted, as its considerations now apply to DAP itself.\r\n\r\n[1]: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774",
       "createdAt": "2026-03-02T20:38:54Z",
-      "updatedAt": "2026-03-25T00:18:15Z",
+      "updatedAt": "2026-03-27T16:57:07Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
       "headRepository": "tgeoghegan/draft-ietf-ppm-dap-taskprov",
       "headRefName": "remove-task-bind",
-      "headRefOid": "f2dda0bcf43f38440507a35fe53c0289418109de",
+      "headRefOid": "97764a3f0a6ea021a5b64d3faac1c733d5677c08",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -9397,6 +9397,13 @@
           "body": "@cjpatton Don't know why but you didn't get tagged as a reviewer here.",
           "createdAt": "2026-03-10T18:46:17Z",
           "updatedAt": "2026-03-10T18:46:17Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "Updated this PR based on discussion yesterday. The headline change here is that the taskprov report extension is now a task extension. It serves the same purpose, of ensuring that all participants agree that the taskprov extension is in use. But this way each report is smaller.\r\n\r\nBesides these changes, one other question for the document's owners: what do you want to do about the dangling `{{todo-fix-dap-reference}}` references? Should we block this PR on draft-ietf-ppm-dap-18 being published, or merge this and circle back and fix those references in a subsequent PR? Note that there's numerous out of date section references in the document anyway.\r\n\r\nThis PR will close issues:\r\n\r\n- #114 \r\n- #125 (the `Url` type is no longer referenced)\r\n- #123 (taskprov extensions don't exist anymore)\r\n- #120 (`task_interval` extension is now in draft-ietf-ppm-dap)\r\n- #115 (draft-ietf-ppm-dap discusses extensibility requirements)",
+          "createdAt": "2026-03-27T16:57:03Z",
+          "updatedAt": "2026-03-27T16:57:03Z"
         }
       ],
       "reviews": [
@@ -9437,6 +9444,106 @@
               "body": "```suggestion\nThe task ID is generated deterministically from the encoded `TaskConfiguration`,\nensuring that independent Clients are able to generate the same task ID.\nTask IDs are generated following the process below.\n```\n\nNote that it would be helpful if, rather than \"below\", there was a section to reference.",
               "createdAt": "2026-03-25T00:18:15Z",
               "updatedAt": "2026-03-25T00:18:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587vekH6",
+          "commit": {
+            "abbreviatedOid": "f2dda0b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-26T22:41:05Z",
+          "updatedAt": "2026-03-26T22:41:05Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "As discussed 2026-03-27: This can go.  See #114 for rationale.  And #39 for why this was originally added (since fixed in core DAP).",
+              "createdAt": "2026-03-26T22:41:05Z",
+              "updatedAt": "2026-03-26T22:41:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587vwBPD",
+          "commit": {
+            "abbreviatedOid": "f2dda0b"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-27T16:38:11Z",
+          "updatedAt": "2026-03-27T16:38:11Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "To amend this: we discussed further in #ppm on ietf.slack.com and concluded that it's valuable for everyonein teh protocol to agree on whether taskprov is in use at all. To that end, we moved the report extension to a task extension.",
+              "createdAt": "2026-03-27T16:38:11Z",
+              "updatedAt": "2026-03-27T16:38:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587vwJKH",
+          "commit": {
+            "abbreviatedOid": "f2dda0b"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-27T16:43:32Z",
+          "updatedAt": "2026-03-27T16:43:32Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "I believe I've rewritten the paragraph in a manner that's satisfactory, but please suggest further changes if not.",
+              "createdAt": "2026-03-27T16:43:32Z",
+              "updatedAt": "2026-03-27T16:43:32Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587vwKU5",
+          "commit": {
+            "abbreviatedOid": "f2dda0b"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-27T16:44:23Z",
+          "updatedAt": "2026-03-27T16:44:23Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "I believe I've rewritten the paragraph in a manner that's satisfactory, but please suggest further changes if not. The aggregator behavior in question is in the paragraph immediately after this one so a section reference feels redundant. I rephrased as \"following Aggregator behavior\" which I'm not sure is amazing either.",
+              "createdAt": "2026-03-27T16:44:23Z",
+              "updatedAt": "2026-03-27T16:44:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587vwQTI",
+          "commit": {
+            "abbreviatedOid": "62d636e"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-27T16:48:13Z",
+          "updatedAt": "2026-03-27T16:48:13Z",
+          "comments": [
+            {
+              "originalPosition": 383,
+              "body": "Two questions here for the document's editors:\n\n- Is \"protocol participant\" on L297 correct? The whole point of taskprov is that the aggregators don't interact with the task Author. Should this just be the Client? Or maybe Client and Collector?\n- Is it excessively prescriptive to assert that the Author has to disseminate a `TaskConfiguration` structure to Clients? The Author<->Client interactions are out of scope of this document, aren't they?",
+              "createdAt": "2026-03-27T16:48:13Z",
+              "updatedAt": "2026-03-27T16:48:13Z"
             }
           ]
         }

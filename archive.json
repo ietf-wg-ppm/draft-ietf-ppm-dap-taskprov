@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-29T01:16:31.894787+00:00",
+  "timestamp": "2026-03-31T01:15:02.285666+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9379,7 +9379,7 @@
       "labels": [],
       "body": "PPM WG consensus is that we should do task configuration binding/commitment in DAP itself. This is realized in [1]. This PR on taskprov mostly deletes content that now lives in draft-ietf-ppm-dap, leaving the in-band task provisioning mechanism. A couple things to call out:\r\n\r\n- numerous portions of this document need to refer to DAP's discussion of task configuration, but since no draft including that is yet published, I put in a dummy section titled \"TODO fix dap reference\" and refer to that elsewhere. Once draft-ietf-ppm-dap-18 is released, we can replace those with specific section references, but for now, this gets us a buildable document we can review.\r\n- Since the task configuration mechanism in DAP also has extensions, taskprov doesn't need to define its own extension mechanism. And to my reading, the entire section on extending taskprov can be deleted, as its considerations now apply to DAP itself.\r\n\r\n[1]: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774",
       "createdAt": "2026-03-02T20:38:54Z",
-      "updatedAt": "2026-03-27T16:57:07Z",
+      "updatedAt": "2026-03-30T14:50:06Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
@@ -9544,6 +9544,72 @@
               "body": "Two questions here for the document's editors:\n\n- Is \"protocol participant\" on L297 correct? The whole point of taskprov is that the aggregators don't interact with the task Author. Should this just be the Client? Or maybe Client and Collector?\n- Is it excessively prescriptive to assert that the Author has to disseminate a `TaskConfiguration` structure to Clients? The Author<->Client interactions are out of scope of this document, aren't they?",
               "createdAt": "2026-03-27T16:48:13Z",
               "updatedAt": "2026-03-27T16:48:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587wD9DF",
+          "commit": {
+            "abbreviatedOid": "97764a3"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "This doesn't establish why the task extension is needed.  That seems pretty important because [I can't see what value it provides](https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/114).",
+          "createdAt": "2026-03-30T01:03:21Z",
+          "updatedAt": "2026-03-30T01:05:05Z",
+          "comments": [
+            {
+              "originalPosition": 364,
+              "body": "This whitespace change is troubling.  tab to space or space to tab?  Or something else?",
+              "createdAt": "2026-03-30T01:03:21Z",
+              "updatedAt": "2026-03-30T01:05:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587wN5ci",
+          "commit": {
+            "abbreviatedOid": "97764a3"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-30T12:23:11Z",
+          "updatedAt": "2026-03-30T12:23:30Z",
+          "comments": [
+            {
+              "originalPosition": 364,
+              "body": "It looks like this used to be `c2a0`, a non-breaking space. Now it's just a space.",
+              "createdAt": "2026-03-30T12:23:11Z",
+              "updatedAt": "2026-03-30T12:23:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR587wRi4m",
+          "commit": {
+            "abbreviatedOid": "97764a3"
+          },
+          "author": "wangshan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-30T14:43:42Z",
+          "updatedAt": "2026-03-30T14:50:06Z",
+          "comments": [
+            {
+              "originalPosition": 387,
+              "body": "```suggestion\nthe `TaskConfiguration` disseminated by the Author can be configured. The\n```",
+              "createdAt": "2026-03-30T14:43:42Z",
+              "updatedAt": "2026-03-30T14:50:06Z"
+            },
+            {
+              "originalPosition": 489,
+              "body": "```suggestion\nthe task. The task ID for each request MUST be derived from the `TaskConfiguration` as\n```",
+              "createdAt": "2026-03-30T14:47:25Z",
+              "updatedAt": "2026-03-30T14:50:06Z"
             }
           ]
         }

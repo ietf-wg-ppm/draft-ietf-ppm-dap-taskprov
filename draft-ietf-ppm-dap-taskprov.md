@@ -59,21 +59,18 @@ parties that this mechanism was used to configure the task.
 (RFC EDITOR: Remove this paragraph.) This draft is maintained in
 https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
-> TODO: update this DAP reference once draft-ietf-ppm-dap-18 is out
+The Distributed Aggregation Protocol {{!DAP=I-D.draft-ietf-ppm-dap-18}} enables
+secure aggregation of a set of reports submitted by Clients. This process is
+centered around a "task" that determines, among other things, the cryptographic
+scheme to use for the secure computation (a Verifiable Distributed Aggregation
+Function {{!VDAF=I-D.draft-irtf-cfrg-vdaf-15}}), how reports are partitioned
+into batches, and privacy parameters such as the minimum size of each batch.
 
-The DAP protocol {{!DAP=I-D.draft-ietf-ppm-dap-16}} enables secure aggregation
-of a set of reports submitted by Clients. This process is centered around a
-"task" that determines, among other things, the cryptographic scheme to use for
-the secure computation (a Verifiable Distributed Aggregation Function
-{{!VDAF=I-D.draft-irtf-cfrg-vdaf-15}}), how reports are partitioned into
-batches, and privacy parameters such as the minimum size of each batch. See
-{{todo-fix-dap-reference}} for a complete listing.
-
-{{taskprov}} specifies one possible mechanism for provisioning DAP tasks that
-is built on top of the task configuration definition in
-{{todo-fix-dap-reference}}. Its chief design goal is to make task configuration
-completely in-band, via HTTP request headers. It also defines a task extension
-that signals to parties that this mechanism was used to configure the task.
+{{taskprov}} specifies one possible mechanism for provisioning DAP tasks that is
+built on top of the task configuration definition in {{Section 4.2 of !DAP}}.
+Its chief design goal is to make task configuration completely in-band, via HTTP
+request headers. It also defines a task extension that signals to parties that
+this mechanism was used to configure the task.
 
 ## Change Log
 
@@ -166,29 +163,29 @@ Task author:
 
 When Taskprov is in use, protocol participants include a `Taskprov` extension
 (see {{task-extension}}) in the task's `TaskConfiguration` structure as
-described in {{todo-fix-dap-reference}}.
+described in {{Section 4.2 of !DAP}}.
 
 The payload of the extension MUST be empty. If the payload is non-empty, then
 the protocol participant MUST refuse to participate in the task.
 
-When the client uses the Taskprov extension, it computes the task ID
-({{todo-fix-dap-reference}}) as follows:
+When the client uses the Taskprov extension, it computes the task ID ({{Section
+4.2 of !DAP}}) as follows:
 
 ~~~
 task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
 ~~~
 
-where `task_config` is a `TaskConfiguration` structure defined in
-{{todo-fix-dap-reference}}. Function SHA-256() is as defined in {{SHS}}.
+where `task_config` is a `TaskConfiguration` structure. Function SHA-256() is as
+defined in {{SHS}}.
 
 The task configuration is bound to each report share (via HPKE authenticated and
-associated data, see {{todo-fix-dap-reference}}). Deterministically deriving the
+associated data, see {{Section 4.4.2.1 of !DAP}}). Deterministically deriving the
 task ID from the encoded `TaskConfiguration` ensures that Clients, Aggregators
 and the Collector can only agree on the task ID if they also agree on the
 parameters, including whether Taskprov is in use. This is accomplished by the
 following Aggregator behavior.
 
-During aggregation ({{Section 4.6 of !DAP}}) in a task where Taskprov is in use,
+During aggregation ({{Section 4.5 of !DAP}}) in a task where Taskprov is in use,
 each Aggregator processes reports as follows.
 
 First, it looks up the ID and parameters associated with the task. Note the
@@ -196,11 +193,11 @@ task has already been configured; otherwise the Aggregator would have already
 aborted the request due to not recognizing the task.
 
 Next, the Aggregator encodes the parameters as a `TaskConfiguration` defined in
-{{todo-fix-dap-reference}} and computes the task ID as above. If the derived
-task ID does not match the task ID of the request, then it MUST reject the
-report with error "invalid_message".
+{{Section 4.2 of !DAP}} and computes the task ID as above. If the derived task
+ID does not match the task ID of the request, then it MUST reject the report
+with error "invalid_message".
 
-During the upload interaction ({{Section 4.5 of !DAP}}), the Leader SHOULD
+During the upload interaction ({{Section 4.4 of !DAP}}), the Leader SHOULD
 abort the request with "unrecognizedTask" if the derived task ID does not match
 the task ID of the request.
 
@@ -247,14 +244,14 @@ which in turn is presumed to be configured out-of-band.
 
 The process of provisioning a task begins when the Author disseminates the task
 configuration to the Collector and each of the Clients. When a Client issues an
-upload request to the Leader (as described in {{Section 4.5 of !DAP}}), it
+upload request to the Leader (as described in {{Section 4.4 of !DAP}}), it
 includes in an HTTP header the task configuration it used to generate the
 report. We refer to this process as "task advertisement". Before consuming the
 report, the Leader parses the configuration and decides whether to opt-in; if
 not, the task's execution halts.
 
 Otherwise, if the Leader does opt-in, it advertises the task to the Helper
-during the aggregation interaction ({{Section 4.6 of !DAP}}). In particular, it
+during the aggregation interaction ({{Section 4.5 of !DAP}}). In particular, it
 includes the task configuration in an HTTP header of each aggregation job
 request for that task. Before proceeding, the Helper must first parse the
 configuration and decide whether to opt-in; if not, the task's execution halts.
@@ -263,7 +260,7 @@ configuration and decide whether to opt-in; if not, the task's execution halts.
 
 To advertise a task to its peer, a protocol participant includes the header
 "DAP-Taskprov" with an HTTP request incident to the task execution. The value
-is the `TaskConfiguration` structure defined {{todo-fix-dap-reference}},
+is the `TaskConfiguration` structure defined in {{Section 4.2 of !DAP}},
 expanded into its URL-safe, unpadded Base 64 representation as specified in
 {{Sections 5 and 3.2 of !RFC4648}}.
 
@@ -316,12 +313,12 @@ A protocol participant MAY "opt out" of a task if:
    established.
 
 1. The task lifetime is too long (if the `task_interval` task extension is in
-   use; see {{todo-fix-dap-reference}}).
+   use; see {{Section 4.2.3 of !DAP}}).
 
 A protocol participant MUST opt out if:
 
 1. The task has ended (if the `task_interval` task extension is in use; see
-   {{todo-fix-dap-reference}}).
+   {{Section 4.2.3 of !DAP}}).
 
 1. The DAP batch mode or VDAF is not implemented.
 
@@ -407,9 +404,8 @@ First, the Helper attempts to parse payload of the "DAP-Taskprov" HTTP header.
 If this step fails, the Helper MUST abort with "invalidMessage".
 
 Next, the Helper checks that the task ID indicated in the request matches the
-task ID derived from the `TaskConfiguration` as defined in
-{{todo-fix-dap-reference}}. If not, the Helper MUST abort with
-"unrecognizedTask".
+task ID derived from the `TaskConfiguration` as defined in {{definition}}.
+If not, the Helper MUST abort with "unrecognizedTask".
 
 Next, the Helper decides whether to opt in to the task as described in
 {{provisioning-a-task}}. If it opts out, it MUST abort the request with
@@ -442,7 +438,7 @@ agreement on the task configuration. This is provided by binding the
 parameters to the task ID, which in turn is bound to each report uploaded for a
 task. Furthermore, inclusion of the Taskprov extension in the task configuration
 means Aggregators that do not implement this extension will reject the report as
-required by ({{Section 4.5.3 of !DAP}}).
+required by {{Section 4.2.2 of !DAP}}.
 
 The task provisioning mechanism in {{taskprov}} extends the threat model of DAP
 by including a new logical role, called the Author. The Author is responsible
@@ -470,8 +466,8 @@ directly impact tasks used by honest Clients, it does present a
 Denial-of-Service risk for the Aggregators themselves. This can be mitigated by
 limiting the rate at which new tasks are configured. In addition, deployments
 SHOULD arrange for the Author to digitally sign the task configuration so that
-Clients cannot forge task creation, e.g., via a task extension
-({{todo-fix-dap-reference}}).
+Clients cannot forge task creation, e.g., via a task extension ({{Section 4.2.2
+of !DAP}}).
 
 Support for the Taskprov extension may render a deployment of DAP more
 susceptible to task enumeration attacks ({{Section 8.6.1 of !DAP}}). For
@@ -481,7 +477,7 @@ uploading a report for it with the Taskprov extension. Aggregators can mitigate
 these kinds of attack by:
 
 1. Requiring authentication of all APIs, including the upload endpoint (see
-   {{Section 3.3 of !DAP}});
+   {{Section 3.5 of !DAP}});
 
 1. Enforcing rate limits on unauthenticated APIs; or
 
@@ -542,15 +538,6 @@ task-provisioning header:
 | DAP-Taskprov | permanent | {{taskprov}} of RFC XXXX |
 {: #http-header title="Updates to the Hypertext Transfer Protocol (HTTP) Field Name Registry"}
 
-# TODO fix DAP reference
-
-> TODO: delete this section
-
-This document should refer to sections of a DAP draft that includes
-https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774 (this will probably
-be draft-ietf-ppm-dap-18). This section is a placeholder so we can refer to it
-from elsewhere in the draft and still have it build.
-
 --- back
 
 # Contributors
@@ -567,6 +554,10 @@ divergentdave@gmail.com
 Suman Ganta
 Apple Inc.
 sganta2@apple.com
+
+Tim Geoghegan
+ISRG
+timgeog+ietf@gmail.com
 
 Gianni Parsa
 Apple Inc.

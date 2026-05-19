@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-04-05T01:17:13.869256+00:00",
+  "timestamp": "2026-05-19T02:03:31.876935+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -9382,13 +9382,13 @@
       ],
       "body": "PPM WG consensus is that we should do task configuration binding/commitment in DAP itself. This is realized in [1]. This PR on taskprov mostly deletes content that now lives in draft-ietf-ppm-dap, leaving the in-band task provisioning mechanism. A couple things to call out:\r\n\r\n- numerous portions of this document need to refer to DAP's discussion of task configuration, but since no draft including that is yet published, I put in a dummy section titled \"TODO fix dap reference\" and refer to that elsewhere. Once draft-ietf-ppm-dap-18 is released, we can replace those with specific section references, but for now, this gets us a buildable document we can review. A subsequent PR will replace these with up-to-date references to specific sections of draft-ietf-ppm-dap-18.\r\n- Since the task configuration mechanism in DAP also has extensions, taskprov doesn't need to define its own extension mechanism. And to my reading, the entire section on extending taskprov can be deleted, as its considerations now apply to DAP itself.\r\n- The taskprov *report* extension is replaced with a *task* extension. This achieves the same goal of ensuring all protocol participants agree that taskprov is in use, but avoids making every report bigger.\r\n\r\n[1]: ietf-wg-ppm/draft-ietf-ppm-dap#774",
       "createdAt": "2026-03-02T20:38:54Z",
-      "updatedAt": "2026-04-03T18:31:37Z",
+      "updatedAt": "2026-05-18T18:30:30Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
       "headRepository": "tgeoghegan/draft-ietf-ppm-dap-taskprov",
       "headRefName": "remove-task-bind",
-      "headRefOid": "ad557d13a8b587022de1710c6ee8d399f188e731",
+      "headRefOid": "e789c49072b116854f78338ce8ebbe8d3c7847ce",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -9428,6 +9428,13 @@
           "body": "OK, I'll let you and the other taskprov editors consider that question. I've rebased this PR so as far as I'm concerned it's ready to merge.",
           "createdAt": "2026-04-01T17:59:08Z",
           "updatedAt": "2026-04-01T17:59:08Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "NONE",
+          "body": "I added a commit to fix up section references for draft-ietf-ppm-dap-18. This should be OK to merge now.",
+          "createdAt": "2026-05-18T18:30:29Z",
+          "updatedAt": "2026-05-18T18:30:29Z"
         }
       ],
       "reviews": [

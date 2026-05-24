@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-21T02:02:17.469107+00:00",
+  "timestamp": "2026-05-24T02:00:33.583035+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1382,7 +1382,7 @@
       "id": "I_kwDOH4FR587bi3iI",
       "title": "Align task config header with RFC 9651",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/113",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -1394,8 +1394,8 @@
       ],
       "body": "Define a structured field for the task advertisement header. Also, there may be intra-doc references that need to be cleaned up.\n\nThis is a wire breaking change, as we'll need to change the syntax slightly and add padding to the base64. Also, the name of the header could change.",
       "createdAt": "2025-12-01T23:50:42Z",
-      "updatedAt": "2025-12-01T23:52:28Z",
-      "closedAt": null,
+      "updatedAt": "2026-05-22T21:55:16Z",
+      "closedAt": "2026-05-22T21:55:16Z",
       "comments": [
         {
           "author": "martinthomson",
@@ -9018,7 +9018,7 @@
       "id": "PR_kwDOH4FR5864qLW4",
       "title": "Align DAP-Taskprov with RFC 9651 (*)",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/119",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -9028,17 +9028,19 @@
       ],
       "body": "Closes #113.\r\n\r\nUpdate the DAP-Taskprov header by replacing the value with a proper HTTP Structured Header. Our Item has type Byte Sequence, so we need to replace the URL-safe, base64 encoding with a standard base64 encoding delimited with colons.",
       "createdAt": "2025-12-12T23:46:14Z",
-      "updatedAt": "2026-01-07T16:16:54Z",
+      "updatedAt": "2026-05-22T21:55:15Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
-      "baseRefOid": "0806f70f677b1ce0419d80bb7d0481eb128089b0",
+      "baseRefOid": "d71a5c16a240c5d98c9c2c88153ce2941fae1d75",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/113",
-      "headRefOid": "b63fe30c729c9ba3ff3f68b9d08811b1c9f75c2d",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "596195148ad3291bbf857e2aee930d75115d9625",
+      "closedAt": "2026-05-22T21:55:15Z",
+      "mergedAt": "2026-05-22T21:55:15Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "354dcf14b7307bc76df218f316091564aa3402ed"
+      },
       "comments": [],
       "reviews": [
         {
@@ -9372,9 +9374,9 @@
       "id": "PR_kwDOH4FR587HbqTn",
       "title": "Remove task parameter binding from the draft",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/126",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "tgeoghegan",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [
         "wire breaking",
@@ -9382,35 +9384,37 @@
       ],
       "body": "PPM WG consensus is that we should do task configuration binding/commitment in DAP itself. This is realized in [1]. This PR on taskprov mostly deletes content that now lives in draft-ietf-ppm-dap, leaving the in-band task provisioning mechanism. A couple things to call out:\r\n\r\n- numerous portions of this document need to refer to DAP's discussion of task configuration, but since no draft including that is yet published, I put in a dummy section titled \"TODO fix dap reference\" and refer to that elsewhere. Once draft-ietf-ppm-dap-18 is released, we can replace those with specific section references, but for now, this gets us a buildable document we can review. A subsequent PR will replace these with up-to-date references to specific sections of draft-ietf-ppm-dap-18.\r\n- Since the task configuration mechanism in DAP also has extensions, taskprov doesn't need to define its own extension mechanism. And to my reading, the entire section on extending taskprov can be deleted, as its considerations now apply to DAP itself.\r\n- The taskprov *report* extension is replaced with a *task* extension. This achieves the same goal of ensuring all protocol participants agree that taskprov is in use, but avoids making every report bigger.\r\n\r\n[1]: ietf-wg-ppm/draft-ietf-ppm-dap#774",
       "createdAt": "2026-03-02T20:38:54Z",
-      "updatedAt": "2026-05-19T18:19:44Z",
+      "updatedAt": "2026-05-22T21:24:11Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "625a0fa0382ced401b041ced2153761b178b5ece",
       "headRepository": "tgeoghegan/draft-ietf-ppm-dap-taskprov",
       "headRefName": "remove-task-bind",
       "headRefOid": "e789c49072b116854f78338ce8ebbe8d3c7847ce",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-05-22T21:24:11Z",
+      "mergedAt": "2026-05-22T21:24:11Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "d71a5c16a240c5d98c9c2c88153ce2941fae1d75"
+      },
       "comments": [
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@cjpatton Don't know why but you didn't get tagged as a reviewer here.",
           "createdAt": "2026-03-10T18:46:17Z",
           "updatedAt": "2026-03-10T18:46:17Z"
         },
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Updated this PR based on discussion yesterday. The headline change here is that the taskprov report extension is now a task extension. It serves the same purpose, of ensuring that all participants agree that the taskprov extension is in use. But this way each report is smaller.\r\n\r\nBesides these changes, one other question for the document's owners: what do you want to do about the dangling `{{todo-fix-dap-reference}}` references? Should we block this PR on draft-ietf-ppm-dap-18 being published, or merge this and circle back and fix those references in a subsequent PR? Note that there's numerous out of date section references in the document anyway.\r\n\r\nThis PR will close issues:\r\n\r\n- ~#114~ \r\n- #125 (the `Url` type is no longer referenced)\r\n- #123 (taskprov extensions don't exist anymore)\r\n- #120 (`task_interval` extension is now in draft-ietf-ppm-dap)\r\n- #115 (draft-ietf-ppm-dap discusses extensibility requirements)",
           "createdAt": "2026-03-27T16:57:03Z",
           "updatedAt": "2026-04-01T17:26:14Z"
         },
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@cjpatton just to be clear, you're OK with taking this change including the `{{todo-fix-dap-reference}}`s?",
           "createdAt": "2026-04-01T17:26:56Z",
           "updatedAt": "2026-04-01T17:26:56Z"
@@ -9424,14 +9428,14 @@
         },
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "OK, I'll let you and the other taskprov editors consider that question. I've rebased this PR so as far as I'm concerned it's ready to merge.",
           "createdAt": "2026-04-01T17:59:08Z",
           "updatedAt": "2026-04-01T17:59:08Z"
         },
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I added a commit to fix up section references for draft-ietf-ppm-dap-18. This should be OK to merge now.",
           "createdAt": "2026-05-18T18:30:29Z",
           "updatedAt": "2026-05-18T18:30:29Z"
@@ -9504,7 +9508,7 @@
             "abbreviatedOid": "f2dda0b"
           },
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-27T16:38:11Z",
@@ -9524,7 +9528,7 @@
             "abbreviatedOid": "f2dda0b"
           },
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-27T16:43:32Z",
@@ -9544,7 +9548,7 @@
             "abbreviatedOid": "f2dda0b"
           },
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-27T16:44:23Z",
@@ -9564,7 +9568,7 @@
             "abbreviatedOid": "62d636e"
           },
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-27T16:48:13Z",
@@ -9604,7 +9608,7 @@
             "abbreviatedOid": "97764a3"
           },
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-30T12:23:11Z",

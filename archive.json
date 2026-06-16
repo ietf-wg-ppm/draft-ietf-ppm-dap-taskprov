@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-05-31T02:08:53.421865+00:00",
+  "timestamp": "2026-06-16T02:35:46.513781+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1706,6 +1706,22 @@
       "body": "In order to work well with the latest drafts of DAP, this document should specify the verification key ID of the verification key derived in section 4.3. The simplest solution would be to just specify that the verification key ID is zero. Alternately, the document could allow for lifecycle management of `verify_key_init` values, and let an identifier of a particular shared secret be the identifier for all verification keys derived from it.",
       "createdAt": "2026-05-29T23:23:47Z",
       "updatedAt": "2026-05-29T23:23:47Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 128,
+      "id": "I_kwDOH4FR588AAAABFib42g",
+      "title": "Consider requiring non-empty `TaskConfiguration.task_info`",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/128",
+      "state": "OPEN",
+      "author": "tgeoghegan",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/787, DAP is permitting empty `TaskConfiguration.task_info` strings. When `TaskConfig` was defined in taskprov, it defined that field as having a minimum length of 1.\n\ntaskprov should require adding a requirement for a non-empty `task_info` string if it's necessary to disambiguate between tasks that would otherwise have identical `TaskConfiguration`s and thus task IDs. On the other hand, perhaps adequate diversification can be left up to implementation.",
+      "createdAt": "2026-06-15T15:45:07Z",
+      "updatedAt": "2026-06-15T15:45:07Z",
       "closedAt": null,
       "comments": []
     }

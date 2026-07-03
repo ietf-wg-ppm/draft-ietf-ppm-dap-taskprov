@@ -91,6 +91,8 @@ that satisfies the security requirements for this key ({{Section 9.1 of
 
 - Remove the report extension.  (\*)
 
+- Specify how to pick the VDAF verification key ID as required by DAP.
+
 03:
 
 - Handle repeated extensions in the `TaskprovExtension` field of the
@@ -281,6 +283,9 @@ where `task_id` is as defined in {{dap-task-id}}. Functions HKDF-Extract() and
 HKDF-Expand() are as defined in {{!RFC5869}}. Both functions are instantiated
 with `SHA-256()` as defined in {{SHS}}.
 
+When the VDAF verification key is derived in this way, the verification key ID
+({{Section 4.5.3.1 of !DAP}}) SHALL be `0`.
+
 ## Opting into a Task {#provisioning-a-task}
 
 Prior to participating in a task, each protocol participant must determine if
@@ -362,7 +367,8 @@ request as usual.
 When the Leader opts in to a task, it MUST derive the VDAF verification key
 for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise
 the task to the Helper in every request incident to the task as described in
-{{task-advertisement}}.
+{{task-advertisement}}. The Leader MUST use `0` as the verification key ID when
+initializing an aggregation job ({{Section 4.5.3.1 of !DAP}}).
 
 ### Collection Protocol
 
@@ -394,7 +400,10 @@ Next, the Helper decides whether to opt in to the task as described in
 "invalidTask".
 
 Finally, the Helper completes the request as usual, deriving the VDAF
-verification key for the task as described in {{vdaf-verify-key}}.
+verification key for the task as described in {{vdaf-verify-key}}. The
+verification key ID picked by the Leader for aggregation job initialization
+({{Section 4.5.3.1 of !DAP}}) MUST be `0`; the Helper MUST handle every other
+value as an unrecognized key ID.
 
 ## Collector Behavior
 

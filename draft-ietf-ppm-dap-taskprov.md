@@ -63,7 +63,7 @@ The Distributed Aggregation Protocol {{!DAP=I-D.draft-ietf-ppm-dap-18}} enables
 secure aggregation of a set of reports submitted by Clients. This process is
 centered around a "task" that determines, among other things, the cryptographic
 scheme to use for the secure computation (a Verifiable Distributed Aggregation
-Function {{!VDAF=I-D.draft-irtf-cfrg-vdaf-15}}), how reports are partitioned
+Function {{!VDAF=I-D.draft-irtf-cfrg-vdaf-19}}), how reports are partitioned
 into batches, and privacy parameters such as the minimum size of each batch.
 
 {{taskprov}} specifies one possible mechanism for provisioning DAP tasks that is

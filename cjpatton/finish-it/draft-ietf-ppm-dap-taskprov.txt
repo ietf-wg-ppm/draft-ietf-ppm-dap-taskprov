@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 23 November 2026                                     Cloudflare
-                                                             22 May 2026
+Expires: 4 January 2027                                       Cloudflare
+                                                             3 July 2026
 
 
                    In-Band Task Provisioning for DAP
@@ -15,10 +15,13 @@ Expires: 23 November 2026                                     Cloudflare
 Abstract
 
    This document defines a mechanism for provisioning tasks for the
-   Distributed Aggregation Protocol (DAP).  The task configuration is
-   provisioned in-band via an HTTP header.  This document also specifies
-   a task extension that signals to parties that this mechanism was used
-   to configure the task.
+   Distributed Aggregation Protocol (DAP).  The parameters of the task
+   being executed are piggy-backed on each request, enabling deployment
+   scenarios in which the process of provisioning these parameters is
+   fully automated.  Long-lived cryptographic assets are still exchanged
+   out-of-band: accordingly, this document also specifies a mechanism
+   for deriving a per-task VDAF verification key from a pre-shared
+   secret.
 
 About This Document
 
@@ -52,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 November 2026.
+   This Internet-Draft will expire on 4 January 2027.
 
 Copyright Notice
 
@@ -73,26 +76,27 @@ Table of Contents
    1.  Introduction
      1.1.  Change Log
    2.  Conventions and Definitions
-   3.  The Taskprov Task Extension
-   4.  In-band Task Provisioning with the Taskprov Extension
-     4.1.  Overview
-     4.2.  DAP-Taskprov Structured Header
-     4.3.  Deriving the VDAF Verification Key
-     4.4.  Opting into a Task
-     4.5.  Client Behavior
-     4.6.  Leader Behavior
-       4.6.1.  Upload Protocol
-       4.6.2.  Aggregation Protocol
-       4.6.3.  Collection Protocol
-     4.7.  Helper Behavior
-     4.8.  Collector Behavior
-   5.  Security Considerations
-   6.  Operational Considerations
-   7.  IANA Considerations
-     7.1.  Task Extension
-     7.2.  DAP Sub-namespace for DAP
-     7.3.  HTTP Field Name Registration
-   8.  Normative References
+   3.  In-band Task Provisioning with the Taskprov Extension
+     3.1.  Overview
+     3.2.  DAP-Taskprov Structured Header
+     3.3.  Deriving the DAP Task ID
+     3.4.  Deriving the VDAF Verification Key
+     3.5.  Opting into a Task
+     3.6.  Client Behavior
+     3.7.  Leader Behavior
+       3.7.1.  Upload Protocol
+       3.7.2.  Aggregation Protocol
+       3.7.3.  Collection Protocol
+     3.8.  Helper Behavior
+     3.9.  Collector Behavior
+   4.  Security Considerations
+   5.  Operational Considerations
+   6.  IANA Considerations
+     6.1.  Updates to DAP Sub-namespace for DAP
+     6.2.  HTTP Field Name Registration
+   7.  References
+     7.1.  Normative References
+     7.2.  Informative References
    Contributors
    Authors' Addresses
 
@@ -109,12 +113,16 @@ Table of Contents
    into batches, and privacy parameters such as the minimum size of each
    batch.
 
-   Section 4 specifies one possible mechanism for provisioning DAP tasks
-   that is built on top of the task configuration definition in
-   Section 4.2 of [DAP].  Its chief design goal is to make task
-   configuration completely in-band, via HTTP request headers.  It also
-   defines a task extension that signals to parties that this mechanism
-   was used to configure the task.
+   This document specifies a mechanism for provisioning DAP tasks that
+   is built on top of the task configuration definition in Section 4.2
+   of [DAP].  Its chief design goal is to make task configuration
+   completely in-band, via HTTP request headers.  Long-level
+   cryptographic assets, such as HPKE configurations [RFC9180] and VDAF
+   verification keys Section 5.2 of [VDAF], are presumed to be
+   established out-of-band.  Accordingly, this document specifies a
+   mechanism for deriving a per-task verification key from a pre-shared
+   secret in a manner that satisfies the security requirements for this
+   key (Section 9.1 of [VDAF]).
 
 1.1.  Change Log
 
@@ -128,8 +136,7 @@ Table of Contents
    *  Task binding is moved to [DAP] (https://github.com/ietf-wg-ppm/
       draft-ietf-ppm-dap/pull/774).  (*)
 
-   *  Move report extension to a task extension to make reports smaller.
-      (*)
+   *  Remove the report extension.  (*)
 
    04:
 
@@ -199,13 +206,13 @@ Table of Contents
 
    This document uses the same conventions for error handling as [DAP].
    In addition, this document extends the core specification by adding
-   the following error types:
+   the following DAP error type:
 
        +=============+============================================+
        | Type        | Description                                |
        +=============+============================================+
        | invalidTask | An Aggregator has opted out of the         |
-       |             | indicated task as described in Section 4.4 |
+       |             | indicated task as described in Section 3.5 |
        +-------------+--------------------------------------------+
 
                                  Table 1
@@ -214,52 +221,9 @@ Table of Contents
    terms are used:
 
    Task author:  The entity that defines a task's configuration in the
-      provisioning mechanism of Section 4.
+      provisioning mechanism of Section 3.
 
-3.  The Taskprov Task Extension
-
-   When Taskprov is in use, protocol participants include a Taskprov
-   extension (see Section 7.1) in the task's TaskConfiguration structure
-   as described in Section 4.2 of [DAP].
-
-   The payload of the extension MUST be empty.  If the payload is non-
-   empty, then the protocol participant MUST refuse to participate in
-   the task.
-
-   When the client uses the Taskprov extension, it computes the task ID
-   (Section 4.2 of [DAP]) as follows:
-
-   task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
-
-   where task_config is a TaskConfiguration structure.  Function SHA-
-   256() is as defined in [SHS].
-
-   The task configuration is bound to each report share (via HPKE
-   authenticated and associated data, see Section 4.4.2.1 of [DAP]).
-   Deterministically deriving the task ID from the encoded
-   TaskConfiguration ensures that Clients, Aggregators and the Collector
-   can only agree on the task ID if they also agree on the parameters,
-   including whether Taskprov is in use.  This is accomplished by the
-   following Aggregator behavior.
-
-   During aggregation (Section 4.5 of [DAP]) in a task where Taskprov is
-   in use, each Aggregator processes reports as follows.
-
-   First, it looks up the ID and parameters associated with the task.
-   Note the task has already been configured; otherwise the Aggregator
-   would have already aborted the request due to not recognizing the
-   task.
-
-   Next, the Aggregator encodes the parameters as a TaskConfiguration
-   defined in Section 4.2 of [DAP] and computes the task ID as above.
-   If the derived task ID does not match the task ID of the request,
-   then it MUST reject the report with error "invalid_message".
-
-   During the upload interaction (Section 4.4 of [DAP]), the Leader
-   SHOULD abort the request with "unrecognizedTask" if the derived task
-   ID does not match the task ID of the request.
-
-4.  In-band Task Provisioning with the Taskprov Extension
+3.  In-band Task Provisioning with the Taskprov Extension
 
    Before a task can be executed, it is necessary to first provision the
    Clients, Aggregators, and Collector with the task's configuration.
@@ -304,7 +268,7 @@ Table of Contents
    pre-shared secret, which in turn is presumed to be configured out-of-
    band.
 
-4.1.  Overview
+3.1.  Overview
 
    The process of provisioning a task begins when the Author
    disseminates the task configuration to the Collector and each of the
@@ -322,7 +286,7 @@ Table of Contents
    Helper must first parse the configuration and decide whether to opt-
    in; if not, the task's execution halts.
 
-4.2.  DAP-Taskprov Structured Header
+3.2.  DAP-Taskprov Structured Header
 
    The DAP-Taskprov HTTP header is used to advertise a task.
 
@@ -342,7 +306,22 @@ Table of Contents
 
     DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
 
-4.3.  Deriving the VDAF Verification Key
+3.3.  Deriving the DAP Task ID
+
+   When the Taskprov mechanism is in use, the task ID (Section 4.2 of
+   [DAP] ) is set to the hash of the task configuration.  This prevents
+   the protocol participants from processing reports for the same task
+   using different parameters.
+
+   When the DAP-Taskprov header is present, the task ID SHALL be
+   computed as follows:
+
+   task_id = SHA-256(SHA-256("dap-taskprov task id") || task_config)
+
+   where task_config is the TaskConfiguration value encoded by the
+   header.  Function SHA-256() is as defined in [SHS].
+
+3.4.  Deriving the VDAF Verification Key
 
    When a Leader and Helper implement this mechanism, they SHOULD
    compute the shared VDAF verification key [VDAF] as described in this
@@ -366,18 +345,18 @@ Table of Contents
        VERIFY_KEY_SIZE,             # L
    )
 
-   where task_id is as defined in Section 3.  Functions HKDF-Extract()
+   where task_id is as defined in Section 3.3.  Functions HKDF-Extract()
    and HKDF-Expand() are as defined in [RFC5869].  Both functions are
    instantiated with SHA-256() as defined in [SHS].
 
-4.4.  Opting into a Task
+3.5.  Opting into a Task
 
    Prior to participating in a task, each protocol participant must
    determine if the TaskConfiguration disseminated by the Author can be
    configured.  The participant is said to "opt in" to the task if the
-   derived task ID (see Section 3) corresponds to an already configured
-   task or the task ID is unrecognized and therefore corresponds to a
-   new task.
+   derived task ID (see Section 3.3) corresponds to an already
+   configured task or the task ID is unrecognized and therefore
+   corresponds to a new task.
 
    A protocol participant MAY "opt out" of a task if:
 
@@ -385,8 +364,8 @@ Table of Contents
        but the task configuration disseminated by the Author does not
        match the existing configuration.
 
-   2.  The VDAF config or other parameters are deemed insufficient for
-       privacy.
+   2.  The VDAF configuration or other parameters are deemed
+       insufficient for privacy.
 
    3.  A secure connection to one or both of the Aggregator endpoints
        could not be established.
@@ -404,29 +383,29 @@ Table of Contents
    The behavior of each protocol participant is determined by whether or
    not they opt in to a task.
 
-4.5.  Client Behavior
+3.6.  Client Behavior
 
    Upon receiving a TaskConfiguration from the Author, the Client
-   decides whether to opt into the task as described in Section 4.4.  If
+   decides whether to opt into the task as described in Section 3.5.  If
    the Client opts out, it MUST NOT attempt to upload reports for the
    task.
 
    Once the client opts into a task, it may begin uploading reports for
    the task to the Leader.
 
-   Clients advertise the task configuration as specified in Section 4.2
+   Clients advertise the task configuration as specified in Section 3.2
    in order to convey the task configuration to the Leader.  If the
    Client does not advertise the task configuration and the Leader does
    not already have it, then the Leader will abort with error
    "unrecognizedTask".  At this point, the Client may retry the upload
    with the task advertisement.
 
-4.6.  Leader Behavior
+3.7.  Leader Behavior
 
-4.6.1.  Upload Protocol
+3.7.1.  Upload Protocol
 
    Upon receiving a Client report, if the Leader does not support the
-   Section 4 mechanism, it will ignore the DAP-Taskprov header.  In
+   Section 3 mechanism, it will ignore the DAP-Taskprov header.  In
    particular, if the task ID is not recognized, then it MUST abort the
    upload request with "unrecognizedTask".
 
@@ -439,24 +418,24 @@ Table of Contents
 
    If the Client advertises the task, the Leader checks that the task ID
    indicated by the upload request matches the task ID derived from the
-   DAP-Taskprov header value.  If the task ID does not match, then the
-   Leader MUST abort with "unrecognizedTask".
+   DAP-Taskprov header value as in Section 3.3.  If the task ID does not
+   match, then the Leader MUST abort with "unrecognizedTask".
 
    The Leader then decides whether to opt in to the task as described in
-   Section 4.4.  If it opts out, it MUST abort the upload request with
+   Section 3.5.  If it opts out, it MUST abort the upload request with
    "invalidTask".
 
    Finally, once the Leader has opted in to the task, it completes the
    upload request as usual.
 
-4.6.2.  Aggregation Protocol
+3.7.2.  Aggregation Protocol
 
    When the Leader opts in to a task, it SHOULD derive the VDAF
-   verification key for that task as described in Section 4.3.  The
+   verification key for that task as described in Section 3.4.  The
    Leader MUST advertise the task to the Helper in every request
-   incident to the task as described in Section 4.2.
+   incident to the task as described in Section 3.2.
 
-4.6.3.  Collection Protocol
+3.7.3.  Collection Protocol
 
    The Collector might create a collection job for a task provisioned by
    this mechanism prior to opting into the task.  In this case, the
@@ -464,14 +443,10 @@ Table of Contents
    "unrecognizedTask".  When it does so, it is up to the Collector to
    retry its request.
 
-      OPEN ISSUE: This semantics is awkward, as there's no way for the
-      Leader to distinguish between Collectors who support this
-      mechanism and those that don't.
-
    The Leader MUST advertise the task in every aggregate share request
-   issued to the Helper as described in Section 4.2.
+   issued to the Helper as described in Section 3.2.
 
-4.7.  Helper Behavior
+3.8.  Helper Behavior
 
    The Leader advertises a task to the Helper during each step of an
    aggregation job and when it requests the Helper's aggregate share
@@ -485,49 +460,40 @@ Table of Contents
    mechanism, it proceeds as follows.
 
    First, the Helper checks that the task ID indicated in the request
-   matches the task ID derived from the TaskConfig as defined in
-   Section 3.  If not, the Helper MUST abort with "unrecognizedTask".
+   matches the task ID derived from the TaskConfiguration as defined in
+   Section 3.3.  If not, the Helper MUST abort with "unrecognizedTask".
 
    Next, the Helper decides whether to opt in to the task as described
-   in Section 4.4.  If it opts out, it MUST abort the request with
+   in Section 3.5.  If it opts out, it MUST abort the request with
    "invalidTask".
 
    Finally, the Helper completes the request as usual, deriving the VDAF
-   verification key for the task as described in Section 4.3.
+   verification key for the task as described in Section 3.4.
 
-4.8.  Collector Behavior
+3.9.  Collector Behavior
 
    Upon receiving a TaskConfiguration from the Author, the Collector
    first decides whether to opt into the task as described in
-   Section 4.4.  If the Collector opts out, it MUST NOT attempt to
+   Section 3.5.  If the Collector opts out, it MUST NOT attempt to
    initialize collection jobs for the task.
 
    Otherwise, once opted in, the Collector MAY begin to issue collect
    requests for the task.  The task ID for each request MUST be derived
-   from the TaskConfiguration as described in Section 4.4.  The
-   Collector MUST advertise the task as described in Section 4.2.
+   from the TaskConfiguration as described in Section 3.3.  The
+   Collector MUST advertise the task as described in Section 3.2.
 
    If the Leader responds to a collection request with an
    "unrecognizedTask" error, the Collector MAY retry its request after
    waiting an appropriate amount of time.
 
-5.  Security Considerations
+4.  Security Considerations
 
-   The Taskprov extension has the same security and privacy
-   considerations as the core DAP protocol.  In addition, successful
-   execution of a DAP task implies agreement on the task configuration.
-   This is provided by binding the parameters to the task ID, which in
-   turn is bound to each report uploaded for a task.  Furthermore,
-   inclusion of the Taskprov extension in the task configuration means
-   Aggregators that do not implement this extension will reject the
-   report as required by Section 4.2.2 of [DAP].
-
-   The task provisioning mechanism in Section 4 extends the threat model
-   of DAP by including a new logical role, called the Author.  The
-   Author is responsible for configuring Clients prior to task
-   execution.  For privacy we consider the Author to be under control of
-   the adversary.  It is therefore incumbent on protocol participants to
-   verify the privacy parameters of a task before opting in.
+   The DAP-Taskprov header extends the threat model of DAP by including
+   a new logical role, called the Author.  The Author is responsible for
+   configuring Clients prior to task execution.  For privacy we consider
+   the Author to be under control of the adversary.  It is therefore
+   incumbent on protocol participants to verify the privacy parameters
+   of a task before opting in.
 
    Another risk is that the Author could configure a unique task to
    fingerprint a Client.  Although Client anonymization is not
@@ -554,13 +520,12 @@ Table of Contents
    that Clients cannot forge task creation, e.g., via a task extension
    (Section 4.2.2 of [DAP]).
 
-   Support for the Taskprov extension may render a deployment of DAP
-   more susceptible to task enumeration attacks (Section 8.6.1 of
-   [DAP]).  For example, if the Leader's upload endpoint is
-   unauthenticated, then any HTTP client can learn if a Leader supports
-   a particular task configuration by uploading a report for it with the
-   Taskprov extension.  Aggregators can mitigate these kinds of attack
-   by:
+   Support for DAP-Taskprov may render a deployment of DAP more
+   susceptible to task enumeration attacks (Section 8.6.1 of [DAP]).
+   For example, if the Leader's upload endpoint is unauthenticated, then
+   any HTTP client can learn if a Leader supports a particular task
+   configuration by advertising the DAP-Taskrpov header.  Aggregators
+   can mitigate these kinds of attack by:
 
    1.  Requiring authentication of all APIs, including the upload
        endpoint (see Section 3.5 of [DAP]);
@@ -571,64 +536,45 @@ Table of Contents
        in order to make the task ID harder to predict (e.g., 16 bytes of
        output of a CSPRNG).
 
-6.  Operational Considerations
+5.  Operational Considerations
 
-   The Taskprov extension does not introduce any new operational
-   considerations for DAP.
-
-   The task provisioning mechanism in Section 4 is designed so that the
+   The DAP-Taskprv provisioning mechanism is designed so that the
    Aggregators do not need to store individual task configurations long-
    term.  Because the task configuration is advertised in each request
-   in the upload, aggregation, and collection protocols, the process of
+   in the upload, aggregation, and collection flows, the process of
    opting-in and deriving the task ID and VDAF verify key can be re-run
    on the fly for each request.  This is useful if a large number of
    concurrent tasks are expected.  Once an Aggregator has opted-in to a
-   task, the expectation is that the task is supported until it ends.
-   In particular, Aggregators that operate in this manner MUST NOT opt
-   out once they have opted in.
+   task, the expectation is that the task is supported until the task
+   expires.  In particular, Aggregators that operate in this manner MUST
+   NOT opt out once they have opted in.
 
-7.  IANA Considerations
+6.  IANA Considerations
 
-   This document requests a codepoint for the taskprov task extension.
+6.1.  Updates to DAP Sub-namespace for DAP
 
-   (RFC EDITOR: Replace "XXXX" with the RFC number assigned to this
-   document.)
+   The values in Table 1 will be (RFC EDITOR: change "will be" to "have
+   been") added to urn:ietf:params:ppm:dap.
 
-7.1.  Task Extension
-
-   The following entry will be (RFC EDITOR: change "will be" to "has
-   been") added to the "DAP Task Extension Identifiers" registry of the
-   "Distributed Aggregation Protocol (DAP)" page created by [DAP]:
-
-   Value:  0x0002
-
-   Name:  taskprov
-
-   Reference:  Section 3 of RFC XXXX
-
-7.2.  DAP Sub-namespace for DAP
-
-      TODO Figure out how to ask IANA to register the errors in Table 1.
-      See https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/
-      issues/34
-
-7.3.  HTTP Field Name Registration
+6.2.  HTTP Field Name Registration
 
    A new entry to the "Hypertext Transfer Protocol (HTTP) Field Name
    Registry" will be (RFC EDITOR: change "will be" to "has been") added
-   for the task advertisement header (Section 4.2):
+   for the task advertisement header (Section 3.2):
 
        +==============+===========+=================+=============+
        | Field Name   | Status    | Structured Type | Reference   |
        +==============+===========+=================+=============+
-       | DAP-Taskprov | permanent | Item            | Section 4   |
+       | DAP-Taskprov | permanent | Item            | Section 3   |
        |              |           |                 | of RFC XXXX |
        +--------------+-----------+-----------------+-------------+
 
            Table 2: Updates to the Hypertext Transfer Protocol
                         (HTTP) Field Name Registry
 
-8.  Normative References
+7.  References
+
+7.1.  Normative References
 
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
@@ -651,10 +597,6 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [RFC9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
-              Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
-              February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
-
    [RFC9458]  Thomson, M. and C. A. Wood, "Oblivious HTTP", RFC 9458,
               DOI 10.17487/RFC9458, January 2024,
               <https://www.rfc-editor.org/rfc/rfc9458>.
@@ -670,6 +612,12 @@ Table of Contents
               Progress, Internet-Draft, draft-irtf-cfrg-vdaf-15, 17 June
               2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
               cfrg-vdaf-15>.
+
+7.2.  Informative References
+
+   [RFC9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
+              Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
+              February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
 
 Contributors
 

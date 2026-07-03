@@ -138,6 +138,9 @@ Table of Contents
 
    *  Remove the report extension.  (*)
 
+   *  Specify how to pick the VDAF verification key ID as required by
+      DAP.
+
    04:
 
    *  Redefine time_precision as its own TimePrecision type, to maintain

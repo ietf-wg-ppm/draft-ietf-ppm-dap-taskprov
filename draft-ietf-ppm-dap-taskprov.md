@@ -279,7 +279,7 @@ For example:
 
 ## Deriving the VDAF Verification Key {#vdaf-verify-key}
 
-When a Leader and Helper implement this mechanism, they SHOULD compute the
+When a Leader and Helper implement this mechanism, they MUST compute the
 shared VDAF verification key {{!VDAF}} as described in this section.
 
 The Aggregators are presumed to have securely exchanged a pre-shared secret
@@ -383,7 +383,7 @@ request as usual.
 
 ### Aggregation Protocol
 
-When the Leader opts in to a task, it SHOULD derive the VDAF verification key
+When the Leader opts in to a task, it MUST derive the VDAF verification key
 for that task as described in {{vdaf-verify-key}}. The Leader MUST advertise
 the task to the Helper in every request incident to the task as described in
 {{task-advertisement}}.

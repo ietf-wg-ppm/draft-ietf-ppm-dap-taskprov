@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-06-16T02:35:46.513781+00:00",
+  "timestamp": "2026-07-05T01:51:31.730281+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -541,13 +541,15 @@
       "state": "OPEN",
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [
-        "pre-WGLC"
+        "draft-04"
       ],
       "body": "The document currently suggests that the type `urn:ietf:params:ppm:dap:error:invalidTask` should be used in problem details responses. However, DAP says \"Servers MUST NOT use the DAP URN namespace for errors not listed in the appropriate IANA registry\". Thus, the taskprov document's 'IANA Considerations' section should either add an `invalidTask` entry to the contents of DAP's URN registry, or create a separate namespace of its own.",
       "createdAt": "2023-08-04T19:25:11Z",
-      "updatedAt": "2024-10-22T22:55:25Z",
+      "updatedAt": "2026-07-03T18:19:19Z",
       "closedAt": null,
       "comments": [
         {
@@ -1367,13 +1369,15 @@
       "state": "OPEN",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
-      "assignees": [],
+      "assignees": [
+        "cjpatton"
+      ],
       "labels": [
         "draft-04"
       ],
       "body": "The next VDAF draft (> 17) will include some breaking changes:\nhttps://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/549\nhttps://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/574\n\nNote that no changes to DAP or taskprov are required beyond bumping the version.\n\nRelated: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/753",
       "createdAt": "2025-11-05T17:54:42Z",
-      "updatedAt": "2025-11-05T17:56:10Z",
+      "updatedAt": "2026-07-03T18:25:25Z",
       "closedAt": null,
       "comments": []
     },
@@ -1414,11 +1418,15 @@
       "state": "OPEN",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
-      "assignees": [],
-      "labels": [],
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [
+        "draft-04"
+      ],
       "body": "This extension is in the title of [Section 3](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-3), but I can't work out what value is served by having it present.\n\nI can see why you might think that an extension is necessary so that both client and aggregators agree that Taskprov is in effect, but I don't think that's right.\n\nThere are three outcomes possible when a report is submitted without this extension:\n1. The server doesn't support Taskprov, in which case the task ID will be unknown to it. There is no way to recover from this state and that's OK.\n2. The server supports Taskprov, but doesn't know about the task ID (yet).  This is where the provisioning process in Section 4 might come into play.\n3. The server already knows about the task (with or without Taskprov, this is mostly fine).\n\nBecause the aggregators need to use Taskprov to generate a task configuration (and task ID), there is no situation where they are not aware of the task being either created using Taskprov or not.\n\nAs far as I can see, the most important potential reason to define a report extension doesn't hold in this case.  That is, it doesn't help ensure that clients and servers agree on something.  Clients do not need to care how the task was configured.  Either they are told that Taskprov was involved or not.  In either case, they need to know about the task configuration and how it relates to the task ID, but there is no substantive difference for clients operating in two modes, assuming that the task ID is the same:\n\na. A client that is given the task configuration and task ID, as per the original DAP.\nb. A client that is given the task configuration and told to generate a task ID using the process here.\n\nThe client needs to know and trust the aggregators.  Taskprov creates a stronger binding between a given task configuration and a concrete task, but if the original DAP can be secure on the basis that the client trusts that the configuration the aggregators are using matches its own, then it is also true when using Taskprov.  Taskprov provides stronger assurances about that correspondence, but this is only relevant if the original DAP is vulnerable to attacks where clients are given the wrong configuration for a task.  I don't believe that to be the case, but if it were true, then the entire task ID design in DAP is broken.  More on that in a separate thread.\n\nThe only reason I can imagine being an issue related to the report extension is much more about the details of how the VDAF is executed when Taskprov is in play. That is because Taskprov fixes the verification key derivation. I'll open a follow-up issue on that part.",
       "createdAt": "2025-12-10T05:22:28Z",
-      "updatedAt": "2025-12-12T15:17:21Z",
+      "updatedAt": "2026-07-03T18:20:05Z",
       "closedAt": null,
       "comments": [
         {
@@ -1449,7 +1457,7 @@
       "id": "I_kwDOH4FR587dWfme",
       "title": "Extension model for VDAFs and batch modes",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/115",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -1458,8 +1466,8 @@
       ],
       "body": "DAP defines identifiers for both VDAFs and batch modes.  When new values are defined for those, Taskprov cannot be used until a definition is given for the values that are encoded into `vdaf_config` and `batch_config`, respectively.\n\nThis is basically OK, but it imposes a constraint on extensions.  This is current spelled out with:\n\n> Documents defining either a new DAP batch mode or VDAF SHOULD include a section titled \"Taskprov Considerations\" that specifies the payload of TaskConfig.batch_config or TaskConfig.vdaf_config respectively.\n\nThis is a recommendation, but I would make this draft update the registries for these and request that new definitions identify the specification of the encoding for parameters.  Otherwise, you might end up in bad situations.\n\nConsider that someone chooses to ignore the \"SHOULD\" here and doesn't define how to encode the configuration for a new extension (of either type).  That might be due to an expectation that Taskprov is not needed.  Later, someone decides to define that.  They do that by writing down how to do that in a document of their own, probably an internet-draft.\n\nBut what if two someones define an encoding and they concurrently reach different conclusions about the encoding?  Interoperability failure.\n\nAdding a pointer to the respective registries means that you force a definition to consider Taskprov.  And in doing so, you ensure that encodings are considered for all extensions to these.  The cost is that someone who decides not to define an encoding will prevent the use of Taskprov.  At least until their specification -- and the IANA registry entry -- are updated, but it becomes clear that only one such encoding can exist.\n\nSo the \"SHOULD\" becomes \"MUST either define a canonical encoding for related configuration or note that Taskprov cannot be used with the {VDAF|batch mode}\".  \"SHOULD\" is almost always the wrong choice anyway.",
       "createdAt": "2025-12-10T05:32:20Z",
-      "updatedAt": "2025-12-11T23:10:27Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:21:03Z",
+      "closedAt": "2026-07-03T18:21:03Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1475,7 +1483,7 @@
       "id": "I_kwDOH4FR587dXFK_",
       "title": "Confusing sequence of events for in-band provisioning",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/116",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -1485,8 +1493,8 @@
       ],
       "body": "I've read the setup for [Section 4](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-4) a few times and I'm still unclear on how the document intends for events to be sequenced.  This section really needs an overview that provides that sequencing.\n\nIn my mind, the core DAP arrangement is something like:\n\n1. Author contacts Aggregators, proposes a task configuration (and maybe collector HPKE configuration), gets task ID (and maybe Aggregator HPKE configuration).\n2. Author distributes task configuration and task ID to Clients (and maybe Aggregator HPKE configuration and maybe report submission credentials).\n3. Clients submit reports to Aggregators.\n\nIn Taskprov, I had imagined the flow being more like:\n\n1. Author distributes task configuration to Clients (and the other maybes).\n2. Clients submit reports to Aggregators.\n???. How do the Aggregators learn of the task configuration?  Is it in parallel with step 1 or via the reports that Clients submit?\n\nSection 4.2 says \"a protocol participant\", which implies that more than one entity might learn of task configuration via the HTTP header field.  I can see how that might be useful in a lot of different ways, but there are lots of HTTP requests and responses flying around.  Knowing which of those might be places that you need to look for task configuration is pretty important.  The draft describes two places, but it isn't particularly clear:\n\n* In the request from Client to Leader where reports are submitted.  That would assume that Clients are given a configuration by an Author, but not Aggregators.\n* In the request from Leader to Helper when the verification starts.\n\nThe draft also says something about the collection job, but this is weird.  Why would this not only be associated with the AggregationJobInitReq?  When can a Leader assume that the Helper knows about it?  In particular, why does the Leader need to repeat the header in every request it makes to a Helper?\n\n> The Leader MUST advertise the task in every aggregate share request issued to the Helper [...]\n\nI presume that this might be due to statelessness on the part of the Helper.  It might be worth saying that.\n\nIn both cases, there are lots of these requests.  Not all of them need the information included.  Maybe it would be a good idea to provide more concrete guidance on when it is helpful to omit the header field.",
       "createdAt": "2025-12-10T06:32:36Z",
-      "updatedAt": "2025-12-11T23:54:07Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:16:42Z",
+      "closedAt": "2026-07-03T18:16:42Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1501,6 +1509,13 @@
           "body": "> I'm not sure what you're referring to about the collection job. I'm curious if it's just an editorial issue. In any case, the Helper first learns about tasks from the Leader at the start of an aggregation job.\n\nThat is [here](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-4.6.3), where it talks about the collection protocol.  However, I don't really understand why that would be something that requires special handling.\n\nOne thing to maybe note is that the task configuration is static, so protocols like HTTP/2 and HTTP/3 don't pay much to have it included in every request.  That addresses statefulness concerns nicely, I think.",
           "createdAt": "2025-12-11T23:42:21Z",
           "updatedAt": "2025-12-11T23:42:21Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This has been hanging out for a while, I'm going to presume that there's nothing to do here. @martinthomson please re-open if you want to work on this.",
+          "createdAt": "2026-07-03T18:16:42Z",
+          "updatedAt": "2026-07-03T18:16:42Z"
         }
       ]
     },
@@ -1509,15 +1524,15 @@
       "id": "I_kwDOH4FR587dXjOm",
       "title": "Task configuration doesn't encode Collector identity",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/117",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This means that an important aspect of task configuration -- who gets the results -- is not agreed.\n\nI can see why you might want to avoid having Clients aware of the Collector identity, but I'm not sure that I agree that this is worth hiding.",
       "createdAt": "2025-12-10T07:18:37Z",
-      "updatedAt": "2026-01-12T23:25:25Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:17:31Z",
+      "closedAt": "2026-07-03T18:17:31Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1539,6 +1554,13 @@
           "body": "The problem with binding to an HPKE config is that it prevents the collector from rotating the value within the scope of a task. I think we're better off aligning Collector identity with Aggregator identity, as I sketched here: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/758#issuecomment-3740884480",
           "createdAt": "2026-01-12T23:25:25Z",
           "updatedAt": "2026-01-12T23:25:25Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Collector identity is now supported in DAP as a task extension.",
+          "createdAt": "2026-07-03T18:17:31Z",
+          "updatedAt": "2026-07-03T18:17:31Z"
         }
       ]
     },
@@ -1550,11 +1572,16 @@
       "state": "OPEN",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
-      "assignees": [],
-      "labels": [],
+      "assignees": [
+        "cjpatton"
+      ],
+      "labels": [
+        "wire breaking",
+        "draft-04"
+      ],
       "body": "DAP is entirely too casual when it comes to key agreement for the verification key, but that's sort of defensible.  That it suggests a derivation method is in my view an error.  It should have either said nothing or made the derivation mandatory (the latter being my preference; the opportunities for footgunning being far less that way).\n\nI would have gone further and defined how the shared secret is derived and identified. Maybe that's just because I'm weird like that.\n\nTaskprov is a different story.  In that case, Aggregators are unlikely to have some means of arranging key for every task they accept.  So it makes sense to mandate a method.\n\nExcept this doesn't.  It says \"SHOULD\".  That's not really going to promote interoperability.  If an implementation chooses not to, how does this even work?  (Presumably, they would have to develop some proprietary means of key agreement, which they could run in much the same way that they run the proprietary key agreement in the first place.  That might be per-task or not.)\n\nThis has some implications for #114.  If you button down a method, then the report extension might be the way that Aggregators know that the method specified in this document is the one they have to use, as opposed to whatever they might do when the report extension is absent.  Of course, in the current state of things, the answer is always a helpful \u00af\\\\\\_(\u30c4)\\_/\u00af\n\n",
       "createdAt": "2025-12-11T00:26:57Z",
-      "updatedAt": "2025-12-11T23:52:23Z",
+      "updatedAt": "2026-07-03T18:15:09Z",
       "closedAt": null,
       "comments": [
         {
@@ -1571,7 +1598,7 @@
       "id": "I_kwDOH4FR587euRas",
       "title": "Use `Interval` from draft-ietf-ppm-dap to represent task lifetime",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/120",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -1581,12 +1608,12 @@
       ],
       "body": "Time intervals are are represented as a start time (UNIX timestamp) plus the number of `time_precision`. That is, the end time is `start_time + duration*time_precision`. We can use `Interval` to represent this data in `TaskConfig`. We should also clarify how `duration` is interpreted.",
       "createdAt": "2025-12-16T23:11:36Z",
-      "updatedAt": "2026-01-12T23:36:22Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:12:58Z",
+      "closedAt": "2026-07-03T18:12:58Z",
       "comments": [
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> Time intervals are are represented as a start time (UNIX timestamp) plus the number of `time_precision`\n\nThis isn't quite true: the start time is _also_ expressed as a number of `time_precision`s now.",
           "createdAt": "2025-12-17T00:44:36Z",
           "updatedAt": "2025-12-17T00:44:36Z"
@@ -1600,10 +1627,17 @@
         },
         {
           "author": "tgeoghegan",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "[DAP 4.1.1](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-16#section-4.1.1) defines an interval as:\n\n```\nstruct {\n  Time start;\n  Duration duration;\n} Interval;\n```\n\nAnd both `Time` and `Duration` are defined as \"integers representing a number of time_precisions\" so I think it follows from those definitions. But that doesn't mean we can't make it even more clear. Maybe we should put some examples of `Time`, `Duration` and `Interval` values in DAP next to the type definitions.",
           "createdAt": "2025-12-17T01:17:32Z",
           "updatedAt": "2025-12-17T01:18:19Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "No longer relevant since we don't define the task config structure anymore.",
+          "createdAt": "2026-07-03T18:12:58Z",
+          "updatedAt": "2026-07-03T18:12:58Z"
         }
       ]
     },
@@ -1612,7 +1646,7 @@
       "id": "I_kwDOH4FR587hiXc3",
       "title": "Maybe mandate sorting of extensions",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/123",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -1622,8 +1656,8 @@
       ],
       "body": "Tasks will end up with different hashes if you don't have some way for Clients and Aggregators to agree on order.  Users of the feature could sort this out, but there's not reason they should have to.",
       "createdAt": "2026-01-06T06:10:26Z",
-      "updatedAt": "2026-01-13T03:11:43Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:12:24Z",
+      "closedAt": "2026-07-03T18:12:24Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1666,6 +1700,13 @@
           "body": "Sure, I'm just trying to understand how that situation would arise.  Because that isn't how I imagined taskprov ever operating.",
           "createdAt": "2026-01-13T03:11:43Z",
           "updatedAt": "2026-01-13T03:11:43Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "No longer relevant for this draft. This was implemented in DAP.",
+          "createdAt": "2026-07-03T18:12:24Z",
+          "updatedAt": "2026-07-03T18:12:24Z"
         }
       ]
     },
@@ -1674,15 +1715,15 @@
       "id": "I_kwDOH4FR587m32dq",
       "title": "Url is not defined",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/125",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The draft [presently says](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-3.1-13):\n\n> The definition of Time, Duration, Url, and BatchMode follow those in [[DAP](https://ietf-wg-ppm.github.io/draft-ietf-ppm-dap-taskprov/draft-ietf-ppm-dap-taskprov.html#DAP)].\n\nHowever, I can't find a definition of `Url` in DAP.\n\nI'm guessing that this is something simple like this:\n\n```tls-syntax\nopaque Url<1..2^16-1>;\n```\n\nIt would be good to have that defined.  (This probably applies to DAP now that the encoding of task configuration is moving, but I'm filing it here for better visibility.)",
       "createdAt": "2026-01-30T01:38:43Z",
-      "updatedAt": "2026-02-02T22:50:01Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:11:45Z",
+      "closedAt": "2026-07-03T18:11:45Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1690,6 +1731,13 @@
           "body": "Yup, that's how it's intended to be defined. I believe at one point it was, in DAP.",
           "createdAt": "2026-02-02T22:50:01Z",
           "updatedAt": "2026-02-02T22:50:01Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "No longer relevant.",
+          "createdAt": "2026-07-03T18:11:45Z",
+          "updatedAt": "2026-07-03T18:11:45Z"
         }
       ]
     },
@@ -1702,10 +1750,12 @@
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "draft-04"
+      ],
       "body": "In order to work well with the latest drafts of DAP, this document should specify the verification key ID of the verification key derived in section 4.3. The simplest solution would be to just specify that the verification key ID is zero. Alternately, the document could allow for lifecycle management of `verify_key_init` values, and let an identifier of a particular shared secret be the identifier for all verification keys derived from it.",
       "createdAt": "2026-05-29T23:23:47Z",
-      "updatedAt": "2026-05-29T23:23:47Z",
+      "updatedAt": "2026-07-03T18:11:22Z",
       "closedAt": null,
       "comments": []
     },
@@ -1714,15 +1764,15 @@
       "id": "I_kwDOH4FR588AAAABFib42g",
       "title": "Consider requiring non-empty `TaskConfiguration.task_info`",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/128",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tgeoghegan",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "In https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/787, DAP is permitting empty `TaskConfiguration.task_info` strings. When `TaskConfig` was defined in taskprov, it defined that field as having a minimum length of 1.\n\ntaskprov should require adding a requirement for a non-empty `task_info` string if it's necessary to disambiguate between tasks that would otherwise have identical `TaskConfiguration`s and thus task IDs. On the other hand, perhaps adequate diversification can be left up to implementation.",
       "createdAt": "2026-06-15T15:45:07Z",
-      "updatedAt": "2026-06-15T15:45:07Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-03T18:09:40Z",
+      "closedAt": "2026-07-03T18:09:40Z",
       "comments": []
     }
   ],
@@ -9718,6 +9768,160 @@
           "createdAt": "2026-05-19T18:19:44Z",
           "updatedAt": "2026-05-19T18:19:44Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 129,
+      "id": "PR_kwDOH4FR587tsDCp",
+      "title": "Remove the task extension altogether",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/129",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-04"
+      ],
+      "body": "Closes #34.\r\nCloses #114.\r\n\r\nContinue to derive the task ID from the config, ensuring that reports are never processed with different configs in the same task.\r\n\r\nWhile at it:\r\n\r\n1. Complete IANA considerations for the new DAP error type.\r\n\r\n2. Demote HPKE to an informative reference.",
+      "createdAt": "2026-07-03T18:09:16Z",
+      "updatedAt": "2026-07-03T18:20:28Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/finish-it",
+      "headRefOid": "2639e17edcb57f33517037fcb0c00c50f008270a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABE9Hyug",
+          "commit": {
+            "abbreviatedOid": "2639e17"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-03T18:18:56Z",
+          "updatedAt": "2026-07-03T18:18:56Z",
+          "comments": [
+            {
+              "originalPosition": 115,
+              "body": "@tgeoghegan would you mind double checking that this is a proper TaskConfiguration, and if not, re-generating it?",
+              "createdAt": "2026-07-03T18:18:56Z",
+              "updatedAt": "2026-07-03T18:18:56Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 130,
+      "id": "PR_kwDOH4FR587tsSDA",
+      "title": "Make the VDAF verification key derivation scheme mandatory",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/130",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-04"
+      ],
+      "body": "Closes #118.",
+      "createdAt": "2026-07-03T18:23:36Z",
+      "updatedAt": "2026-07-03T18:27:32Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/118",
+      "headRefOid": "f836257661742a5ce94cc17fcc6004c55886b88a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 131,
+      "id": "PR_kwDOH4FR587tsV9L",
+      "title": "Bump VDAF to 19",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/131",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-04"
+      ],
+      "body": "Closes #111.\r\n\r\nThis is the version of VDAF cited by DAP-18.",
+      "createdAt": "2026-07-03T18:28:02Z",
+      "updatedAt": "2026-07-03T18:28:24Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/111",
+      "headRefOid": "7ddc4157765e74a9cb1bd9bbb0c8841f03007a77",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 132,
+      "id": "PR_kwDOH4FR587tsiOQ",
+      "title": "Define the verification key ID",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/132",
+      "state": "OPEN",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-04"
+      ],
+      "body": "Closes #127.\r\nBased on #129 (merge that first).",
+      "createdAt": "2026-07-03T18:40:13Z",
+      "updatedAt": "2026-07-03T22:57:19Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "cjpatton/finish-it",
+      "baseRefOid": "2639e17edcb57f33517037fcb0c00c50f008270a",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/127",
+      "headRefOid": "f7d2e9a61f8daa732babdfb4c134ec5adc9b1026",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABE99WGw",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-03T22:57:19Z",
+          "updatedAt": "2026-07-03T22:57:19Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Is this last bit necessary?  Is there any need to prohibit this directly.  What if I had a process that added more verification keys to a task?",
+              "createdAt": "2026-07-03T22:57:19Z",
+              "updatedAt": "2026-07-03T22:57:19Z"
+            }
+          ]
         }
       ]
     }

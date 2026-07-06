@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 23 November 2026                                     Cloudflare
-                                                             22 May 2026
+Expires: 7 January 2027                                       Cloudflare
+                                                             6 July 2026
 
 
                    In-Band Task Provisioning for DAP
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 November 2026.
+   This Internet-Draft will expire on 7 January 2027.
 
 Copyright Notice
 
@@ -667,9 +667,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-15, 17 June
-              2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
-              cfrg-vdaf-15>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-19, 14
+              April 2026, <https://datatracker.ietf.org/doc/html/draft-
+              irtf-cfrg-vdaf-19>.
 
 Contributors
 

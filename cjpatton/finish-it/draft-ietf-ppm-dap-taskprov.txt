@@ -116,7 +116,7 @@ Table of Contents
    This document specifies a mechanism for provisioning DAP tasks that
    is built on top of the task configuration definition in Section 4.2
    of [DAP].  Its chief design goal is to make task configuration
-   completely in-band, via HTTP request headers.  Long-level
+   completely in-band, via HTTP request headers.  Long-lived
    cryptographic assets, such as HPKE configurations [RFC9180] and VDAF
    verification keys Section 5.2 of [VDAF], are presumed to be
    established out-of-band.  Accordingly, this document specifies a

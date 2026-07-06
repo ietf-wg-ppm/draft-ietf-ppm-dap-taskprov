@@ -1272,7 +1272,7 @@ into batches, and privacy parameters such as the minimum size of each batch.<a h
 <p id="section-1-3">This document specifies a mechanism for provisioning DAP tasks that is built on
 top of the task configuration definition in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Its chief
 design goal is to make task configuration completely in-band, via HTTP request
-headers. Long-level cryptographic assets, such as HPKE configurations
+headers. Long-lived cryptographic assets, such as HPKE configurations
 <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
 to be established out-of-band. Accordingly, this document specifies a mechanism
 for deriving a per-task verification key from a pre-shared secret in a manner

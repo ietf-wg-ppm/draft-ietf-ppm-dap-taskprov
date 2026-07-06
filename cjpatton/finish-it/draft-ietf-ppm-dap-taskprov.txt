@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 4 January 2027                                       Cloudflare
-                                                             3 July 2026
+Expires: 7 January 2027                                       Cloudflare
+                                                             6 July 2026
 
 
                    In-Band Task Provisioning for DAP
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 January 2027.
+   This Internet-Draft will expire on 7 January 2027.
 
 Copyright Notice
 
@@ -304,7 +304,7 @@ Table of Contents
 
    For example:
 
-    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
+    DAP-Taskprov: :BHRlc3QAG2h0dHBzOi8vbGVhZGVyLmV4YW1wbGUuY29tLwAbaHR0cHM6Ly9oZWxwZXIuZXhhbXBsZS5jb20vAAAAAAAAADwAAAAAAAAACgEAAAAAAAEAAAAUAAEAEAAAAAAAAAA8AAAAAAAAAGQ=:
 
 3.3.  Deriving the DAP Task ID
 

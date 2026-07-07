@@ -321,9 +321,8 @@ Table of Contents
 
 3.4.  Deriving the VDAF Verification Key
 
-   When a Leader and Helper implement this mechanism, they SHOULD
-   compute the shared VDAF verification key [VDAF] as described in this
-   section.
+   When a Leader and Helper implement this mechanism, they MUST compute
+   the shared VDAF verification key [VDAF] as described in this section.
 
    The Aggregators are presumed to have securely exchanged a pre-shared
    secret out-of-band.  The length of this secret MUST be 32 bytes.  Let
@@ -431,7 +430,7 @@ Table of Contents
 
 3.7.2.  Aggregation Protocol
 
-   When the Leader opts in to a task, it SHOULD derive the VDAF
+   When the Leader opts in to a task, it MUST derive the VDAF
    verification key for that task as described in Section 3.4.  The
    Leader MUST advertise the task to the Helper in every request
    incident to the task as described in Section 3.2.  The Leader MUST
@@ -615,9 +614,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-15, 17 June
-              2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
-              cfrg-vdaf-15>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-19, 14
+              April 2026, <https://datatracker.ietf.org/doc/html/draft-
+              irtf-cfrg-vdaf-19>.
 
 7.2.  Informative References
 

@@ -1273,10 +1273,10 @@ into batches, and privacy parameters such as the minimum size of each batch.<a h
 top of the task configuration definition in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Its chief
 design goal is to make task configuration completely in-band, via HTTP request
 headers. Long-level cryptographic assets, such as HPKE configurations
-<span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
+<span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
 to be established out-of-band. Accordingly, this document specifies a mechanism
 for deriving a per-task verification key from a pre-shared secret in a manner
-that satisfies the security requirements for this key (<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15#section-9.1" class="relref">Section 9.1</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-1-3" class="pilcrow">¶</a></p>
+that satisfies the security requirements for this key (<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-9.1" class="relref">Section 9.1</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="change-log">
 <section id="section-1.1">
         <h3 id="name-change-log">
@@ -1518,13 +1518,13 @@ Function <code>SHA-256()</code> is as defined in <span>[<a href="#SHS" class="ci
         <h3 id="name-deriving-the-vdaf-verificat">
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-deriving-the-vdaf-verificat" class="section-name selfRef">Deriving the VDAF Verification Key</a>
         </h3>
-<p id="section-3.4-1">When a Leader and Helper implement this mechanism, they <span class="bcp14">SHOULD</span> compute the
+<p id="section-3.4-1">When a Leader and Helper implement this mechanism, they <span class="bcp14">MUST</span> compute the
 shared VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span> as described in this section.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <p id="section-3.4-2">The Aggregators are presumed to have securely exchanged a pre-shared secret
 out-of-band. The length of this secret <span class="bcp14">MUST</span> be 32 bytes. Let us denote this
 secret by <code>verify_key_init</code>.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
 <p id="section-3.4-3">Let <code>VERIFY_KEY_SIZE</code> denote the length of the verification key for the VDAF
-indicated by the task configuration. (See <span>[<a href="#VDAF" class="cite xref">VDAF</a>], <a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15#section-5" class="relref">Section 5</a></span>.)<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+indicated by the task configuration. (See <span>[<a href="#VDAF" class="cite xref">VDAF</a>], <a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-5" class="relref">Section 5</a></span>.)<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">The VDAF verification key used for the task is computed as follows:<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.4-5">
 <pre>
@@ -1642,7 +1642,7 @@ request as usual.<a href="#section-3.7.1-5" class="pilcrow">¶</a></p>
           <h4 id="name-aggregation-protocol">
 <a href="#section-3.7.2" class="section-number selfRef">3.7.2. </a><a href="#name-aggregation-protocol" class="section-name selfRef">Aggregation Protocol</a>
           </h4>
-<p id="section-3.7.2-1">When the Leader opts in to a task, it <span class="bcp14">SHOULD</span> derive the VDAF verification key
+<p id="section-3.7.2-1">When the Leader opts in to a task, it <span class="bcp14">MUST</span> derive the VDAF verification key
 for that task as described in <a href="#vdaf-verify-key" class="auto internal xref">Section 3.4</a>. The Leader <span class="bcp14">MUST</span> advertise
 the task to the Helper in every request incident to the task as described in
 <a href="#task-advertisement" class="auto internal xref">Section 3.2</a>. The Leader <span class="bcp14">MUST</span> use <code>0</code> as the verification key ID when
@@ -1867,7 +1867,7 @@ advertisement header (<a href="#task-advertisement" class="auto internal xref">S
 <dd class="break"></dd>
 <dt id="VDAF">[VDAF]</dt>
       <dd>
-<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Cook, D.</span>, <span class="refAuthor">Patton, C.</span>, and <span class="refAuthor">P. Schoppmann</span>, <span class="refTitle">"Verifiable Distributed Aggregation Functions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-vdaf-15</span>, <time datetime="2025-06-17" class="refDate">17 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-15</a>&gt;</span>. </dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Cook, D.</span>, <span class="refAuthor">Patton, C.</span>, and <span class="refAuthor">P. Schoppmann</span>, <span class="refTitle">"Verifiable Distributed Aggregation Functions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-vdaf-19</span>, <time datetime="2026-04-14" class="refDate">14 April 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>

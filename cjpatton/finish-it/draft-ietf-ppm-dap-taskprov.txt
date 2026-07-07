@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 7 January 2027                                       Cloudflare
-                                                             6 July 2026
+Expires: 8 January 2027                                       Cloudflare
+                                                             7 July 2026
 
 
                    In-Band Task Provisioning for DAP
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 January 2027.
+   This Internet-Draft will expire on 8 January 2027.
 
 Copyright Notice
 
@@ -116,7 +116,7 @@ Table of Contents
    This document specifies a mechanism for provisioning DAP tasks that
    is built on top of the task configuration definition in Section 4.2
    of [DAP].  Its chief design goal is to make task configuration
-   completely in-band, via HTTP request headers.  Long-lived
+   completely in-band, via HTTP request headers.  Long-level
    cryptographic assets, such as HPKE configurations [RFC9180] and VDAF
    verification keys Section 5.2 of [VDAF], are presumed to be
    established out-of-band.  Accordingly, this document specifies a
@@ -131,17 +131,12 @@ Table of Contents
    (*) Indicates a change that breaks wire compatibility with the
    previous draft.
 
-   05:
-
-   *  Task binding is moved to [DAP] (https://github.com/ietf-wg-ppm/
-      draft-ietf-ppm-dap/pull/774).  (*)
-
-   *  Remove the report extension.  (*)
-
    04:
 
-   *  Redefine time_precision as its own TimePrecision type, to maintain
-      compatibility with DAP-16 [DAP].
+   *  Move task binding is moved to [DAP] (https://github.com/ietf-wg-
+      ppm/draft-ietf-ppm-dap/pull/774).  (*)
+
+   *  Remove the report extension.  (*)
 
    03:
 
@@ -304,14 +299,14 @@ Table of Contents
 
    For example:
 
-    DAP-Taskprov: :BHRlc3QAG2h0dHBzOi8vbGVhZGVyLmV4YW1wbGUuY29tLwAbaHR0cHM6Ly9oZWxwZXIuZXhhbXBsZS5jb20vAAAAAAAAADwAAAAAAAAACgEAAAAAAAEAAAAUAAEAEAAAAAAAAAA8AAAAAAAAAGQ=:
+    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
 
 3.3.  Deriving the DAP Task ID
 
    When the Taskprov mechanism is in use, the task ID (Section 4.2 of
-   [DAP] ) is set to the hash of the task configuration.  This prevents
-   the protocol participants from processing reports for the same task
-   using different parameters.
+   [DAP] ) is set to the hash of the task configuration.  This ensures
+   the protocol participants agree on the task ID before processing
+   reports.
 
    When the DAP-Taskprov header is present, the task ID SHALL be
    computed as follows:
@@ -538,7 +533,7 @@ Table of Contents
 
 5.  Operational Considerations
 
-   The DAP-Taskprov provisioning mechanism is designed so that the
+   The DAP-Taskprv provisioning mechanism is designed so that the
    Aggregators do not need to store individual task configurations long-
    term.  Because the task configuration is advertised in each request
    in the upload, aggregation, and collection flows, the process of

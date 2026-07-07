@@ -71,7 +71,7 @@ into batches, and privacy parameters such as the minimum size of each batch.
 This document specifies a mechanism for provisioning DAP tasks that is built on
 top of the task configuration definition in {{Section 4.2 of !DAP}}. Its chief
 design goal is to make task configuration completely in-band, via HTTP request
-headers. Long-level cryptographic assets, such as HPKE configurations
+headers. Long-lived cryptographic assets, such as HPKE configurations
 {{?RFC9180}} and VDAF verification keys {{Section 5.2 of !VDAF}}, are presumed
 to be established out-of-band. Accordingly, this document specifies a mechanism
 for deriving a per-task verification key from a pre-shared secret in a manner
@@ -86,7 +86,7 @@ that satisfies the security requirements for this key ({{Section 9.1 of
 
 04:
 
-- Move task binding is moved to {{!DAP}}
+- Move task binding to {{!DAP}}
   (https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774).  (\*)
 
 - Remove the report extension.  (\*)
@@ -233,12 +233,12 @@ that are present MUST be ignored.
 For example:
 
 ~~~
-    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
+    DAP-Taskprov: :BHRlc3QAG2h0dHBzOi8vbGVhZGVyLmV4YW1wbGUuY29tLwAbaHR0cHM6Ly9oZWxwZXIuZXhhbXBsZS5jb20vAAAAAAAAADwAAAAAAAAACgEAAAAAAAEAAAAUAAEAEAAAAAAAAAA8AAAAAAAAAGQ=:
 ~~~
 
 ## Deriving the DAP Task ID {#dap-task-id}
 
-When the Taskprov mechanism is in use, the task ID  ({{Section 4.2 of !DAP}} )
+When the Taskprov mechanism is in use, the task ID ({{Section 4.2 of !DAP}})
 is set to the hash of the task configuration. This ensures the protocol
 participants agree on the task ID before processing reports.
 
@@ -459,7 +459,7 @@ DAP-Taskrpov header. Aggregators can mitigate these kinds of attack by:
 
 # Operational Considerations
 
-The DAP-Taskprv provisioning mechanism is designed so that the Aggregators do
+The DAP-Taskprov provisioning mechanism is designed so that the Aggregators do
 not need to store individual task configurations long-term. Because the task
 configuration is advertised in each request in the upload, aggregation, and
 collection flows, the process of opting-in and deriving the task ID and VDAF

@@ -1272,7 +1272,7 @@ into batches, and privacy parameters such as the minimum size of each batch.<a h
 <p id="section-1-3">This document specifies a mechanism for provisioning DAP tasks that is built on
 top of the task configuration definition in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Its chief
 design goal is to make task configuration completely in-band, via HTTP request
-headers. Long-level cryptographic assets, such as HPKE configurations
+headers. Long-lived cryptographic assets, such as HPKE configurations
 <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
 to be established out-of-band. Accordingly, this document specifies a mechanism
 for deriving a per-task verification key from a pre-shared secret in a manner
@@ -1287,7 +1287,7 @@ that satisfies the security requirements for this key (<span><a href="https://da
 <p id="section-1.1-3">04:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.1-4.1">
-            <p id="section-1.1-4.1.1">Move task binding is moved to <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>
+            <p id="section-1.1-4.1.1">Move task binding to <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>
 (https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774).  (*)<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-4.2">
@@ -1492,7 +1492,7 @@ that are present <span class="bcp14">MUST</span> be ignored.<a href="#section-3.
 <p id="section-3.2-5">For example:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2-6">
 <pre>
-    DAP-Taskprov: :AWYAFGh0dHBzOi8vZXhhbXBsZS5jb20vABxodHRwczovL2Fub3RoZXIuZXhhbXBsZS5jb20vAAAAAAAAA+gAAAPoAgAAAAAAAAAAJxAAAAAAAAACXQAAAAIABAAAAP8ACAAAAAQwMTIz:
+    DAP-Taskprov: :BHRlc3QAG2h0dHBzOi8vbGVhZGVyLmV4YW1wbGUuY29tLwAbaHR0cHM6Ly9oZWxwZXIuZXhhbXBsZS5jb20vAAAAAAAAADwAAAAAAAAACgEAAAAAAAEAAAAUAAEAEAAAAAAAAAA8AAAAAAAAAGQ=:
 </pre><a href="#section-3.2-6" class="pilcrow">¶</a>
 </div>
 </section>
@@ -1502,7 +1502,7 @@ that are present <span class="bcp14">MUST</span> be ignored.<a href="#section-3.
         <h3 id="name-deriving-the-dap-task-id">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-deriving-the-dap-task-id" class="section-name selfRef">Deriving the DAP Task ID</a>
         </h3>
-<p id="section-3.3-1">When the Taskprov mechanism is in use, the task ID  (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span> )
+<p id="section-3.3-1">When the Taskprov mechanism is in use, the task ID (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>)
 is set to the hash of the task configuration. This ensures the protocol
 participants agree on the task ID before processing reports.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">When the DAP-Taskprov header is present, the task ID <span class="bcp14">SHALL</span> be computed as
@@ -1761,7 +1761,7 @@ CSPRNG).<a href="#section-4-5.3.1" class="pilcrow">¶</a></p>
       <h2 id="name-operational-considerations">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
       </h2>
-<p id="section-5-1">The DAP-Taskprv provisioning mechanism is designed so that the Aggregators do
+<p id="section-5-1">The DAP-Taskprov provisioning mechanism is designed so that the Aggregators do
 not need to store individual task configurations long-term. Because the task
 configuration is advertised in each request in the upload, aggregation, and
 collection flows, the process of opting-in and deriving the task ID and VDAF

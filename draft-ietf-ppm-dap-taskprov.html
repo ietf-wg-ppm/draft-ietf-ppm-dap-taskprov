@@ -1270,13 +1270,13 @@ scheme to use for the secure computation (a Verifiable Distributed Aggregation
 Function <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>), how reports are partitioned
 into batches, and privacy parameters such as the minimum size of each batch.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">This document specifies a mechanism for provisioning DAP tasks that is built on
-top of the task configuration definition in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Its chief
+top of the task configuration definition in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Its chief
 design goal is to make task configuration completely in-band, via HTTP request
 headers. Long-level cryptographic assets, such as HPKE configurations
-<span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
+<span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span> and VDAF verification keys <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20#section-5.2" class="relref">Section 5.2</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>, are presumed
 to be established out-of-band. Accordingly, this document specifies a mechanism
 for deriving a per-task verification key from a pre-shared secret in a manner
-that satisfies the security requirements for this key (<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-9.1" class="relref">Section 9.1</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-1-3" class="pilcrow">¶</a></p>
+that satisfies the security requirements for this key (<span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20#section-9.1" class="relref">Section 9.1</a> of [<a href="#VDAF" class="cite xref">VDAF</a>]</span>).<a href="#section-1-3" class="pilcrow">¶</a></p>
 <div id="change-log">
 <section id="section-1.1">
         <h3 id="name-change-log">
@@ -1291,7 +1291,13 @@ that satisfies the security requirements for this key (<span><a href="https://da
 (https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774).  (*)<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-1.1-4.2">
-            <p id="section-1.1-4.2.1">Remove the report extension.  (*)<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
+            <p id="section-1.1-4.2.1">Remove the report extension. (*)<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-4.3">
+            <p id="section-1.1-4.3.1">Bump draft-ietf-ppm-dap-16 to 19 <span>[<a href="#DAP" class="cite xref">DAP</a>]</span>. (*)<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-4.4">
+            <p id="section-1.1-4.4.1">Bump draft-irtf-cfrg-vdaf-15 to 20 <span>[<a href="#VDAF" class="cite xref">VDAF</a>]</span>.<a href="#section-1.1-4.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-1.1-5">03:<a href="#section-1.1-5" class="pilcrow">¶</a></p>
@@ -1457,13 +1463,13 @@ which in turn is presumed to be configured out-of-band.<a href="#section-3-7" cl
         </h3>
 <p id="section-3.1-1">The process of provisioning a task begins when the Author disseminates the task
 configuration to the Collector and each of the Clients. When a Client issues an
-upload request to the Leader (as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), it
+upload request to the Leader (as described in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>), it
 includes in an HTTP header field <span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> the task configuration it used to
 generate the report. We refer to this process as "task advertisement". Before
 consuming the report, the Leader parses the configuration and decides whether
 to opt-in; if not, the task's execution halts.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">Otherwise, if the Leader does opt-in, it advertises the task to the Helper
-during the aggregation interaction (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). In particular, it
+during the aggregation interaction (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.5" class="relref">Section 4.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). In particular, it
 includes the task configuration in an HTTP header of each aggregation job
 request for that task. Before proceeding, the Helper must first parse the
 configuration and decide whether to opt-in; if not, the task's execution halts.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
@@ -1480,7 +1486,7 @@ a Byte Sequence (<span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.3.5
 ignored.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Its value conveys the task configuration with which the recipient is meant to
 process the DAP request. It <span class="bcp14">MUST</span> be a valid <code>TaskConfiguration</code> as defined in
-<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Otherwise, the value <span class="bcp14">MUST</span> be ignored.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>. Otherwise, the value <span class="bcp14">MUST</span> be ignored.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.2-4">This document does not define any parameters for the header. Any parameters
 that are present <span class="bcp14">MUST</span> be ignored.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <p id="section-3.2-5">For example:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
@@ -1496,7 +1502,7 @@ that are present <span class="bcp14">MUST</span> be ignored.<a href="#section-3.
         <h3 id="name-deriving-the-dap-task-id">
 <a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-deriving-the-dap-task-id" class="section-name selfRef">Deriving the DAP Task ID</a>
         </h3>
-<p id="section-3.3-1">When the Taskprov mechanism is in use, the task ID  (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span> )
+<p id="section-3.3-1">When the Taskprov mechanism is in use, the task ID  (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2" class="relref">Section 4.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span> )
 is set to the hash of the task configuration. This ensures the protocol
 participants agree on the task ID before processing reports.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">When the DAP-Taskprov header is present, the task ID <span class="bcp14">SHALL</span> be computed as
@@ -1521,7 +1527,7 @@ shared VDAF verification key <span>[<a href="#VDAF" class="cite xref">VDAF</a>]<
 out-of-band. The length of this secret <span class="bcp14">MUST</span> be 32 bytes. Let us denote this
 secret by <code>verify_key_init</code>.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
 <p id="section-3.4-3">Let <code>VERIFY_KEY_SIZE</code> denote the length of the verification key for the VDAF
-indicated by the task configuration. (See <span>[<a href="#VDAF" class="cite xref">VDAF</a>], <a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19#section-5" class="relref">Section 5</a></span>.)<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+indicated by the task configuration. (See <span>[<a href="#VDAF" class="cite xref">VDAF</a>], <a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20#section-5" class="relref">Section 5</a></span>.)<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4">The VDAF verification key used for the task is computed as follows:<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.4-5">
 <pre>
@@ -1567,14 +1573,14 @@ established.<a href="#section-3.5-3.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.5-3.4">
             <p id="section-3.5-3.4.1">The task lifetime is too long (if the <code>task_interval</code> task extension is in
-use; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-3.5-3.4.1" class="pilcrow">¶</a></p>
+use; see <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-3.5-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-3.5-4">A protocol participant <span class="bcp14">MUST</span> opt out if:<a href="#section-3.5-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.5-5">
 <li id="section-3.5-5.1">
             <p id="section-3.5-5.1.1">The task has ended (if the <code>task_interval</code> task extension is in use; see
-<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-3.5-5.1.1" class="pilcrow">¶</a></p>
+<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2.3" class="relref">Section 4.2.3</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-3.5-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.5-5.2">
             <p id="section-3.5-5.2.1">The DAP batch mode or VDAF is not implemented.<a href="#section-3.5-5.2.1" class="pilcrow">¶</a></p>
@@ -1728,16 +1734,16 @@ directly impact tasks used by honest Clients, it does present a
 Denial-of-Service risk for the Aggregators themselves. This can be mitigated by
 limiting the rate at which new tasks are configured. In addition, deployments
 <span class="bcp14">SHOULD</span> arrange for the Author to digitally sign the task configuration so that
-Clients cannot forge task creation, e.g., via a task extension (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-4.2.2" class="relref">Section 4.2.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-4-3" class="pilcrow">¶</a></p>
+Clients cannot forge task creation, e.g., via a task extension (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-4.2.2" class="relref">Section 4.2.2</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>).<a href="#section-4-3" class="pilcrow">¶</a></p>
 <p id="section-4-4">Support for DAP-Taskprov may render a deployment of DAP more susceptible to
-task enumeration attacks (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-8.6.1" class="relref">Section 8.6.1</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). For example, if the
+task enumeration attacks (<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-8.6.1" class="relref">Section 8.6.1</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>). For example, if the
 Leader's upload endpoint is unauthenticated, then any HTTP client can learn if
 a Leader supports a particular task configuration by advertising the
 DAP-Taskrpov header. Aggregators can mitigate these kinds of attack by:<a href="#section-4-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-4-5">
 <li id="section-4-5.1">
           <p id="section-4-5.1.1">Requiring authentication of all APIs, including the upload endpoint (see
-<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18#section-3.5" class="relref">Section 3.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>);<a href="#section-4-5.1.1" class="pilcrow">¶</a></p>
+<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19#section-3.5" class="relref">Section 3.5</a> of [<a href="#DAP" class="cite xref">DAP</a>]</span>);<a href="#section-4-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-4-5.2">
           <p id="section-4-5.2.1">Enforcing rate limits on unauthenticated APIs; or<a href="#section-4-5.2.1" class="pilcrow">¶</a></p>
@@ -1830,7 +1836,7 @@ advertisement header (<a href="#task-advertisement" class="auto internal xref">S
 <dl class="references">
 <dt id="DAP">[DAP]</dt>
         <dd>
-<span class="refAuthor">Geoghegan, T.</span>, <span class="refAuthor">Patton, C.</span>, <span class="refAuthor">Pitman, B.</span>, <span class="refAuthor">Rescorla, E.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Distributed Aggregation Protocol for Privacy Preserving Measurement"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-ppm-dap-18</span>, <time datetime="2026-05-11" class="refDate">11 May 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18">https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-18</a>&gt;</span>. </dd>
+<span class="refAuthor">Geoghegan, T.</span>, <span class="refAuthor">Patton, C.</span>, <span class="refAuthor">Pitman, B.</span>, <span class="refAuthor">Rescorla, E.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Distributed Aggregation Protocol for Privacy Preserving Measurement"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-ppm-dap-19</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19">https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-19</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -1858,7 +1864,7 @@ advertisement header (<a href="#task-advertisement" class="auto internal xref">S
 <dd class="break"></dd>
 <dt id="VDAF">[VDAF]</dt>
       <dd>
-<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Cook, D.</span>, <span class="refAuthor">Patton, C.</span>, and <span class="refAuthor">P. Schoppmann</span>, <span class="refTitle">"Verifiable Distributed Aggregation Functions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-vdaf-19</span>, <time datetime="2026-04-14" class="refDate">14 April 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-19</a>&gt;</span>. </dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Cook, D.</span>, <span class="refAuthor">Patton, C.</span>, and <span class="refAuthor">P. Schoppmann</span>, <span class="refTitle">"Verifiable Distributed Aggregation Functions"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-vdaf-20</span>, <time datetime="2026-06-24" class="refDate">24 June 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-vdaf-20</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>

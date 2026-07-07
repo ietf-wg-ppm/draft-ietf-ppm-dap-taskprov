@@ -136,7 +136,11 @@ Table of Contents
    *  Move task binding is moved to [DAP] (https://github.com/ietf-wg-
       ppm/draft-ietf-ppm-dap/pull/774).  (*)
 
-   *  Remove the report extension.  (*)
+   *  Remove the report extension. (*)
+
+   *  Bump draft-ietf-ppm-dap-16 to 19 [DAP]. (*)
+
+   *  Bump draft-irtf-cfrg-vdaf-15 to 20 [VDAF].
 
    03:
 
@@ -573,9 +577,9 @@ Table of Contents
    [DAP]      Geoghegan, T., Patton, C., Pitman, B., Rescorla, E., and
               C. A. Wood, "Distributed Aggregation Protocol for Privacy
               Preserving Measurement", Work in Progress, Internet-Draft,
-              draft-ietf-ppm-dap-18, 11 May 2026,
+              draft-ietf-ppm-dap-19, 6 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-
-              18>.
+              19>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -603,9 +607,9 @@ Table of Contents
 
    [VDAF]     Barnes, R., Cook, D., Patton, C., and P. Schoppmann,
               "Verifiable Distributed Aggregation Functions", Work in
-              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-19, 14
-              April 2026, <https://datatracker.ietf.org/doc/html/draft-
-              irtf-cfrg-vdaf-19>.
+              Progress, Internet-Draft, draft-irtf-cfrg-vdaf-20, 24 June
+              2026, <https://datatracker.ietf.org/doc/html/draft-irtf-
+              cfrg-vdaf-20>.
 
 7.2.  Informative References
 

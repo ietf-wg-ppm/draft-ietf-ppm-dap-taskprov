@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-05T01:51:31.730281+00:00",
+  "timestamp": "2026-07-07T01:54:20.709637+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -1366,7 +1366,7 @@
       "id": "I_kwDOH4FR587WHIsa",
       "title": "Bump VDAF and DAP versions",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/111",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -1377,8 +1377,8 @@
       ],
       "body": "The next VDAF draft (> 17) will include some breaking changes:\nhttps://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/549\nhttps://github.com/cfrg/draft-irtf-cfrg-vdaf/issues/574\n\nNote that no changes to DAP or taskprov are required beyond bumping the version.\n\nRelated: https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/issues/753",
       "createdAt": "2025-11-05T17:54:42Z",
-      "updatedAt": "2026-07-03T18:25:25Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-06T17:48:13Z",
+      "closedAt": "2026-07-06T17:48:13Z",
       "comments": []
     },
     {
@@ -1771,9 +1771,31 @@
       "labels": [],
       "body": "In https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/787, DAP is permitting empty `TaskConfiguration.task_info` strings. When `TaskConfig` was defined in taskprov, it defined that field as having a minimum length of 1.\n\ntaskprov should require adding a requirement for a non-empty `task_info` string if it's necessary to disambiguate between tasks that would otherwise have identical `TaskConfiguration`s and thus task IDs. On the other hand, perhaps adequate diversification can be left up to implementation.",
       "createdAt": "2026-06-15T15:45:07Z",
-      "updatedAt": "2026-07-03T18:09:40Z",
-      "closedAt": "2026-07-03T18:09:40Z",
-      "comments": []
+      "updatedAt": "2026-07-06T17:47:51Z",
+      "closedAt": "2026-07-06T17:47:51Z",
+      "comments": [
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "None of the open PRs addresses this issue. @cjpatton did you close this because you concluded that we can leave it to implementations to choose `task_info` of sufficient length to disambiguate? I think that's reasonable, because having thought about this further, an empty task_info is fine if an implementation can be certain that it'll never again send the same `DAP-Taskprov` header without referring to the same task. And further a minimum length of 1 isn't sufficient if there will be more than 255 tasks that share the same configuration. So leaving it up to implementations is probably the best we can do.",
+          "createdAt": "2026-07-06T14:10:42Z",
+          "updatedAt": "2026-07-06T14:10:42Z"
+        },
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I apologize, closing was premature. I didn't fully grock your point before I hit the button. \n\nI don't think a normative requirement that `len(task_info) > 1` is useful for achieving what you want to achieve. Rather I think this is an operational consideration for the Author: reports generated for the same `TaskConfiguration` are considered to be part of the same task; if you want to split the same DAP parameters across multiple tasks, you must use the task info field to encode this.\n\nIf you think this would be useful to add, then feel free to send a PR. I don't think it's strictly necessary, but I don't object.",
+          "createdAt": "2026-07-06T15:09:57Z",
+          "updatedAt": "2026-07-06T15:10:11Z"
+        },
+        {
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I'd be OK with closing this without action. Making effective use of DAP and/or taskprov requires careful experiment and task design on the part of deployments, so I don't think we can do much better here than a dubiously valuable sentence or two in operational considerations.",
+          "createdAt": "2026-07-06T17:16:43Z",
+          "updatedAt": "2026-07-06T17:16:43Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -9785,13 +9807,13 @@
       ],
       "body": "Closes #34.\r\nCloses #114.\r\n\r\nContinue to derive the task ID from the config, ensuring that reports are never processed with different configs in the same task.\r\n\r\nWhile at it:\r\n\r\n1. Complete IANA considerations for the new DAP error type.\r\n\r\n2. Demote HPKE to an informative reference.",
       "createdAt": "2026-07-03T18:09:16Z",
-      "updatedAt": "2026-07-03T18:20:28Z",
+      "updatedAt": "2026-07-06T22:30:44Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/finish-it",
-      "headRefOid": "2639e17edcb57f33517037fcb0c00c50f008270a",
+      "headRefOid": "d19d06a02e06a5d4c7cb5a776d832aff5e64a382",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -9817,6 +9839,90 @@
               "updatedAt": "2026-07-03T18:18:56Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFF-oAA",
+          "commit": {
+            "abbreviatedOid": "2639e17"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "LGTM, just a couple typos and needs the example fixed.",
+          "createdAt": "2026-07-06T14:28:26Z",
+          "updatedAt": "2026-07-06T14:36:00Z",
+          "comments": [
+            {
+              "originalPosition": 115,
+              "body": "Here's a valid encoding of the following task:\n\n```\nTaskConfiguration {\n    task_info: [ // \"test\"\n        116,\n        101,\n        115,\n        116,\n    ],\n    leader_aggregator_endpoint: https://leader.example.com/,\n    helper_aggregator_endpoint: https://helper.example.com/,\n    time_precision: TimePrecision(\n        60,\n    ),\n    min_batch_size: 10,\n    batch_config: TimeInterval,\n    vdaf_config: Prio3Count,\n    extensions: [\n        TaskInterval(\n            Interval {\n                start: Time(\n                    60,\n                ),\n                duration: Duration(\n                    100,\n                ),\n            },\n        ),\n    ],\n}\n```\n\n```suggestion\n    DAP-Taskprov: :BHRlc3QAG2h0dHBzOi8vbGVhZGVyLmV4YW1wbGUuY29tLwAbaHR0cHM6Ly9oZWxwZXIuZXhhbXBsZS5jb20vAAAAAAAAADwAAAAAAAAACgEAAAAAAAEAAAAUAAEAEAAAAAAAAAA8AAAAAAAAAGQ=:\n```",
+              "createdAt": "2026-07-06T14:28:26Z",
+              "updatedAt": "2026-07-06T14:36:00Z"
+            },
+            {
+              "originalPosition": 120,
+              "body": "```suggestion\nWhen the Taskprov mechanism is in use, the task ID ({{Section 4.2 of !DAP}} )\n```",
+              "createdAt": "2026-07-06T14:28:39Z",
+              "updatedAt": "2026-07-06T14:36:00Z"
+            },
+            {
+              "originalPosition": 267,
+              "body": "```suggestion\nThe DAP-Taskprov provisioning mechanism is designed so that the Aggregators do\n```",
+              "createdAt": "2026-07-06T14:31:10Z",
+              "updatedAt": "2026-07-06T14:36:00Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFGPMxw",
+          "commit": {
+            "abbreviatedOid": "2639e17"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T14:59:26Z",
+          "updatedAt": "2026-07-06T14:59:26Z",
+          "comments": [
+            {
+              "originalPosition": 115,
+              "body": "Thanks!",
+              "createdAt": "2026-07-06T14:59:26Z",
+              "updatedAt": "2026-07-06T14:59:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFJG7QQ",
+          "commit": {
+            "abbreviatedOid": "70e2cd6"
+          },
+          "author": "divergentdave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-07-06T22:04:51Z",
+          "updatedAt": "2026-07-06T22:26:59Z",
+          "comments": [
+            {
+              "originalPosition": 29,
+              "body": "nit: typo\n```suggestion\nheaders. Long-lived cryptographic assets, such as HPKE configurations\n```",
+              "createdAt": "2026-07-06T22:04:51Z",
+              "updatedAt": "2026-07-06T22:26:59Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "This is an outstanding issue dating back to #126: The datatracker has only drafts up to draft-ietf-ppm-dap-taskprov-03, so we should fold these into a single \"04 (forthcoming):\" header.",
+              "createdAt": "2026-07-06T22:09:36Z",
+              "updatedAt": "2026-07-06T22:26:59Z"
+            },
+            {
+              "originalPosition": 127,
+              "body": "This sentence isn't correct anymore, since that goal is already accomplished by including those parameters in the `InputShareAad`. Now, this derivation is moreso a convenient way to choose a TaskID in the Taskprov deployment scenario. We could say that this provides a deterministic way for all parties to compute the TaskID from the TaskConfiguration in the headers of the initial request.",
+              "createdAt": "2026-07-06T22:17:22Z",
+              "updatedAt": "2026-07-06T22:26:59Z"
+            }
+          ]
         }
       ]
     },
@@ -9834,7 +9940,7 @@
       ],
       "body": "Closes #118.",
       "createdAt": "2026-07-03T18:23:36Z",
-      "updatedAt": "2026-07-03T18:27:32Z",
+      "updatedAt": "2026-07-06T14:17:16Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
@@ -9846,14 +9952,28 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABFF5Kng",
+          "commit": {
+            "abbreviatedOid": "f836257"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-07-06T14:17:15Z",
+          "updatedAt": "2026-07-06T14:17:15Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 131,
       "id": "PR_kwDOH4FR587tsV9L",
       "title": "Bump VDAF to 19",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/131",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -9862,19 +9982,56 @@
       ],
       "body": "Closes #111.\r\n\r\nThis is the version of VDAF cited by DAP-18.",
       "createdAt": "2026-07-03T18:28:02Z",
-      "updatedAt": "2026-07-03T18:28:24Z",
+      "updatedAt": "2026-07-06T17:48:12Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/111",
       "headRefOid": "7ddc4157765e74a9cb1bd9bbb0c8841f03007a77",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "closedAt": "2026-07-06T17:48:12Z",
+      "mergedAt": "2026-07-06T17:48:12Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "dbe83ff6a52c09a97a5caf8d7c7bbe9503cecb8d"
+      },
+      "comments": [
+        {
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> [draft-irtf-cfrg-vdaf-20](https://datatracker.ietf.org/doc/draft-irtf-cfrg-vdaf/20/) is up on the Datatracker. Any reason not to jump to that version? Relatedly: should the document contain a note to the RFC editor requesting that they update references to draft-ietf-ppm-dap and draft-irtf-cfrg-vdaf to RFC XXXXX when possible?\r\n\r\nI'm citing the draft cited by the latest DAP version.",
+          "createdAt": "2026-07-06T14:58:46Z",
+          "updatedAt": "2026-07-06T14:58:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABFFytNg",
+          "commit": {
+            "abbreviatedOid": "7ddc415"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "[draft-irtf-cfrg-vdaf-20](https://datatracker.ietf.org/doc/draft-irtf-cfrg-vdaf/20/) is up on the Datatracker. Any reason not to jump to that version? Relatedly: should the document contain a note to the RFC editor requesting that they update references to draft-ietf-ppm-dap and draft-irtf-cfrg-vdaf to RFC XXXXX when possible?",
+          "createdAt": "2026-07-06T14:04:37Z",
+          "updatedAt": "2026-07-06T14:04:37Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFHTMjg",
+          "commit": {
+            "abbreviatedOid": "7ddc415"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-07-06T17:15:08Z",
+          "updatedAt": "2026-07-06T17:15:08Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 132,
@@ -9890,7 +10047,7 @@
       ],
       "body": "Closes #127.\r\nBased on #129 (merge that first).",
       "createdAt": "2026-07-03T18:40:13Z",
-      "updatedAt": "2026-07-03T22:57:19Z",
+      "updatedAt": "2026-07-06T22:56:54Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "cjpatton/finish-it",
       "baseRefOid": "2639e17edcb57f33517037fcb0c00c50f008270a",
@@ -9920,6 +10077,132 @@
               "body": "Is this last bit necessary?  Is there any need to prohibit this directly.  What if I had a process that added more verification keys to a task?",
               "createdAt": "2026-07-03T22:57:19Z",
               "updatedAt": "2026-07-03T22:57:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFF3sLg",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T14:14:25Z",
+          "updatedAt": "2026-07-06T14:14:25Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "I'm also nervous about forcing the verification key ID to be 0. I guess that some future draft written at PPM that spells out a mechanism for rotating verification keys and using the ID field could update these MUSTs and SHALLs and explain how you use a nonzero verification key ID with taskprov.",
+              "createdAt": "2026-07-06T14:14:25Z",
+              "updatedAt": "2026-07-06T14:14:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFF4tFw",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "This change does what it sets out to do, but let's make sure we agree that taskprov could ever use a nonzero verification key ID before we merge.",
+          "createdAt": "2026-07-06T14:16:22Z",
+          "updatedAt": "2026-07-06T14:16:22Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFGOghQ",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T14:58:10Z",
+          "updatedAt": "2026-07-06T14:58:10Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Per https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/130, taskprov is intentionally highly opinionated here: you derive a per-**task** key from a pre-shared secret; there is no such thing as multiple keys per task. This being the case, there's no reason to derive the key ID any other way.\r\n\r\nUnless we want to let the key ID to identify the pre-shared secret?",
+              "createdAt": "2026-07-06T14:58:10Z",
+              "updatedAt": "2026-07-06T14:58:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFHTCew",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T17:14:46Z",
+          "updatedAt": "2026-07-06T17:14:46Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Yeah, maybe you could do that. But let's not go design the whole mechanism now. For my part, I'd be satisfied with this change right now if we agree that future drafts can amend the MUST and SHALL stuff we write down today.",
+              "createdAt": "2026-07-06T17:14:46Z",
+              "updatedAt": "2026-07-06T17:14:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFHUPRg",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Approving, because I'm satisfied that Chris has thought through the implications of forcing `verification_key_id = 0` and did it on purpose.",
+          "createdAt": "2026-07-06T17:17:49Z",
+          "updatedAt": "2026-07-06T17:17:49Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFHjHyA",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T17:52:55Z",
+          "updatedAt": "2026-07-06T17:52:55Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "To be interoperable, I think we would want to add some versioning to the DAP-Taskprov header to allow the client to signal expectations.\r\n\r\n\r\n",
+              "createdAt": "2026-07-06T17:52:55Z",
+              "updatedAt": "2026-07-06T17:52:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFJWzQQ",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "divergentdave",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-06T22:56:54Z",
+          "updatedAt": "2026-07-06T22:56:54Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "I think defining behavior for verification key ID 0 only for now would be fine. However, if extensibility concerns are a barrier for this PR, maybe we should consider bumping up the cardinality of `verification_key_init`. The spec diff may be similar to that we have now for ID 0 only.\n\nMy initial thought for how to handle multiple keys would be sharing multiple `verification_key_init` values out of band between aggregators, each with an ID, and then deriving verification keys for tasks from each `verification_key_init` value, assigning the `verification_key_init` value's ID as the verification key ID for corresponding keys derived from it.",
+              "createdAt": "2026-07-06T22:56:54Z",
+              "updatedAt": "2026-07-06T22:56:54Z"
             }
           ]
         }

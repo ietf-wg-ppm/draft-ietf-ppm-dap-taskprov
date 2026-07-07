@@ -61,11 +61,11 @@ key from a pre-shared secret.
 (RFC EDITOR: Remove this paragraph.) This draft is maintained in
 https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov.
 
-The Distributed Aggregation Protocol {{!DAP=I-D.draft-ietf-ppm-dap-18}} enables
+The Distributed Aggregation Protocol {{!DAP=I-D.draft-ietf-ppm-dap-19}} enables
 secure aggregation of a set of reports submitted by Clients. This process is
 centered around a "task" that determines, among other things, the cryptographic
 scheme to use for the secure computation (a Verifiable Distributed Aggregation
-Function {{!VDAF=I-D.draft-irtf-cfrg-vdaf-19}}), how reports are partitioned
+Function {{!VDAF=I-D.draft-irtf-cfrg-vdaf-20}}), how reports are partitioned
 into batches, and privacy parameters such as the minimum size of each batch.
 
 This document specifies a mechanism for provisioning DAP tasks that is built on
@@ -89,7 +89,11 @@ that satisfies the security requirements for this key ({{Section 9.1 of
 - Move task binding is moved to {{!DAP}}
   (https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap/pull/774).  (\*)
 
-- Remove the report extension.  (\*)
+- Remove the report extension. (\*)
+
+- Bump draft-ietf-ppm-dap-16 to 19 {{!DAP}}. (\*)
+
+- Bump draft-irtf-cfrg-vdaf-15 to 20 {{!VDAF}}.
 
 03:
 

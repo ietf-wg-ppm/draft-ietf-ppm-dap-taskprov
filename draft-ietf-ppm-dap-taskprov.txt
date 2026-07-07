@@ -5,8 +5,8 @@
 Privacy Preserving Measurement                                   S. Wang
 Internet-Draft                                                Apple Inc.
 Intended status: Informational                                 C. Patton
-Expires: 7 January 2027                                       Cloudflare
-                                                             6 July 2026
+Expires: 8 January 2027                                       Cloudflare
+                                                             7 July 2026
 
 
                    In-Band Task Provisioning for DAP
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 January 2027.
+   This Internet-Draft will expire on 8 January 2027.
 
 Copyright Notice
 
@@ -344,9 +344,8 @@ Table of Contents
 
 4.3.  Deriving the VDAF Verification Key
 
-   When a Leader and Helper implement this mechanism, they SHOULD
-   compute the shared VDAF verification key [VDAF] as described in this
-   section.
+   When a Leader and Helper implement this mechanism, they MUST compute
+   the shared VDAF verification key [VDAF] as described in this section.
 
    The Aggregators are presumed to have securely exchanged a pre-shared
    secret out-of-band.  The length of this secret MUST be 32 bytes.  Let
@@ -451,7 +450,7 @@ Table of Contents
 
 4.6.2.  Aggregation Protocol
 
-   When the Leader opts in to a task, it SHOULD derive the VDAF
+   When the Leader opts in to a task, it MUST derive the VDAF
    verification key for that task as described in Section 4.3.  The
    Leader MUST advertise the task to the Helper in every request
    incident to the task as described in Section 4.2.

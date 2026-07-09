@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-07T01:54:20.709637+00:00",
+  "timestamp": "2026-07-09T01:46:06.400232+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -538,7 +538,7 @@
       "id": "I_kwDOH4FR585tgf6r",
       "title": "Error type registration",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/34",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "divergentdave",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -549,8 +549,8 @@
       ],
       "body": "The document currently suggests that the type `urn:ietf:params:ppm:dap:error:invalidTask` should be used in problem details responses. However, DAP says \"Servers MUST NOT use the DAP URN namespace for errors not listed in the appropriate IANA registry\". Thus, the taskprov document's 'IANA Considerations' section should either add an `invalidTask` entry to the contents of DAP's URN registry, or create a separate namespace of its own.",
       "createdAt": "2023-08-04T19:25:11Z",
-      "updatedAt": "2026-07-03T18:19:19Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-07T02:40:49Z",
+      "closedAt": "2026-07-07T02:40:49Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1415,7 +1415,7 @@
       "id": "I_kwDOH4FR587dWZ5m",
       "title": "What purpose does the Taskprov report extension serve?",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/114",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -1426,8 +1426,8 @@
       ],
       "body": "This extension is in the title of [Section 3](https://datatracker.ietf.org/doc/html/draft-ietf-ppm-dap-taskprov#section-3), but I can't work out what value is served by having it present.\n\nI can see why you might think that an extension is necessary so that both client and aggregators agree that Taskprov is in effect, but I don't think that's right.\n\nThere are three outcomes possible when a report is submitted without this extension:\n1. The server doesn't support Taskprov, in which case the task ID will be unknown to it. There is no way to recover from this state and that's OK.\n2. The server supports Taskprov, but doesn't know about the task ID (yet).  This is where the provisioning process in Section 4 might come into play.\n3. The server already knows about the task (with or without Taskprov, this is mostly fine).\n\nBecause the aggregators need to use Taskprov to generate a task configuration (and task ID), there is no situation where they are not aware of the task being either created using Taskprov or not.\n\nAs far as I can see, the most important potential reason to define a report extension doesn't hold in this case.  That is, it doesn't help ensure that clients and servers agree on something.  Clients do not need to care how the task was configured.  Either they are told that Taskprov was involved or not.  In either case, they need to know about the task configuration and how it relates to the task ID, but there is no substantive difference for clients operating in two modes, assuming that the task ID is the same:\n\na. A client that is given the task configuration and task ID, as per the original DAP.\nb. A client that is given the task configuration and told to generate a task ID using the process here.\n\nThe client needs to know and trust the aggregators.  Taskprov creates a stronger binding between a given task configuration and a concrete task, but if the original DAP can be secure on the basis that the client trusts that the configuration the aggregators are using matches its own, then it is also true when using Taskprov.  Taskprov provides stronger assurances about that correspondence, but this is only relevant if the original DAP is vulnerable to attacks where clients are given the wrong configuration for a task.  I don't believe that to be the case, but if it were true, then the entire task ID design in DAP is broken.  More on that in a separate thread.\n\nThe only reason I can imagine being an issue related to the report extension is much more about the details of how the VDAF is executed when Taskprov is in play. That is because Taskprov fixes the verification key derivation. I'll open a follow-up issue on that part.",
       "createdAt": "2025-12-10T05:22:28Z",
-      "updatedAt": "2026-07-03T18:20:05Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-07T02:40:49Z",
+      "closedAt": "2026-07-07T02:40:49Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -1569,7 +1569,7 @@
       "id": "I_kwDOH4FR587dkGQM",
       "title": "Verification key derivation: specify something",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/issues/118",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -1581,8 +1581,8 @@
       ],
       "body": "DAP is entirely too casual when it comes to key agreement for the verification key, but that's sort of defensible.  That it suggests a derivation method is in my view an error.  It should have either said nothing or made the derivation mandatory (the latter being my preference; the opportunities for footgunning being far less that way).\n\nI would have gone further and defined how the shared secret is derived and identified. Maybe that's just because I'm weird like that.\n\nTaskprov is a different story.  In that case, Aggregators are unlikely to have some means of arranging key for every task they accept.  So it makes sense to mandate a method.\n\nExcept this doesn't.  It says \"SHOULD\".  That's not really going to promote interoperability.  If an implementation chooses not to, how does this even work?  (Presumably, they would have to develop some proprietary means of key agreement, which they could run in much the same way that they run the proprietary key agreement in the first place.  That might be per-task or not.)\n\nThis has some implications for #114.  If you button down a method, then the report extension might be the way that Aggregators know that the method specified in this document is the one they have to use, as opposed to whatever they might do when the report extension is absent.  Of course, in the current state of things, the answer is always a helpful \u00af\\\\\\_(\u30c4)\\_/\u00af\n\n",
       "createdAt": "2025-12-11T00:26:57Z",
-      "updatedAt": "2026-07-03T18:15:09Z",
-      "closedAt": null,
+      "updatedAt": "2026-07-07T02:40:29Z",
+      "closedAt": "2026-07-07T02:40:29Z",
       "comments": [
         {
           "author": "cjpatton",
@@ -9798,7 +9798,7 @@
       "id": "PR_kwDOH4FR587tsDCp",
       "title": "Remove the task extension altogether",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/129",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -9807,17 +9807,19 @@
       ],
       "body": "Closes #34.\r\nCloses #114.\r\n\r\nContinue to derive the task ID from the config, ensuring that reports are never processed with different configs in the same task.\r\n\r\nWhile at it:\r\n\r\n1. Complete IANA considerations for the new DAP error type.\r\n\r\n2. Demote HPKE to an informative reference.",
       "createdAt": "2026-07-03T18:09:16Z",
-      "updatedAt": "2026-07-06T22:30:44Z",
+      "updatedAt": "2026-07-07T02:40:48Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
-      "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
+      "baseRefOid": "dbe83ff6a52c09a97a5caf8d7c7bbe9503cecb8d",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/finish-it",
-      "headRefOid": "d19d06a02e06a5d4c7cb5a776d832aff5e64a382",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "c36c9e52a89f0e4fcfc3a5134da1642ac54c109c",
+      "closedAt": "2026-07-07T02:40:48Z",
+      "mergedAt": "2026-07-07T02:40:48Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "223576f453ea663533e64acb0a2d685f56b60826"
+      },
       "comments": [],
       "reviews": [
         {
@@ -9931,7 +9933,7 @@
       "id": "PR_kwDOH4FR587tsSDA",
       "title": "Make the VDAF verification key derivation scheme mandatory",
       "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/130",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "cjpatton",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
@@ -9940,17 +9942,19 @@
       ],
       "body": "Closes #118.",
       "createdAt": "2026-07-03T18:23:36Z",
-      "updatedAt": "2026-07-06T14:17:16Z",
+      "updatedAt": "2026-07-07T02:40:28Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "354dcf14b7307bc76df218f316091564aa3402ed",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/118",
       "headRefOid": "f836257661742a5ce94cc17fcc6004c55886b88a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-07-07T02:40:28Z",
+      "mergedAt": "2026-07-07T02:40:28Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "e412b12b0e0b53792e5cc65d5ef7007e2e8f8ab9"
+      },
       "comments": [],
       "reviews": [
         {
@@ -10047,13 +10051,13 @@
       ],
       "body": "Closes #127.\r\nBased on #129 (merge that first).",
       "createdAt": "2026-07-03T18:40:13Z",
-      "updatedAt": "2026-07-06T22:56:54Z",
+      "updatedAt": "2026-07-07T02:44:45Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
-      "baseRefName": "cjpatton/finish-it",
-      "baseRefOid": "2639e17edcb57f33517037fcb0c00c50f008270a",
+      "baseRefName": "main",
+      "baseRefOid": "223576f453ea663533e64acb0a2d685f56b60826",
       "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "headRefName": "cjpatton/127",
-      "headRefOid": "f7d2e9a61f8daa732babdfb4c134ec5adc9b1026",
+      "headRefOid": "722fc914fb934686602fb817ee78058cd7c3b0e5",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -10205,6 +10209,125 @@
               "updatedAt": "2026-07-06T22:56:54Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFKMUzg",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-07T02:44:45Z",
+          "updatedAt": "2026-07-07T02:44:45Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Yeah, that's basically what I meant here:\r\n\r\n> Unless we want to let the key ID to identify the pre-shared secret?\r\n\r\nI'll implement this when I get a chance.",
+              "createdAt": "2026-07-07T02:44:45Z",
+              "updatedAt": "2026-07-07T02:44:46Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 133,
+      "id": "PR_kwDOH4FR587uoXE8",
+      "title": "Update VDAF/DAP references",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/133",
+      "state": "MERGED",
+      "author": "cjpatton",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [
+        "draft-04"
+      ],
+      "body": "",
+      "createdAt": "2026-07-07T02:47:44Z",
+      "updatedAt": "2026-07-07T21:11:24Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "223576f453ea663533e64acb0a2d685f56b60826",
+      "headRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "headRefName": "cjpatton/bump-refs",
+      "headRefOid": "e6004baa9b9b65862a2873e3ae7aae6eeacb2101",
+      "closedAt": "2026-07-07T21:11:24Z",
+      "mergedAt": "2026-07-07T21:11:24Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "11809f99f534a6308bdd16f0f4ea12770f61a094"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABFOt7sQ",
+          "commit": {
+            "abbreviatedOid": "e6004ba"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-07-07T14:10:38Z",
+          "updatedAt": "2026-07-07T14:10:38Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 134,
+      "id": "PR_kwDOH4FR587u2t4B",
+      "title": "Re-apply review comments",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/134",
+      "state": "MERGED",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Some changes from #129 got lost in a force push, so this PR applies them again.",
+      "createdAt": "2026-07-07T13:52:23Z",
+      "updatedAt": "2026-07-07T21:12:50Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "223576f453ea663533e64acb0a2d685f56b60826",
+      "headRepository": "divergentdave/draft-wang-ppm-dap-taskprov",
+      "headRefName": "david/cleanup",
+      "headRefOid": "61fb64759ef5634ad802f0bf2531c9cb3e048fb9",
+      "closedAt": "2026-07-07T21:12:49Z",
+      "mergedAt": "2026-07-07T21:12:49Z",
+      "mergedBy": "cjpatton",
+      "mergeCommit": {
+        "oid": "b58b4d78d425f3d95a752a208a5dd2a24b426a75"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABFOtlIA",
+          "commit": {
+            "abbreviatedOid": "61fb647"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Another victim of stacked PRs",
+          "createdAt": "2026-07-07T14:09:56Z",
+          "updatedAt": "2026-07-07T14:09:56Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABFRo4ew",
+          "commit": {
+            "abbreviatedOid": "61fb647"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "\ud83e\udd26  thanks David for the eagle eye.",
+          "createdAt": "2026-07-07T21:12:43Z",
+          "updatedAt": "2026-07-07T21:12:43Z",
+          "comments": []
         }
       ]
     }

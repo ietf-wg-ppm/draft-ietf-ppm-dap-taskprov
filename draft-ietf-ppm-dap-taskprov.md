@@ -315,6 +315,8 @@ A protocol participant MUST opt out if:
 
 1. The DAP batch mode or VDAF is not implemented.
 
+1. Any task extension is not recognized.
+
 The behavior of each protocol participant is determined by whether or not they
 opt in to a task.
 

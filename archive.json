@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-14T01:16:04.605024+00:00",
+  "timestamp": "2026-07-16T01:22:20.905681+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -10327,6 +10327,62 @@
           "body": "\ud83e\udd26  thanks David for the eagle eye.",
           "createdAt": "2026-07-07T21:12:43Z",
           "updatedAt": "2026-07-07T21:12:43Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 135,
+      "id": "PR_kwDOH4FR587xldY4",
+      "title": "MUST opt out if task has unrecognized extension",
+      "url": "https://github.com/ietf-wg-ppm/draft-ietf-ppm-dap-taskprov/pull/135",
+      "state": "OPEN",
+      "author": "divergentdave",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [
+        "editorial",
+        "draft-04"
+      ],
+      "body": "DAP says that \"Extensions are mandatory to support. Protocol participants MUST NOT participate in tasks containing unrecognized extensions.\" Thus, I think we should add this to the list of situations where opting out of a task is required.",
+      "createdAt": "2026-07-14T14:09:39Z",
+      "updatedAt": "2026-07-14T15:06:28Z",
+      "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
+      "baseRefName": "main",
+      "baseRefOid": "b58b4d78d425f3d95a752a208a5dd2a24b426a75",
+      "headRepository": "divergentdave/draft-wang-ppm-dap-taskprov",
+      "headRefName": "david/opt-out-unrecognized-extension",
+      "headRefOid": "1f926e8188608938774728d1eae5c17aa4948403",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOH4FR588AAAABF93_Ow",
+          "commit": {
+            "abbreviatedOid": "1f926e8"
+          },
+          "author": "tgeoghegan",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Wouldn't all the conditions enumerated in draft-ietf-ppm-dap apply implicitly? There's no harm in reminding readers of this requirement, though.",
+          "createdAt": "2026-07-14T14:33:50Z",
+          "updatedAt": "2026-07-14T14:33:50Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABF-Lulw",
+          "commit": {
+            "abbreviatedOid": "1f926e8"
+          },
+          "author": "cjpatton",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "I think this is already implicit, but it certainly doesn't hurt. We just need to be consistent about reiterating all of the checks and not just some of them.",
+          "createdAt": "2026-07-14T15:06:11Z",
+          "updatedAt": "2026-07-14T15:06:11Z",
           "comments": []
         }
       ]

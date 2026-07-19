@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-07-16T01:22:20.905681+00:00",
+  "timestamp": "2026-07-19T01:23:28.074553+00:00",
   "repo": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
   "labels": [
     {
@@ -10051,7 +10051,7 @@
       ],
       "body": "Closes #127.\r\nBased on #129 (merge that first).",
       "createdAt": "2026-07-03T18:40:13Z",
-      "updatedAt": "2026-07-13T09:25:21Z",
+      "updatedAt": "2026-07-17T20:13:39Z",
       "baseRepository": "ietf-wg-ppm/draft-ietf-ppm-dap-taskprov",
       "baseRefName": "main",
       "baseRefOid": "223576f453ea663533e64acb0a2d685f56b60826",
@@ -10227,6 +10227,26 @@
               "body": "Yeah, that's basically what I meant here:\r\n\r\n> Unless we want to let the key ID to identify the pre-shared secret?\r\n\r\nI'll implement this when I get a chance.",
               "createdAt": "2026-07-07T02:44:45Z",
               "updatedAt": "2026-07-07T02:44:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOH4FR588AAAABGa3RBg",
+          "commit": {
+            "abbreviatedOid": "f7d2e9a"
+          },
+          "author": "markblunk",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-07-17T20:13:39Z",
+          "updatedAt": "2026-07-17T20:13:39Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Should we specify the error that the Helper responds with if the key is not 0?",
+              "createdAt": "2026-07-17T20:13:39Z",
+              "updatedAt": "2026-07-17T20:13:39Z"
             }
           ]
         }
